@@ -14,55 +14,55 @@ datasource db {
     url      = env("DATABASE_URL")
 }
 
-model Post {
-    id        Int      @id @default(autoincrement())
-    name      String
-    createdAt DateTime @default(now())
-    updatedAt DateTime @updatedAt
 
-    createdBy   User   @relation(fields: [createdById], references: [id])
-    createdById String
-
-    @@index([name])
-}
-
-// Necessary for Next auth
-model Account {
-    id                       String  @id @default(cuid())
-    userId                   String
-    type                     String
-    provider                 String
-    providerAccountId        String
-    refresh_token            String? // @db.Text
-    access_token             String? // @db.Text
-    expires_at               Int?
-    token_type               String?
-    scope                    String?
-    id_token                 String? // @db.Text
-    session_state            String?
-    user                     User    @relation(fields: [userId], references: [id], onDelete: Cascade)
-    refresh_token_expires_in Int?
-
-    @@unique([provider, providerAccountId])
-}
-
-model Session {
-    id           String   @id @default(cuid())
-    sessionToken String   @unique
-    userId       String
-    expires      DateTime
-    user         User     @relation(fields: [userId], references: [id], onDelete: Cascade)
-}
-
+// User table
 model User {
-    id            String    @id @default(cuid())
-    name          String?
-    email         String?   @unique
-    emailVerified DateTime?
-    image         String?
-    accounts      Account[]
-    sessions      Session[]
-    posts         Post[]
+  id          String      @id @default(dbgenerated("uuid_generate_v4()"))
+  name        String?
+  email       String?     @unique
+  emailVerified DateTime?
+  image       String?
+  createdAt   DateTime    @default(now())
+  
+  // Relationships
+  accounts     Account[]
+  sessions     Session[]
+  posts        Post[]
+  teams        Team[]      @relation("TeamCreator")
+  teamMembers  TeamMember[]
+  statlines    Statline[]
+  attendances  ActivityAttendance[]
+}
+
+// Account table
+model Account {
+  id                      String      @id @default(dbgenerated("uuid_generate_v4()"))
+  userId                  String
+  type                    String
+  provider                String
+  providerAccountId       String
+  refresh_token           String?
+  access_token            String?
+  expires_at              Int?
+  token_type              String?
+  scope                   String?
+  id_token                String?
+  session_state           String?
+  refresh_token_expires_in Int?
+  
+  // Relationships
+  user      User          @relation(fields: [userId], references: [id])
+}
+
+// Session table
+model Session {
+  id            String      @id @default(dbgenerated("uuid_generate_v4()"))
+  sessionToken  String      @unique
+  userId        String
+  expires       DateTime
+  
+  // Relationships
+  user      User          @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
@@ -71,4 +71,101 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
+}
+
+// Post table
+model Post {
+  id          Int         @id @default(autoincrement())
+  name        String
+  createdAt   DateTime
+  updatedAt   DateTime
+  createdById String
+  
+  // Relationships
+  createdBy  User          @relation(fields: [createdById], references: [id])
+}
+
+// Team table
+model Team {
+  id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  name       String
+  code       String      @unique
+  creatorId  String
+  createdAt  DateTime
+  
+  // Relationships
+  creator   User          @relation("TeamCreator", fields: [creatorId], references: [id])
+  members   TeamMember[]
+  activities Activity[]
+}
+
+// TeamMember table
+model TeamMember {
+  id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  userId     String
+  teamId     String
+  role       String
+  status     String
+  
+  // Relationships
+  user      User          @relation(fields: [userId], references: [id])
+  team      Team          @relation(fields: [teamId], references: [id])
+}
+
+// Activity table
+model Activity {
+  id           String      @id @default(dbgenerated("uuid_generate_v4()"))
+  title        String
+  time         String
+  gameplan     String?
+  type         String
+  duration     Float?
+  practiceType String?
+  notes        String?
+  date         DateTime
+  createdAt    DateTime
+  updatedAt    DateTime
+  teamId       String
+  
+  // Relationships
+  team       Team          @relation(fields: [teamId], references: [id])
+  attendees  ActivityAttendance[]
+  statlines  Statline[]
+}
+
+// Statline table
+model Statline {
+  id                 String      @id @default(dbgenerated("uuid_generate_v4()"))
+  playerId           String
+  fieldGoalsMade     Int
+  fieldGoalsMissed   Int
+  threePointersMade  Int
+  threePointersMissed Int
+  freeThrows         Int
+  missedFreeThrows   Int
+  assists            Int
+  steals             Int
+  turnovers          Int
+  rebounds           Int
+  blocks             Int
+  createdAt          DateTime
+  updatedAt          DateTime
+  activityId         String
+  
+  // Relationships
+  player    User          @relation(fields: [playerId], references: [id])
+  activity  Activity      @relation(fields: [activityId], references: [id])
+}
+
+// ActivityAttendance table
+model ActivityAttendance {
+  id               String      @id @default(dbgenerated("uuid_generate_v4()"))
+  activityId       String
+  userId           String
+  attendanceStatus String
+  attendedAt       DateTime?
+  
+  // Relationships
+  activity   Activity      @relation(fields: [activityId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
 }
