@@ -1,69 +1,92 @@
+import SignOut from "@/components/sign-out";
+import { api } from "@/trpc/server";
 import Link from "next/link";
+import { redirect } from "next/navigation";
 
-import { LatestPost } from "@/app/_components/post";
-import { auth } from "@/server/auth";
-import { api, HydrateClient } from "@/trpc/server";
+async function Home() {
+  let user;
 
-export default async function Home() {
-  const hello = await api.post.hello({ text: "from tRPC" });
-  const session = await auth();
-
-  if (session?.user) {
-    void api.post.getLatest.prefetch();
+  try {
+    user = await api.user.getUser();
+  } catch (error) {
+    console.error("Error fetching user:", error);
+    return redirect("/login");
   }
 
+  if (!user?.teamMember) {
+    return redirect("/create");
+  }
+
+  const members = await api.user.getTeamMembers({
+    teamId: user.teamMember.team.id,
+  });
+
   return (
-    <HydrateClient>
-      <main className="flex min-h-screen flex-col items-center justify-center bg-gradient-to-b from-[#2e026d] to-[#15162c] text-white">
-        <div className="container flex flex-col items-center justify-center gap-12 px-4 py-16">
-          <h1 className="text-5xl font-extrabold tracking-tight sm:text-[5rem]">
-            Create <span className="text-[hsl(280,100%,70%)]">T3</span> App
-          </h1>
-          <div className="grid grid-cols-1 gap-4 sm:grid-cols-2 md:gap-8">
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/usage/first-steps"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">First Steps →</h3>
-              <div className="text-lg">
-                Just the basics - Everything you need to know to set up your
-                database and authentication.
-              </div>
-            </Link>
-            <Link
-              className="flex max-w-xs flex-col gap-4 rounded-xl bg-white/10 p-4 hover:bg-white/20"
-              href="https://create.t3.gg/en/introduction"
-              target="_blank"
-            >
-              <h3 className="text-2xl font-bold">Documentation →</h3>
-              <div className="text-lg">
-                Learn more about Create T3 App, the libraries it uses, and how
-                to deploy it.
-              </div>
-            </Link>
-          </div>
-          <div className="flex flex-col items-center gap-2">
-            <p className="text-2xl text-white">
-              {hello ? hello.greeting : "Loading tRPC query..."}
+    <main className="min-h-screen bg-gray-900 py-12 text-white">
+      <div className="container mx-auto px-4">
+        {/* Header Section */}
+        <header className="mb-8 flex items-center justify-between">
+          <div>
+            <h1 className="text-3xl font-semibold">
+              Welcome, {user.user?.name}
+            </h1>
+            <p className="text-gray-400">
+              {user.user?.email} - Role: {user.teamMember.role}
             </p>
-
-            <div className="flex flex-col items-center justify-center gap-4">
-              <p className="text-center text-2xl text-white">
-                {session && <span>Logged in as {session.user?.name}</span>}
-              </p>
-              <Link
-                href={session ? "/api/auth/signout" : "/api/auth/signin"}
-                className="rounded-full bg-white/10 px-10 py-3 font-semibold no-underline transition hover:bg-white/20"
-              >
-                {session ? "Sign out" : "Sign in"}
-              </Link>
-            </div>
           </div>
+          <nav className="flex w-1/3 items-center space-x-4">
+            <Link
+              href="/team/create-team"
+              className="mr-2 inline-flex w-full justify-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            >
+              Create Team
+            </Link>
+            <SignOut />
+            <Link
+              href="/team/join-team"
+              className="mr-2 inline-flex w-full justify-center rounded bg-blue-500 px-4 py-2 font-bold text-white hover:bg-blue-700"
+            >
+              Join Team
+            </Link>
+          </nav>
+        </header>
 
-          {session?.user && <LatestPost />}
-        </div>
-      </main>
-    </HydrateClient>
+        {/* Team Members Section */}
+        <section className="mb-8">
+          <h2 className="mb-4 text-2xl font-semibold">Team Members</h2>
+          {members && members.length > 0 ? (
+            <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
+              {members.map((member) => (
+                <div
+                  key={member.id}
+                  className="rounded-lg bg-gray-800 p-4 shadow-md"
+                >
+                  <h3 className="mb-2 text-lg font-semibold">
+                    {member.user.name}
+                  </h3>
+                  <p className="mb-2 text-gray-400">{member.user.email}</p>
+                  <div className="text-sm text-gray-500">
+                    Role: {member.role}
+                  </div>
+                  <div className="text-sm text-gray-500">
+                    Status: {member.status}
+                  </div>
+                </div>
+              ))}
+            </div>
+          ) : (
+            <p className="text-gray-400">No team members found.</p>
+          )}
+        </section>
+
+        {/* Additional Sections (Team List, etc.) */}
+        <section>
+          <h2 className="mb-4 text-2xl font-semibold">Your Teams</h2>
+          {/* <Teamlist role={user.teamMember.role} /> */}
+        </section>
+      </div>
+    </main>
   );
 }
+
+export default Home;
