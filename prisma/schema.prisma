@@ -17,7 +17,7 @@ datasource db {
 
 // User table
 model User {
-  id          String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id          String        @id @default(cuid())
   name        String?
   email       String?     @unique
   emailVerified DateTime?
@@ -36,7 +36,7 @@ model User {
 
 // Account table
 model Account {
-  id                      String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id                      String     @id @default(cuid())
   userId                  String
   type                    String
   provider                String
@@ -49,14 +49,19 @@ model Account {
   id_token                String?
   session_state           String?
   refresh_token_expires_in Int?
+
+  image                    String?
   
   // Relationships
   user      User          @relation(fields: [userId], references: [id])
+
+  @@unique([provider, providerAccountId]) // <--- Add this line
+  @@index([userId])
 }
 
 // Session table
 model Session {
-  id            String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id            String      @id @default(cuid())
   sessionToken  String      @unique
   userId        String
   expires       DateTime
@@ -87,9 +92,10 @@ model Post {
 
 // Team table
 model Team {
-  id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id         String      @id @default(cuid())
   name       String
   code       String      @unique
+  image      String?
   creatorId  String
   createdAt  DateTime
   
@@ -101,7 +107,7 @@ model Team {
 
 // TeamMember table
 model TeamMember {
-  id         String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id         String        @id @default(cuid())
   userId     String
   teamId     String
   role       String
@@ -114,7 +120,7 @@ model TeamMember {
 
 // Activity table
 model Activity {
-  id           String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id           String      @id @default(cuid())
   title        String
   time         String
   gameplan     String?
@@ -135,7 +141,7 @@ model Activity {
 
 // Statline table
 model Statline {
-  id                 String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id                 String      @id @default(cuid())
   playerId           String
   fieldGoalsMade     Int
   fieldGoalsMissed   Int
@@ -159,7 +165,7 @@ model Statline {
 
 // ActivityAttendance table
 model ActivityAttendance {
-  id               String      @id @default(dbgenerated("uuid_generate_v4()"))
+  id               String      @id @default(cuid())
   activityId       String
   userId           String
   attendanceStatus String

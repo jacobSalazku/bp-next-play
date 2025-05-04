@@ -1,9 +1,14 @@
 import "@/styles/globals.css";
-
-import { type Metadata } from "next";
-import { Geist } from "next/font/google";
-
 import { TRPCReactProvider } from "@/trpc/react";
+import { HydrateClient } from "@/trpc/server";
+import { type Metadata } from "next";
+import { Righteous } from "next/font/google";
+
+const righteous = Righteous({
+  variable: "--font-righteous",
+  display: "swap",
+  weight: "400",
+});
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -11,18 +16,15 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-const geist = Geist({
-  subsets: ["latin"],
-  variable: "--font-geist-sans",
-});
-
 export default function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
-    <html lang="en" className={`${geist.variable}`}>
-      <body>
-        <TRPCReactProvider>{children}</TRPCReactProvider>
+    <html lang="en">
+      <body className={righteous.className}>
+        <TRPCReactProvider>
+          <HydrateClient>{children}</HydrateClient>
+        </TRPCReactProvider>
       </body>
     </html>
   );
