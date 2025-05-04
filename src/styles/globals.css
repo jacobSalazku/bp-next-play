@@ -7,4 +7,14 @@
   --font-righteous:
     var(--font-righteous), ui-serif, Georgia, Cambria, "Times New Roman", Times,
     serif;
+  --font-roboto:
+    var(--font-roboto), ui-serif, Georgia, Cambria, "Times New Roman", Times,
+    serif;
+}
+
+.font-righteous {
+  font-family: var(--font-righteous);
+}
+.font-roboto {
+  font-family: var(--font-roboto);
 }
