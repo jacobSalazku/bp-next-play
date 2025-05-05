@@ -63,4 +63,33 @@ export const userRouter = createTRPCRouter({
       }
       return team.members;
     }),
+
+  getTeamMember: protectedProcedure.query(async ({ ctx, input }) => {
+    const teamMember = await ctx.db.teamMember.findFirst({
+      where: {
+        userId: ctx.session.user.id,
+      },
+      select: {
+        id: true,
+        role: true,
+        status: true,
+
+        team: {
+          select: {
+            id: true,
+            name: true,
+            code: true,
+            creatorId: true,
+          },
+        },
+      },
+    });
+    if (!teamMember) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Team member not found.",
+      });
+    }
+    return teamMember;
+  }),
 });
