@@ -2,6 +2,7 @@
 
 import { cn } from "@/lib/utils";
 import {
+  Calendar,
   ChevronLeft,
   ChevronRight,
   Home,
@@ -19,10 +20,12 @@ const Navigation = ({ children }: { children: React.ReactNode }) => {
   const navItems = [
     { label: "Dashboard", href: "/", icon: Home, active: true },
     { label: "Profile", href: "/profile", icon: User, active: false },
+    { label: "Schedule", href: "/settings", icon: Calendar, active: false },
+    { label: "Logout", href: "/logout", icon: User, active: false },
   ];
 
   return (
-    <div className="bg-background text-foreground flex h-screen flex-col dark:bg-gray-900 dark:text-gray-100">
+    <div className="bg-background text-foreground flex h-screen flex-col dark:bg-gray-950 dark:text-gray-100">
       {/* Mobile Header */}
       <header className="border-border flex items-center justify-between border-b p-4 md:hidden dark:border-gray-700">
         <div className="flex items-center gap-2">
@@ -41,7 +44,7 @@ const Navigation = ({ children }: { children: React.ReactNode }) => {
 
       {/* Mobile Sidebar Overlay */}
       {mobileNavOpen && (
-        <div className="fixed inset-0 z-50 bg-neutral-900 md:hidden">
+        <div className="fixed inset-0 z-50 bg-gray-950 md:hidden">
           <div className="bg-background absolute top-0 left-0 flex h-full w-[250px] flex-col bg-neutral-900 p-4 shadow-lg">
             <div className="border-border mb-4 flex items-center justify-between border-b pb-2 dark:border-gray-700">
               <h2 className="text-lg font-bold">Team Manager</h2>
@@ -79,7 +82,7 @@ const Navigation = ({ children }: { children: React.ReactNode }) => {
       <div className="flex flex-1 overflow-hidden">
         <aside
           className={cn(
-            "border-border bg-background z-40 hidden flex-col border-r bg-neutral-950 transition-all duration-300 md:flex",
+            "border-border bg-background z-40 hidden flex-col border-r bg-gray-950 transition-all duration-300 md:flex",
             navOpen ? "w-64" : "w-16",
           )}
         >
@@ -99,7 +102,7 @@ const Navigation = ({ children }: { children: React.ReactNode }) => {
               )}
             </button>
           </div>
-          <nav className="flex-1 overflow-y-auto py-4">
+          <nav className="flex-1 overflow-y-auto bg-gray-950 py-4">
             <ul className="space-y-1">
               {navItems.map((item, idx) => (
                 <li key={idx}>
