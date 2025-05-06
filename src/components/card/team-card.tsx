@@ -1,8 +1,14 @@
-import type { Team } from "@prisma/client";
+import type { Team } from "@/types";
+import { format } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
+import type { FC } from "react";
 import { Link } from "../button/link";
 
-function TeamCard({ team }: { team: Team }) {
+type TeamCardProps = {
+  team: Team;
+};
+
+const TeamCard: FC<TeamCardProps> = ({ team }) => {
   return (
     <div className="mx-auto w-full max-w-md cursor-pointer rounded-2xl border border-gray-500 p-5 text-blue-200 shadow-sm transition-shadow hover:shadow-md">
       <div className="border-b border-white/10 pb-3">
@@ -12,25 +18,47 @@ function TeamCard({ team }: { team: Team }) {
             U14
           </span>
         </div>
-        <p className="mt-1 text-sm text-white/60">12 players</p>
+        <p className="mt-1 text-sm text-white/60">
+          {team.members.length} members
+        </p>
       </div>
       <div className="space-y-3 py-4 text-sm text-white/90">
-        <div className="flex justify-between">
-          <span className="font-medium text-white">Next Activity:</span>
-          <span className="text-white/80">vs Gembo BBC</span>
-        </div>
-        <div className="flex flex-wrap items-center gap-3">
-          <div className="flex items-center gap-1">
-            <Calendar className="h-4 w-4 text-white/40" />4 June
-          </div>
-          <div className="flex items-center gap-1">
-            <Clock className="h-4 w-4 text-white/40" />
-            19:00
-          </div>
-        </div>
-        <div className="flex items-center gap-2">
-          <MapPin className="h-4 w-4 text-white/40" />
-          <span className="text-white/60">Sportschuur</span>
+        <div className="space-y-3 py-4 text-sm text-white/90">
+          {team.activities && team.activities.length > 0 ? (
+            <>
+              <div className="flex justify-between">
+                <span className="font-medium text-white">Next Activity:</span>
+                {team.activities[0]?.type === "Game" && (
+                  <span className="text-white/80">
+                    vs {team.activities[0].title}
+                  </span>
+                )}
+                {team.activities[0]?.type === "Practice" && (
+                  <span className="text-white/80">
+                    {team.activities[0].title}
+                  </span>
+                )}
+              </div>
+              <div className="flex flex-wrap items-center gap-3">
+                <div className="flex items-center gap-1">
+                  <Calendar className="h-4 w-4 text-white/40" />
+                  {format(team.activities[0]?.date ?? new Date(), "dd MMMM")}
+                </div>
+                <div className="flex items-center gap-1">
+                  <Clock className="h-4 w-4 text-white/40" />
+                  {team.activities[0]?.time}
+                </div>
+              </div>
+              <div className="flex items-center gap-2">
+                <MapPin className="h-4 w-4 text-white/40" />
+                <span className="text-white/60">Locatie</span>
+              </div>
+            </>
+          ) : (
+            <div className="flex items-center justify-center py-4">
+              <span className="text-white/60">No activities scheduled yet</span>
+            </div>
+          )}
         </div>
       </div>
 
@@ -51,6 +79,6 @@ function TeamCard({ team }: { team: Team }) {
       </div>
     </div>
   );
-}
+};
 
 export default TeamCard;

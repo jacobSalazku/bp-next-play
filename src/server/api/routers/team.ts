@@ -55,8 +55,6 @@ export const teamRouter = createTRPCRouter({
         name: true,
         code: true,
         image: true,
-        createdAt: true,
-        creatorId: true,
       },
     });
 
@@ -85,8 +83,40 @@ export const teamRouter = createTRPCRouter({
         image: true,
         createdAt: true,
         creatorId: true,
+        activities: {
+          select: {
+            id: true,
+            title: true,
+            duration: true,
+            date: true,
+            time: true,
+            type: true,
+            practiceType: true,
+          },
+          orderBy: { date: "desc" },
+        },
+        members: {
+          select: {
+            userId: true,
+            role: true,
+            status: true,
+            user: {
+              select: {
+                id: true,
+              },
+            },
+          },
+        },
       },
     });
+
+    if (!teams) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Team not found.",
+      });
+    }
+
     return teams;
   }),
 
