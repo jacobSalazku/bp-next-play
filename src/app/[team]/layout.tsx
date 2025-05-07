@@ -8,7 +8,7 @@ export default async function TeamLayout({
   return (
     <TRPCReactProvider>
       <HydrateClient>
-        <main className="flex max-w-screen justify-center bg-black">
+        <main className="flex max-w-screen justify-center bg-gray-950">
           <div className="w-screen max-w-7xl border-2 border-white">
             <Navigation>{children}</Navigation>
           </div>
