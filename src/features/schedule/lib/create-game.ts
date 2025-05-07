@@ -4,8 +4,8 @@ export const createGameActivity = (teamId: string, onClose: () => void) => {
   const utils = api.useUtils();
 
   const createGame = api.activity.createGame.useMutation({
-    onSuccess: () => {
-      void utils.activity.getActivities.invalidate({ teamId: teamId });
+    onSuccess: async () => {
+      await utils.activity.getActivities.invalidate({ teamId: teamId });
       onClose();
     }, // Add missing comma here
     onError: (error) => {
