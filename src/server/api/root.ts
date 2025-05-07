@@ -1,3 +1,4 @@
+import { activityRouter } from "./routers/activity";
 import { drawRouter } from "./routers/draw";
 import { postRouter } from "./routers/post";
 import { scheduleRouter } from "./routers/schedule";
@@ -15,6 +16,7 @@ export const appRouter = createTRPCRouter({
   draw: drawRouter,
   team: teamRouter,
   user: userRouter,
+  activity: activityRouter,
   schedule: scheduleRouter,
 });
 

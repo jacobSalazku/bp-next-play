@@ -23,7 +23,7 @@ const ScheduleBlock = ({
 
   return (
     <div className="bg-background flex w-full items-center justify-center p-4">
-      <div className="w-full max-w-7xl">
+      <div className="h-full w-full max-w-7xl">
         <HorizontalCalender
           selectedDate={selectedDate}
           onDateSelect={setSelectedDate}
