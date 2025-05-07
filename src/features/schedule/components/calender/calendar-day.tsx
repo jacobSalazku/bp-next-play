@@ -3,9 +3,7 @@ import useStore from "@/store/store";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import type { FC, MouseEvent } from "react";
-import { getTypeBgColor } from "../../utils/utils";
-
-type ActivityType = "Game" | "Practice" | "Multiple";
+import { CalendarActivityButton } from "./calendar-activity-button";
 
 type CalendarDayProps = {
   day: Date;
@@ -17,7 +15,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     selectedDate,
     setSelectedDate,
     setOpenGameDetails,
-    setOpenPracticeDetails,
+    setSelectedActivity,
   } = useStore();
 
   const isSelected = selectedDate ? isSameDay(day, selectedDate) : false;
@@ -28,19 +26,16 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
   );
 
   const displayActivities = activitiesForDay.slice(0, 3);
-  const hasMoreActivities = activitiesForDay.length > 1;
+  const extraActivitiesCount =
+    activitiesForDay.length > 3 ? activitiesForDay.length - 3 : null;
 
   const OpenActivityDetailModal = (
     e: MouseEvent<HTMLButtonElement>,
     activity: Activity,
   ) => {
-    e.stopPropagation();
-    if (activity.type === "Game") {
-      setOpenGameDetails(true);
-    }
-    if (activity.type === "Practice") {
-      setOpenPracticeDetails(true);
-    }
+    e.stopPropagation(); // Prevent event bubbling
+    setSelectedActivity(activity);
+    setOpenGameDetails(true);
   };
 
   return (
@@ -55,38 +50,24 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     >
       <span
         className={cn(
-          "mb-2 text-lg font-bold",
-          isSelected
-            ? "text-white"
-            : isToday
-              ? "text-blue-400"
-              : "text-gray-300",
+          isToday ? "text-blue-400" : "text-gray-300",
+          "mb-2 text-lg font-light",
         )}
       >
         {format(day, "d")}
       </span>
-
-      <div className="w-full overflow-hidden">
-        {displayActivities.map((activity) => (
-          <button
-            type="button"
-            key={activity.id}
-            onClick={(e) => OpenActivityDetailModal(e, activity)}
-            className={cn(
-              getTypeBgColor(activity.type as ActivityType),
-              "mb-1 inline-flex w-full cursor-pointer items-center justify-between truncate rounded px-1 py-1 text-xs font-medium hover:opacity-90",
-            )}
-          >
-            <div className="truncate">{activity.title}</div>
-            <div className="text-xs opacity-90">{activity.time}</div>
-          </button>
-        ))}
-        {hasMoreActivities && (
-          <div className="text-center text-xs text-gray-400">
-            +{activities.length - 1} more
-          </div>
-        )}
-      </div>
+      {displayActivities.map((activity) => (
+        <CalendarActivityButton
+          key={activity.id}
+          activity={activity}
+          onClick={OpenActivityDetailModal}
+        />
+      ))}
+      {extraActivitiesCount && (
+        <div className="text-center text-xs text-gray-400">
+          +{extraActivitiesCount} more
+        </div>
+      )}
     </div>
   );
 };
