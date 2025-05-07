@@ -3,6 +3,7 @@
 import { Button } from "@/components/button/button";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { useRouter } from "next/navigation";
 import { type FC } from "react";
 import { useForm } from "react-hook-form";
 import { createGameActivity } from "../../lib/create-game";
@@ -30,6 +31,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, selectedDate, team }) => {
     },
   });
 
+  const router = useRouter();
   const createGame = createGameActivity(team, onClose);
 
   const onSubmit = async (data: GameData) => {
@@ -40,13 +42,14 @@ const GameForm: FC<GameFormProps> = ({ onClose, selectedDate, team }) => {
       teamId: team,
       type: "Game",
     });
+    router.push(`/${team}/schedule`);
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl bg-gray-900 p-6 text-white shadow-2xl ring-1 ring-white/10">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Create Game</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+          <h2 className="text-lg font-normal sm:text-xl">Create Game</h2>
           <button
             onClick={onClose}
             className="text-xl font-bold text-gray-400 hover:text-white"
@@ -55,7 +58,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, selectedDate, team }) => {
             ×
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           <div>
             <label
               htmlFor="title"
