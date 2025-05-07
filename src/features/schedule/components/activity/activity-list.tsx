@@ -50,7 +50,6 @@ export function ActivityList({ activities, team }: ActivityListProps) {
           onFilterChange={(newFilter) => setFilter(newFilter)}
         />
       </div>
-
       {filteredActivities.length > 0 ? (
         <div className="mb-6 space-y-4">
           {filteredActivities.map((activity) => (
