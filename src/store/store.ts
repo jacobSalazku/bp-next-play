@@ -1,8 +1,12 @@
+import type { Activity } from "@prisma/client";
 import { create } from "zustand";
 
 type StoreState = {
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
+
+  selectedActivity: Activity | null;
+  setSelectedActivity: (activity: Activity | null) => void;
 
   openGameModal: boolean;
   setOpenGameModal: (open: boolean) => void;
@@ -19,19 +23,21 @@ type StoreState = {
 
 const useStore = create<StoreState>((set) => ({
   selectedDate: new Date(),
-  setSelectedDate: (date: Date) => set({ selectedDate: date }),
+  setSelectedDate: (date) => set({ selectedDate: date }),
+  selectedActivity: null,
+  setSelectedActivity: (activity) => set({ selectedActivity: activity }),
 
   // Game and Practice Modals
   openGameModal: false,
-  setOpenGameModal: (open: boolean) => set({ openGameModal: open }),
+  setOpenGameModal: (open) => set({ openGameModal: open }),
   openPracticeModal: false,
-  setOpenPracticeModal: (open: boolean) => set({ openPracticeModal: open }),
+  setOpenPracticeModal: (open) => set({ openPracticeModal: open }),
 
   // Game and Practice Details
   openGameDetails: false,
-  setOpenGameDetails: (open: boolean) => set({ openGameDetails: open }),
+  setOpenGameDetails: (open) => set({ openGameDetails: open }),
   openPracticeDetails: false,
-  setOpenPracticeDetails: (open: boolean) => set({ openPracticeDetails: open }),
+  setOpenPracticeDetails: (open) => set({ openPracticeDetails: open }),
 }));
 
 export default useStore;
