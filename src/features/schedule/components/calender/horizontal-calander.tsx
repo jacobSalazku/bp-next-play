@@ -1,25 +1,17 @@
-import { Button } from "@/components/button/button";
+"use client";
 
-import { cn } from "@/lib/utils";
+import { Button } from "@/components/button/button";
 import type { Activity } from "@prisma/client";
-import { addDays, format, isSameDay, subDays } from "date-fns";
+import { addDays, format, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";
 import { CalendarDay } from "./calendar-day";
 
 type HorizontalCalendarProps = {
-  selectedDate?: Date;
-  onDateSelect?: (date: Date) => void;
   activities: Activity[];
-  className?: string;
 };
 
-export function HorizontalCalender({
-  selectedDate,
-  onDateSelect,
-  activities,
-  className,
-}: HorizontalCalendarProps) {
+export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const visibleDays = useMemo(() => {
@@ -33,13 +25,7 @@ export function HorizontalCalender({
   const handleNext = () => setCurrentDate((prevDate) => addDays(prevDate, 7));
 
   return (
-    <div
-      className={cn(
-        "w-full rounded-3xl border border-gray-500 bg-gray-950 p-3 shadow-2xl transition-colors duration-300",
-        "md:p-6",
-        className,
-      )}
-    >
+    <div className="w-full rounded-3xl border border-gray-500 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold tracking-tight text-gray-100">
           {format(visibleDays[0] ?? new Date(), "MMM d")} -{" "}
@@ -64,13 +50,7 @@ export function HorizontalCalender({
       </div>
       <div className="grid grid-cols-5 gap-1">
         {visibleDays.map((day, index) => (
-          <CalendarDay
-            key={index}
-            day={day}
-            isSelected={selectedDate ? isSameDay(day, selectedDate) : false}
-            onSelect={(date) => onDateSelect?.(date)}
-            activities={activities}
-          />
+          <CalendarDay key={index} day={day} activities={activities} />
         ))}
       </div>
     </div>

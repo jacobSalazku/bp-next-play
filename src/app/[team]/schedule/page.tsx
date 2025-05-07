@@ -1,9 +1,12 @@
 import { ScheduleBlock } from "@/features/schedule";
-import { api } from "@/trpc/server";
+import { getTeamAndActivities } from "@/features/schedule/lib/get-team";
+import { redirect } from "next/navigation";
 
 export default async function SchedulePage() {
-  const team = await api.team.getTeam();
-  const activities = await api.activity.getActivities({ teamId: team.id });
+  const { team, activities } = await getTeamAndActivities();
 
+  if (!team) {
+    redirect("/create-team");
+  }
   return <ScheduleBlock activities={activities} team={team.id} />;
 }

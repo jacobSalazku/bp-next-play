@@ -1,7 +1,7 @@
 "use client";
 
 import { Button } from "@/components/button/button";
-import { cn } from "@/lib/utils";
+import useStore from "@/store/store";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import { AlertCircle, CalendarClock, Plus } from "lucide-react";
@@ -12,20 +12,19 @@ import { ActivityCard } from "./activity-card";
 import { ActivityFilter } from "./activity-filter";
 
 type ActivityListProps = {
-  selectedDate: Date;
-  className?: string;
   activities: Activity[];
   team: string;
 };
 
-export function ActivityList({
-  selectedDate,
-  className,
-  activities,
-  team,
-}: ActivityListProps) {
-  const [openGameModal, setOpenGameModal] = useState(false);
-  const [openPracticeModal, setOpenPracticeModal] = useState(false);
+export function ActivityList({ activities, team }: ActivityListProps) {
+  const {
+    selectedDate,
+    openGameModal,
+    setOpenGameModal,
+    openPracticeModal,
+    setOpenPracticeModal,
+  } = useStore();
+
   const [filter, setFilter] = useState<"all" | "game" | "practice">("all");
 
   const filteredActivities = useMemo(() => {
@@ -40,7 +39,7 @@ export function ActivityList({
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className={cn("animate-fade-in mt-6 duration-300", className)}>
+    <div className="animate-fade-in bg-background mt-4 rounded-xl border p-4 shadow-sm duration-300">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
           <CalendarClock className="mr-2 h-5 w-5 text-gray-400" />
@@ -55,13 +54,7 @@ export function ActivityList({
       {filteredActivities.length > 0 ? (
         <div className="mb-6 space-y-4">
           {filteredActivities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              activity={activity}
-              onViewDetails={() => {
-                console.log("View details clicked", activity);
-              }}
-            />
+            <ActivityCard key={activity.id} activity={activity} />
           ))}
         </div>
       ) : (
