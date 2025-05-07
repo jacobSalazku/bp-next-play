@@ -32,7 +32,7 @@ export const ActivityDetails = () => {
               {format(new Date(selectedActivity.date), "EEEE, MMMM d, yyyy")}
             </div>
             <div className="mt-1 text-sm sm:text-base">
-              {format(new Date(selectedActivity.date), "h:mm a")}
+              {selectedActivity.time}
             </div>
           </div>
           {selectedActivity.duration && (
