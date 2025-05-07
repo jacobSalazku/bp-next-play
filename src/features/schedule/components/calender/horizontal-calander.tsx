@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/button/button";
-import { cn } from "@/lib/utils";
 import type { Activity } from "@prisma/client";
 import { addDays, format, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -10,13 +9,9 @@ import { CalendarDay } from "./calendar-day";
 
 type HorizontalCalendarProps = {
   activities: Activity[];
-  className?: string;
 };
 
-export function HorizontalCalender({
-  activities,
-  className,
-}: HorizontalCalendarProps) {
+export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
   const [currentDate, setCurrentDate] = useState(new Date());
 
   const visibleDays = useMemo(() => {
@@ -30,13 +25,7 @@ export function HorizontalCalender({
   const handleNext = () => setCurrentDate((prevDate) => addDays(prevDate, 7));
 
   return (
-    <div
-      className={cn(
-        "w-full rounded-3xl border border-gray-500 bg-gray-950 p-3 shadow-2xl transition-colors duration-300",
-        "md:p-6",
-        className,
-      )}
-    >
+    <div className="w-full rounded-3xl border border-gray-500 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold tracking-tight text-gray-100">
           {format(visibleDays[0] ?? new Date(), "MMM d")} -{" "}
