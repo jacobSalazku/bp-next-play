@@ -48,14 +48,19 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
           : "border border-gray-700 hover:bg-gray-800",
       )}
     >
-      <span
-        className={cn(
-          isToday ? "text-blue-400" : "text-gray-300",
-          "mb-2 text-lg font-light",
-        )}
-      >
-        {format(day, "d")}
-      </span>
+      <div className="inline-flex w-full flex-row items-center justify-between px-1">
+        <span className="text-xs font-medium text-gray-400">
+          {format(day, "EEE")} {/* Mon, Tue, etc. */}
+        </span>
+        <span
+          className={cn(
+            isToday ? "text-blue-400" : "text-gray-300",
+            "mb-2 text-sm font-light md:text-lg",
+          )}
+        >
+          {format(day, "d")}
+        </span>
+      </div>
       {displayActivities.map((activity) => (
         <CalendarActivityButton
           key={activity.id}
