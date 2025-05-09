@@ -41,10 +41,10 @@ const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/70 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-2xl bg-gray-900 p-6 text-white shadow-2xl ring-1 ring-white/10">
-        <div className="mb-6 flex items-center justify-between">
-          <h2 className="text-xl font-semibold">Create Practice</h2>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+          <h2 className="text-lg font-normal sm:text-xl">Create Practice</h2>
           <button
             onClick={onClose}
             className="text-xl font-bold text-gray-400 hover:text-white"
@@ -53,7 +53,7 @@ const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
             ×
           </button>
         </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-5">
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
           <div>
             <label
               htmlFor="title"
@@ -89,9 +89,7 @@ const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
                     })}
                     className="form-radio text-blue-600 focus:ring-blue-500"
                   />
-                  <span className="text-gray-300">
-                    {`${practice} Practice`}
-                  </span>
+                  <span className="text-gray-300">{practice}</span>
                 </label>
               ))}
             </div>
