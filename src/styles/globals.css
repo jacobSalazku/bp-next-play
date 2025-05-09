@@ -15,6 +15,16 @@
 .font-righteous {
   font-family: var(--font-righteous);
 }
+
 .font-roboto {
   font-family: var(--font-roboto);
+}
+
+.scrollbar-none {
+  scrollbar-width: none; /* Firefox */
+  -ms-overflow-style: none; /* IE 10+ */
+}
+
+.scrollbar-none::-webkit-scrollbar {
+  display: none; /* Chrome, Safari, Edge */
 }

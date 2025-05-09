@@ -39,7 +39,7 @@ export function ActivityList({ activities, team }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in bg-background mt-4 rounded-xl border p-4 shadow-sm duration-300">
+    <div className="animate-fade-in bg-background mt-4 rounded-xl border p-6 shadow-sm duration-300">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
           <CalendarClock className="mr-2 h-5 w-5 text-gray-400" />
@@ -51,7 +51,7 @@ export function ActivityList({ activities, team }: ActivityListProps) {
         />
       </div>
       {filteredActivities.length > 0 ? (
-        <div className="mb-6 space-y-4">
+        <div className="scrollbar-none mb-6 max-h-96 space-y-2 overflow-y-auto pr-2">
           {filteredActivities.map((activity) => (
             <ActivityCard key={activity.id} activity={activity} />
           ))}
@@ -84,7 +84,7 @@ export function ActivityList({ activities, team }: ActivityListProps) {
           team={team}
         />
       )}
-      <div className="w-full justify-center">
+      <div className="mt-4 flex w-full justify-center gap-4">
         <Button
           onClick={() => setOpenGameModal(true)}
           type="button"

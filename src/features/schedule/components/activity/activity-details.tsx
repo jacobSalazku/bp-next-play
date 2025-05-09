@@ -3,6 +3,7 @@
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import { format } from "date-fns";
+import { getTypeBgColor } from "../../utils/utils";
 
 export const ActivityDetails = () => {
   const {
@@ -25,33 +26,28 @@ export const ActivityDetails = () => {
             {selectedActivity.title}
           </h2>
         </div>
-        <div className="space-y-4 p-4">
+        <div className="p-4 text-sm sm:text-base">
           <div>
-            <div className="text-xs text-gray-400 sm:text-sm">Date & Time</div>
-            <div className="mt-1 text-sm sm:text-base">
+            <div className="text-xs text-gray-400 sm:text-sm">Date</div>
+            <div>
               {format(new Date(selectedActivity.date), "EEEE, MMMM d, yyyy")}
             </div>
-            <div className="mt-1 text-sm sm:text-base">
-              {selectedActivity.time}
-            </div>
+            <div className="text-xs text-gray-400 sm:text-sm"> Time</div>
+            <div>{selectedActivity.time}</div>
           </div>
           {selectedActivity.duration && (
-            <div>
+            <>
               <div className="text-xs text-gray-400 sm:text-sm">Duration</div>
-              <div className="mt-1 text-sm sm:text-base">
-                {selectedActivity.duration}
-              </div>
-            </div>
+              <div>{selectedActivity.duration}</div>
+            </>
           )}
           <div>
             <div className="text-xs text-gray-400 sm:text-sm">Type</div>
-            <div className="mt-1 inline-block rounded-full py-2 text-xs text-black">
+            <div className="inline-block rounded-full py-2 text-xs text-black">
               <span
                 className={cn(
-                  selectedActivity.type === "Game"
-                    ? "bg-blue-500"
-                    : "bg-green-500",
-                  "rounded-xl p-2 text-white",
+                  getTypeBgColor(selectedActivity.type),
+                  "rounded-xl p-2",
                 )}
               >
                 {selectedActivity.type}
