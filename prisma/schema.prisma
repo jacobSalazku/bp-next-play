@@ -30,7 +30,6 @@ model User {
   posts        Post[]
   teams        Team[]      @relation("TeamCreator")
   teamMembers  TeamMember[]
-  statlines    Statline[]
   attendances  ActivityAttendance[]
 }
 
@@ -114,8 +113,9 @@ model TeamMember {
   status     String
   
   // Relationships
-  user      User          @relation(fields: [userId], references: [id])
-  team      Team          @relation(fields: [teamId], references: [id])
+  user       User          @relation(fields: [userId], references: [id])
+  team       Team          @relation(fields: [teamId], references: [id])
+  statlines  Statline[]
 }
 
 // Activity table
@@ -143,6 +143,7 @@ model Activity {
 model Statline {
   id                 String      @id @default(cuid())
   playerId           String
+  teamMemberId       String
   fieldGoalsMade     Int
   fieldGoalsMissed   Int
   threePointersMade  Int
@@ -159,8 +160,8 @@ model Statline {
   activityId         String
   
   // Relationships
-  player    User          @relation(fields: [playerId], references: [id])
-  activity  Activity      @relation(fields: [activityId], references: [id])
+  teamMember TeamMember  @relation(fields: [teamMemberId], references: [id])
+  activity   Activity    @relation(fields: [activityId], references: [id])
 }
 
 // ActivityAttendance table
