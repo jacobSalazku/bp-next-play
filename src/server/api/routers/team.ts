@@ -1,3 +1,4 @@
+import { TeamMemberRole, TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
@@ -16,20 +17,18 @@ export const teamRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const userId = ctx.session.user.id;
-
       const team = await ctx.db.team.create({
         data: {
           name: input.name,
           image: input.image,
-          creatorId: userId,
+          creatorId: ctx.session.user.id,
           code: Math.random().toString(36).substring(2, 8),
           createdAt: new Date(),
           members: {
             create: {
-              userId: userId,
-              role: "Coach", // Or however your roles are represented (e.g., "COACH")
-              status: "active", // Set the appropriate status value
+              userId: ctx.session.user.id,
+              role: TeamMemberRole.COACH, // Or however your roles are represented (e.g., "COACH")
+              status: TeamMemberStatus.ACTIVE, // Set the appropriate status value
             },
           },
         },
@@ -73,6 +72,7 @@ export const teamRouter = createTRPCRouter({
         members: {
           some: {
             userId: ctx.session.user.id,
+            status: "ACTIVE",
           },
         },
       },
@@ -120,11 +120,67 @@ export const teamRouter = createTRPCRouter({
     return teams;
   }),
 
-  requestToJoin: protectedProcedure
+  getTeamMembers: protectedProcedure
     .input(z.object({ teamId: z.string() }))
-    .mutation(async ({ ctx, input }) => {
+    .query(async ({ ctx, input }) => {
       const team = await ctx.db.team.findUnique({
         where: { id: input.teamId },
+        include: {
+          members: {
+            where: { status: "ACTIVE" },
+            include: {
+              user: {
+                select: {
+                  id: true,
+                  name: true,
+                  image: true,
+                },
+              },
+              statlines: {
+                select: {
+                  id: true,
+                  fieldGoalsMade: true,
+                  fieldGoalsMissed: true,
+                  threePointersMade: true,
+                  threePointersMissed: true,
+                  freeThrows: true,
+                  missedFreeThrows: true,
+                  assists: true,
+                  steals: true,
+                  turnovers: true,
+                  rebounds: true,
+                  blocks: true,
+                },
+              },
+            },
+          },
+        },
+      });
+
+      if (!team) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Team not found.",
+        });
+      }
+
+      const members = team.members.map((member) => ({
+        id: member.user.id,
+        name: member.user.name,
+        image: member.user.image,
+        role: member.role,
+        status: member.status,
+        statlines: member.statlines,
+      }));
+
+      return { members, success: true };
+    }),
+
+  requestToJoin: protectedProcedure
+    .input(z.object({ teamCode: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const team = await ctx.db.team.findUnique({
+        where: { code: input.teamCode },
       });
 
       if (!team) {
@@ -137,6 +193,7 @@ export const teamRouter = createTRPCRouter({
       // Check if user already requested or is in the team
       const existingRequest = await ctx.db.teamMember.findFirst({
         where: { userId: ctx.session.user.id, teamId: team.id },
+        select: { id: true, status: true },
       });
 
       if (existingRequest) {
@@ -150,8 +207,8 @@ export const teamRouter = createTRPCRouter({
         data: {
           userId: ctx.session.user.id,
           teamId: team.id,
-          role: "player",
-          status: "pending",
+          role: "PLAYER",
+          status: "PENDING", // Assuming you want to set the status to pending when requesting
         },
       });
     }),
@@ -175,32 +232,17 @@ export const teamRouter = createTRPCRouter({
         where: {
           id: `${input.teamId}_${input.userId}`, // Assuming a composite unique ID format
         },
-        data: { status: "active" },
+        data: { status: "ACTIVE" },
       });
     }),
 
   getIncomingRequests: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const team = await ctx.db.team.findUnique({
-        where: {
-          id: input.teamId,
-          creatorId: ctx.session.user.id, // Ensure the user is the creator
-        },
-      });
-
-      if (!team) {
-        throw new TRPCError({
-          code: "FORBIDDEN",
-          message:
-            "You are not authorized to view requests for this team, or the team does not exist.",
-        });
-      }
-
       const incomingRequests = await ctx.db.teamMember.findMany({
         where: {
           teamId: input.teamId,
-          status: "pending",
+          status: "PENDING",
         },
         include: {
           user: {
@@ -208,7 +250,7 @@ export const teamRouter = createTRPCRouter({
               id: true,
               name: true,
               email: true,
-              image: true, // Include other user details as needed
+              image: true,
             },
           },
         },

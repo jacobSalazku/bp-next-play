@@ -23,11 +23,11 @@ model User {
   emailVerified DateTime?
   image       String?
   createdAt   DateTime    @default(now())
+  updatedAt   DateTime    @default(now())
   
   // Relationships
   accounts     Account[]
   sessions     Session[]
-  posts        Post[]
   teams        Team[]      @relation("TeamCreator")
   teamMembers  TeamMember[]
   attendances  ActivityAttendance[]
@@ -76,19 +76,6 @@ model VerificationToken {
 
     @@unique([identifier, token])
 }
-
-// Post table
-model Post {
-  id          Int         @id @default(autoincrement())
-  name        String
-  createdAt   DateTime
-  updatedAt   DateTime
-  createdById String
-  
-  // Relationships
-  createdBy  User          @relation(fields: [createdById], references: [id])
-}
-
 // Team table
 model Team {
   id         String      @id @default(cuid())
@@ -107,12 +94,12 @@ model Team {
 // TeamMember table
 model TeamMember {
   id         String        @id @default(cuid())
+
   userId     String
   teamId     String
   role       String
   status     String
-  
-  // Relationships
+
   user       User          @relation(fields: [userId], references: [id])
   team       Team          @relation(fields: [teamId], references: [id])
   statlines  Statline[]

@@ -5,3 +5,8 @@ type RouterOutput = inferRouterOutputs<AppRouter>;
 
 export type Team = RouterOutput["team"]["getTeams"][number];
 export type Activity = RouterOutput["activity"]["getActivities"][number];
+export type TeamMember =
+  RouterOutput["team"]["getTeamMembers"]["members"][number];
+export type UserRequests = RouterOutput["team"]["requestToJoin"];
+export type PendingRequest =
+  RouterOutput["team"]["getIncomingRequests"][number];
