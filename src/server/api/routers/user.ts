@@ -1,9 +1,17 @@
+import { TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
+    if (!ctx.session?.user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "User is not logged in",
+      });
+    }
+
     const user = await ctx.db.user.findFirst({
       where: { id: ctx.session.user.id },
       select: {
@@ -11,8 +19,11 @@ export const userRouter = createTRPCRouter({
         name: true,
         email: true,
         image: true,
+        createdAt: true,
+        updatedAt: true,
       },
     });
+
     const teamMember = await ctx.db.teamMember.findFirst({
       where: { userId: ctx.session.user.id },
       select: {
@@ -29,6 +40,14 @@ export const userRouter = createTRPCRouter({
         role: true,
       },
     });
+
+    if (!user) {
+      throw new TRPCError({
+        code: "UNAUTHORIZED",
+        message: "User is not logged in",
+      });
+    }
+
     return { user, teamMember };
   }),
 
@@ -39,6 +58,7 @@ export const userRouter = createTRPCRouter({
         where: { id: input.teamId },
         select: {
           members: {
+            where: { status: TeamMemberStatus.ACTIVE },
             select: {
               user: {
                 select: {
@@ -64,7 +84,7 @@ export const userRouter = createTRPCRouter({
       return team.members;
     }),
 
-  getTeamMember: protectedProcedure.query(async ({ ctx, input }) => {
+  getTeamMember: protectedProcedure.query(async ({ ctx }) => {
     const teamMember = await ctx.db.teamMember.findFirst({
       where: {
         userId: ctx.session.user.id,
@@ -84,12 +104,40 @@ export const userRouter = createTRPCRouter({
         },
       },
     });
+
     if (!teamMember) {
       throw new TRPCError({
         code: "NOT_FOUND",
         message: "Team member not found.",
       });
     }
+
     return teamMember;
   }),
+
+  getPendingRequests: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const pendingRequests = await ctx.db.teamMember.findMany({
+        where: {
+          teamId: input.teamId,
+          status: TeamMemberStatus.PENDING, // or "Pending" if you're using strings
+        },
+        select: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              email: true,
+              image: true,
+            },
+          },
+          id: true,
+          role: true,
+          status: true,
+        },
+      });
+
+      return pendingRequests;
+    }),
 });
