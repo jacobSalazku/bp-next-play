@@ -1,6 +1,5 @@
 import { api } from "@/trpc/server";
 import { redirect } from "next/navigation";
-
 import { cache } from "react";
 
 export const getTeamActivities = cache(async () => {

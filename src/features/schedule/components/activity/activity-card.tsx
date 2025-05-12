@@ -1,4 +1,5 @@
 "use client";
+
 import { Button } from "@/components/button/button";
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
@@ -6,20 +7,14 @@ import type { Activity } from "@prisma/client";
 import { Clock } from "lucide-react";
 import { type FC } from "react";
 import { getActivityStyle } from "../../utils/utils";
-import { ActivityDetails } from "./activity-details";
 
 type ActivityCardProps = {
   activity: Activity;
 };
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
-  const {
-    setOpenPracticeDetails,
-    setOpenGameDetails,
-    openGameDetails,
-    openPracticeDetails,
-    setSelectedActivity,
-  } = useStore();
+  const { setOpenPracticeDetails, setOpenGameDetails, setSelectedActivity } =
+    useStore();
 
   const { bgColor, textColor, Icon } = getActivityStyle(activity.type);
 
@@ -54,17 +49,25 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
             {activity.duration !== 1 ? "s" : ""})
           </div>
         </div>
-        <Button
-          onClick={handleViewDetails}
-          variant="outline"
-          size="sm"
-          className="mt-3 sm:mt-0 sm:ml-2"
-        >
-          View Details
-        </Button>
+        <div>
+          <Button
+            onClick={handleViewDetails}
+            variant="outline"
+            size="sm"
+            className="mt-3 sm:mt-0 sm:ml-2"
+          >
+            Create Box Score
+          </Button>
+          <Button
+            onClick={handleViewDetails}
+            variant="outline"
+            size="sm"
+            className="mt-3 sm:mt-0 sm:ml-2"
+          >
+            View Details
+          </Button>
+        </div>
       </div>
-      {openGameDetails && <ActivityDetails />}
-      {openPracticeDetails && <ActivityDetails />}
     </>
   );
 };
