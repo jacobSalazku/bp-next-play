@@ -1,3 +1,4 @@
+'use client";';
 import type { Team } from "@/types";
 import { format } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
@@ -22,7 +23,7 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
           {team.members.length} members
         </p>
       </div>
-      <div className="space-y-3 py-4 text-sm text-white/90">
+      <div className="space-y-6 py-8 text-sm text-white/90">
         <div className="space-y-3 py-4 text-sm text-white/90">
           {team.activities && team.activities.length > 0 ? (
             <>
@@ -56,7 +57,11 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
             </>
           ) : (
             <div className="flex items-center justify-center py-4">
-              <span className="text-white/60">No activities scheduled yet</span>
+              <div className="space-y-3 py-4 text-sm text-white/90">
+                <span className="text-white/60">
+                  No activities scheduled yet
+                </span>
+              </div>
             </div>
           )}
         </div>
