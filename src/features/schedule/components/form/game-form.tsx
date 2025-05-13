@@ -1,157 +1,224 @@
 "use client";
 
 import { Button } from "@/components/button/button";
+import { Input } from "@/components/ui/input";
+import { useIsCoach } from "@/hooks/use-is-coach";
+import { cn } from "@/lib/utils";
+import useStore from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { type FC } from "react";
+import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { createGameActivity } from "../../lib/create-game";
-import { type GameData, gameSchema } from "../../zod";
+import { editGameActivity } from "../../lib/edit-activity";
+import { getTypeBgColor } from "../../utils/utils";
+import { gameSchema, type GameData } from "../../zod";
+import { ActivityModalWrapper } from "./activity-modal-wrapper";
+
+export type Mode = "view" | "edit" | "create";
 
 type GameFormProps = {
-  onClose: () => void;
-  selectedDate: Date;
+  mode: Mode;
   team: string;
+  onClose: () => void;
 };
 
-const GameForm: FC<GameFormProps> = ({ onClose, selectedDate, team }) => {
-  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
+  const [formState, setFormState] = useState<Mode>(mode);
+  const createGame = createGameActivity(team, onClose);
+  const editGame = editGameActivity(team, onClose);
+  const router = useRouter();
+  const isCoach = useIsCoach();
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<GameData>({
+    selectedDate,
+    selectedActivity,
+    setOpenGameDetails,
+    setOpenPracticeDetails,
+  } = useStore();
+
+  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+
+  const { register, handleSubmit, reset } = useForm<GameData>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
-      time: "09:00",
-      duration: 1,
       date: formattedDate,
+      duration: 2,
+      time: "11:00",
     },
   });
 
-  const router = useRouter();
-  const createGame = createGameActivity(team, onClose);
+  const isViewMode = formState === "view";
+  const isEditMode = formState === "edit";
+  const isCreateMode = formState === "create";
+
+  const buttonText = () => {
+    if (createGame.status === "pending") {
+      return isEditMode ? "Editing..." : "Creating...";
+    }
+    return isCreateMode ? "Create Game" : "Edit Game";
+  };
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
-    await createGame.mutateAsync({
+
+    const gameData = {
       ...data,
+      id: selectedActivity?.id ?? "",
       date: date.toISOString(),
       teamId: team,
-      type: "Game",
-    });
-    router.push(`/${team}/schedule`);
+      type: "Game" as const,
+    };
+
+    if (formState === "edit") {
+      await editGame.mutateAsync(gameData);
+      router.push(`/${team}/schedule`);
+      setFormState("view");
+    } else {
+      await createGame.mutateAsync(gameData);
+      router.push(`/${team}/schedule`);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
-          <h2 className="text-lg font-normal sm:text-xl">Create Game</h2>
-          <button
-            onClick={onClose}
-            className="text-xl font-bold text-gray-400 hover:text-white"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
+    <ActivityModalWrapper
+      onClose={() => {
+        setOpenGameDetails(false);
+        setOpenPracticeDetails(false);
+      }}
+      title={isViewMode ? selectedActivity?.title : "Create Game"}
+    >
+      {(isEditMode || isCreateMode) && (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-          <div>
-            <label
-              htmlFor="title"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Opponent Name
-            </label>
-            <input
-              id="title"
-              type="text"
-              placeholder="E.g. Eagles FC"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("title")}
-            />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.title.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="time"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Start Time
-            </label>
-            <input
-              id="time"
-              type="time"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("time")}
-            />
-            {errors.time && (
-              <p className="mt-1 text-sm text-red-400">{errors.time.message}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="duration"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Duration (hours)
-            </label>
-            <input
-              id="duration"
-              type="number"
-              step="0.5"
-              min="0.5"
-              placeholder="E.g. 2"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("duration", {
-                required: "Duration is required",
-                min: 0.5,
-              })}
-            />
-            {errors.duration && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.duration.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="date"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Date
-            </label>
-            <input
-              id="date"
-              type="date"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("date")}
-            />
-            {errors.date && (
-              <p className="mt-1 text-sm text-red-400">{errors.date.message}</p>
-            )}
-          </div>
-          <div className="flex justify-end gap-3 pt-4">
-            <Button type="button" onClick={onClose} variant="outline">
-              Cancel
-            </Button>
-            <button
-              type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              {createGame.status == "pending" ? "Creating..." : "Create Game"}
-            </button>
+          <Input
+            label="Opponent Name"
+            aria-label="Input the name of the opponent team"
+            id="title"
+            type="text"
+            placeholder="E.g. Eagles FC"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("title")}
+          />
+          <Input
+            label="Start Time"
+            aria-label="Input the start time of the game"
+            id="time"
+            type="time"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("time")}
+          />
+          <Input
+            label="Duration"
+            aria-label="Input the duration of the game in hours"
+            id="duration"
+            type="number"
+            step="0.5"
+            min="0.5"
+            placeholder="E.g. 2"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("duration", {
+              required: "Duration is required",
+              min: 0.5,
+            })}
+          />
+          <Input
+            label="date"
+            aria-label="Input the date of the game"
+            id="date"
+            type="date"
+            className=""
+            {...register("date")}
+          />
+          <div className="flex justify-end border-t border-gray-800 pt-4">
+            {isCoach && <Button variant="outline">{buttonText()}</Button>}
           </div>
         </form>
-      </div>
-    </div>
+      )}
+
+      {isViewMode && selectedActivity && (
+        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+            <div className="flex items-center justify-between border-b border-gray-800 p-4">
+              <h2 className="text-lg font-normal sm:text-xl">
+                {selectedActivity.title}
+              </h2>
+              <button
+                className="text-xl font-bold text-gray-400 hover:text-white"
+                onClick={() => {
+                  setOpenGameDetails(false);
+                  setOpenPracticeDetails(false);
+                }}
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 space-y-2 p-4 text-sm sm:text-base">
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-gray-400 sm:text-sm">Type</div>
+                <div className="inline-block rounded-full py-2 text-xs text-black">
+                  <span
+                    className={cn(
+                      getTypeBgColor(selectedActivity.type),
+                      "rounded-xl p-2",
+                    )}
+                  >
+                    {selectedActivity.type}
+                  </span>
+                </div>
+              </div>
+              {selectedActivity.type == "Practice" && (
+                <div className="flex flex-col space-x-2">
+                  <div className="text-xs text-gray-400 sm:text-sm">
+                    Type of Practice
+                  </div>
+                  <div>{selectedActivity.practiceType}</div>
+                </div>
+              )}
+              <div className="flex flex-col space-x-2">
+                <div className="text-xs text-gray-400 sm:text-sm"> Time</div>
+                <div>{selectedActivity.time}</div>
+              </div>
+              {selectedActivity.duration && (
+                <div className="flex flex-col space-x-2">
+                  <div className="text-xs text-gray-400 sm:text-sm">
+                    Duration
+                  </div>
+                  <div>{selectedActivity.duration}</div>
+                </div>
+              )}
+              <div className="flex flex-col space-x-2">
+                <div className="text-xs text-gray-400 sm:text-sm">Date</div>
+                <div>
+                  {format(
+                    new Date(selectedActivity.date),
+                    "EEEE, MMMM d, yyyy",
+                  )}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
+              <Button
+                onClick={() => {
+                  setFormState("edit");
+                  reset({
+                    title: selectedActivity.title,
+                    time: selectedActivity.time,
+                    duration: selectedActivity.duration ?? 2,
+                    date: format(new Date(selectedActivity.date), "yyyy-MM-dd"),
+                  });
+                }}
+                variant="outline"
+              >
+                {buttonText()}
+              </Button>
+            </div>
+          </div>
+        </div>
+      )}
+    </ActivityModalWrapper>
   );
 };
 

@@ -1,79 +1,187 @@
 "use client";
 
 import { Button } from "@/components/button/button";
+import { Input } from "@/components/ui/input";
+import { useIsCoach } from "@/hooks/use-is-coach";
+import { cn } from "@/lib/utils";
+import useStore from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { type FC } from "react";
+import type { Mode } from "fs";
+import { X } from "lucide-react";
+import { useRouter } from "next/navigation";
+import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { createPracticeActivity } from "../../lib/create-practice";
+import { editPracticeActivity } from "../../lib/edit-activity";
+import { getTypeBgColor } from "../../utils/utils";
 import { practiceSchema, PracticeType, type PracticeData } from "../../zod";
-
+import { ActivityModalWrapper } from "./activity-modal-wrapper";
 type PracticeProps = {
-  onClose: () => void;
-  selectedDate: Date;
+  mode: Mode;
   team: string;
+  onClose: () => void;
 };
 
-const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
-  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
+  const [formState, setFormState] = useState<Mode>(mode);
+  const createPractice = createPracticeActivity(team, onClose);
+  const editPractice = editPracticeActivity(team, onClose);
+  const router = useRouter();
+  const isCoach = useIsCoach();
 
   const {
-    register,
-    handleSubmit,
-    formState: { errors },
-  } = useForm<PracticeData>({
+    selectedDate,
+    openGameDetails,
+    openPracticeDetails,
+    setOpenGameDetails,
+    setOpenPracticeDetails,
+    selectedActivity,
+  } = useStore();
+
+  const formattedDate = format(selectedDate, "yyyy-MM-dd");
+
+  const { register, handleSubmit, reset } = useForm<PracticeData>({
     resolver: zodResolver(practiceSchema),
     defaultValues: {
       date: formattedDate,
+      duration: 2,
+      time: "18:00",
     },
   });
 
-  const createPractice = createPracticeActivity(team, onClose);
+  const isViewMode = formState === "view";
+  const isEditMode = formState === "edit";
+  const isCreateMode = formState === "create";
+
+  const isModalOpen = openGameDetails || openPracticeDetails;
+
+  if (!selectedActivity || !isModalOpen) return null;
 
   const onSubmit = async (data: PracticeData) => {
     const date = new Date(data.date);
-    await createPractice.mutateAsync({
+
+    const practiceeData = {
       ...data,
+      id: selectedActivity?.id ?? "",
       date: date.toISOString(),
       teamId: team,
-      type: "Practice",
-    });
+      type: "Practice" as const,
+    };
+
+    if (formState === "edit") {
+      await editPractice.mutateAsync(practiceeData);
+      void router.push(`/${team}/schedule`);
+      setFormState("view");
+    } else {
+      await createPractice.mutateAsync(practiceeData);
+      void router.push(`/${team}/schedule`);
+    }
   };
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 backdrop-blur-sm">
-      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
-          <h2 className="text-lg font-normal sm:text-xl">Create Practice</h2>
-          <button
-            onClick={onClose}
-            className="text-xl font-bold text-gray-400 hover:text-white"
-            aria-label="Close"
-          >
-            ×
-          </button>
-        </div>
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-          <div>
-            <label
-              htmlFor="title"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Title
-            </label>
-            <input
-              id="title"
-              type="text"
-              placeholder="voorbereiding wedstrijd"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("title")}
-            />
-            {errors.title && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.title.message}
-              </p>
-            )}
+    <ActivityModalWrapper
+      onClose={() => {
+        setOpenGameDetails(false);
+        setOpenPracticeDetails(false);
+      }}
+      title={isViewMode ? selectedActivity?.title : "Create Practice"}
+    >
+      {isViewMode && selectedActivity && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+          <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+            <div className="flex items-center justify-between border-b border-gray-800 p-4">
+              <h2 className="text-lg font-normal sm:text-xl">
+                {selectedActivity?.title}
+              </h2>
+              <button
+                className="text-xl font-bold text-gray-400 hover:text-white"
+                onClick={() => {
+                  setOpenGameDetails(false);
+                  setOpenPracticeDetails(false);
+                }}
+                aria-label="Close"
+              >
+                <X className="h-5 w-5" />
+              </button>
+            </div>
+            <div className="flex flex-col gap-2 space-y-2 p-4 text-sm sm:text-base">
+              <div className="flex flex-col gap-2">
+                <div className="text-xs text-gray-400 sm:text-sm">Type</div>
+                <div className="inline-block rounded-full py-2 text-xs text-black">
+                  <span
+                    className={cn(
+                      selectedActivity
+                        ? getTypeBgColor(selectedActivity.type)
+                        : "",
+                      "rounded-xl p-2",
+                    )}
+                  >
+                    {selectedActivity?.type}
+                  </span>
+                </div>
+              </div>
+              <div className="flex flex-col space-x-2">
+                <div className="text-xs text-gray-400 sm:text-sm"> Time</div>
+                <div>{selectedActivity?.practiceType}</div>
+              </div>
+              <div className="flex flex-col space-x-2">
+                <div className="text-xs text-gray-400 sm:text-sm"> Time</div>
+                <div>{selectedActivity?.time}</div>
+              </div>
+              {selectedActivity?.duration && (
+                <div className="flex flex-col space-x-2">
+                  <div className="text-xs text-gray-400 sm:text-sm">
+                    Duration
+                  </div>
+                  <div>{selectedActivity.duration}</div>
+                </div>
+              )}
+              <div className="flex flex-col space-x-2">
+                <div className="text-xs text-gray-400 sm:text-sm">Date</div>
+                <div>
+                  {selectedActivity &&
+                    format(
+                      new Date(selectedActivity.date),
+                      "EEEE, MMMM d, yyyy",
+                    )}
+                </div>
+              </div>
+            </div>
+            <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
+              <Button
+                onClick={() => {
+                  setFormState("edit");
+                  reset({
+                    title: selectedActivity.title,
+                    date: format(new Date(selectedActivity.date), "yyyy-MM-dd"),
+                    time: selectedActivity.time,
+                    duration: selectedActivity.duration ?? undefined,
+                    practiceType:
+                      (selectedActivity.practiceType as PracticeType) ??
+                      undefined,
+                  });
+                }}
+                variant="outline"
+              >
+                Edit practice
+              </Button>
+            </div>
           </div>
+        </div>
+      )}
+
+      {(isEditMode || isCreateMode) && (
+        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+          <Input
+            label="Title"
+            aria-label="Practice title input"
+            id="title"
+            type="text"
+            placeholder="voorbereiding wedstrijd"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("title")}
+          />
           <div>
             <label className="mb-2 block text-sm font-semibold text-gray-100">
               Practice Type
@@ -82,6 +190,7 @@ const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
               {Object.values(PracticeType).map((practice) => (
                 <label key={practice} className="flex items-center space-x-3">
                   <input
+                    aria-label={`Practice type radio input${practice}`}
                     type="radio"
                     value={practice}
                     {...register("practiceType", {
@@ -93,87 +202,51 @@ const PracticeForm: FC<PracticeProps> = ({ onClose, selectedDate, team }) => {
                 </label>
               ))}
             </div>
-            {errors.practiceType && (
-              <p className="mt-1 text-sm text-red-500">
-                {errors.practiceType.message}
-              </p>
-            )}
           </div>
-          <div>
-            <label
-              htmlFor="time"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Start Time
-            </label>
-            <input
-              id="time"
-              type="time"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("time")}
-            />
-            {errors.time && (
-              <p className="mt-1 text-sm text-red-400">{errors.time.message}</p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="duration"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Duration (hours)
-            </label>
-            <input
-              id="duration"
-              type="number"
-              step="0.5"
-              min="0.5"
-              placeholder="E.g. 2"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("duration", {
-                required: "Duration is required",
-                min: 0.5,
-              })}
-            />
-            {errors.duration && (
-              <p className="mt-1 text-sm text-red-400">
-                {errors.duration.message}
-              </p>
-            )}
-          </div>
-          <div>
-            <label
-              htmlFor="date"
-              className="mb-1 block text-sm font-medium text-white"
-            >
-              Date
-            </label>
-            <input
-              id="date"
-              type="date"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-              {...register("date")}
-            />
-            {errors.date && (
-              <p className="mt-1 text-sm text-red-400">{errors.date.message}</p>
-            )}
-          </div>
+
+          <Input
+            label="Start Time"
+            aria-label="Practice start time input"
+            id="time"
+            type="time"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("time")}
+          />
+          <Input
+            label="Duration"
+            aria-label="Practice duration input"
+            id="duration"
+            type="number"
+            step="0.5"
+            min="0.5"
+            placeholder="E.g. 2"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("duration", {
+              required: "Duration is required",
+              min: 0.5,
+            })}
+          />
+          <Input
+            label="Date"
+            aria-label="Practice date input"
+            id="date"
+            type="date"
+            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+            {...register("date")}
+          />
           <div className="flex justify-end gap-3 pt-4">
+            {isCoach && (
+              <Button type="submit" variant="outline">
+                Edit Practice
+              </Button>
+            )}
             <Button type="button" onClick={onClose} variant="outline">
               Cancel
             </Button>
-            <button
-              type="submit"
-              className="rounded-md bg-blue-600 px-4 py-2 text-white hover:bg-blue-700 disabled:opacity-50"
-            >
-              {createPractice.status == "pending"
-                ? "Creating..."
-                : "Create Game"}
-            </button>
           </div>
         </form>
-      </div>
-    </div>
+      )}
+    </ActivityModalWrapper>
   );
 };
 

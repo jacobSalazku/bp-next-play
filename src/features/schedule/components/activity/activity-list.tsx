@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/button/button";
+import { useIsCoach } from "@/hooks/use-is-coach";
 import useStore from "@/store/store";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
@@ -20,10 +21,16 @@ export function ActivityList({ activities, team }: ActivityListProps) {
   const {
     selectedDate,
     openGameModal,
+    openGameDetails,
     setOpenGameModal,
     openPracticeModal,
+    openPracticeDetails,
     setOpenPracticeModal,
+    setOpenGameDetails,
+    setOpenPracticeDetails,
   } = useStore();
+
+  const isCoach = useIsCoach();
 
   const [filter, setFilter] = useState<"all" | "game" | "practice">("all");
 
@@ -72,35 +79,53 @@ export function ActivityList({ activities, team }: ActivityListProps) {
       )}
       {openGameModal && (
         <GameForm
-          onClose={() => setOpenGameModal(false)}
-          selectedDate={selectedDate}
           team={team}
+          mode="create"
+          onClose={() => setOpenGameModal(false)}
         />
       )}
       {openPracticeModal && (
         <PracticeForm
-          onClose={() => setOpenPracticeModal(false)}
-          selectedDate={selectedDate}
           team={team}
+          mode="create"
+          onClose={() => setOpenPracticeModal(false)}
+        />
+      )}
+      {openGameDetails && (
+        <GameForm
+          team={team}
+          mode="view"
+          onClose={() => setOpenGameDetails(false)}
+        />
+      )}
+      {openPracticeDetails && (
+        <PracticeForm
+          team={team}
+          mode="view"
+          onClose={() => setOpenPracticeDetails(false)}
         />
       )}
       <div className="mt-4 flex w-full justify-center gap-4">
-        <Button
-          onClick={() => setOpenGameModal(true)}
-          type="button"
-          variant="outline"
-          className="w-1/2"
-        >
-          Create Game
-        </Button>
-        <Button
-          onClick={() => setOpenPracticeModal(true)}
-          type="button"
-          variant="outline"
-          className="w-1/2"
-        >
-          Create Practice
-        </Button>
+        {isCoach && (
+          <>
+            <Button
+              onClick={() => setOpenGameModal(true)}
+              type="button"
+              variant="outline"
+              className="w-1/2"
+            >
+              Create Game
+            </Button>
+            <Button
+              onClick={() => setOpenPracticeModal(true)}
+              type="button"
+              variant="outline"
+              className="w-1/2"
+            >
+              Create Practice
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );
