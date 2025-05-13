@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/button/button";
-import { useIsCoach } from "@/hooks/use-is-coach";
 import useStore from "@/store/store";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
@@ -30,8 +29,6 @@ export function ActivityList({ activities, team }: ActivityListProps) {
     setOpenPracticeDetails,
   } = useStore();
 
-  const isCoach = useIsCoach();
-
   const [filter, setFilter] = useState<"all" | "game" | "practice">("all");
 
   const filteredActivities = useMemo(() => {
@@ -46,7 +43,7 @@ export function ActivityList({ activities, team }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in bg-background mt-4 rounded-xl border p-6 shadow-sm duration-300">
+    <div className="animate-fade-in mt-4 rounded-xl border p-6 shadow-sm duration-300">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
           <CalendarClock className="mr-2 h-5 w-5 text-gray-400" />
@@ -67,24 +64,26 @@ export function ActivityList({ activities, team }: ActivityListProps) {
         <div className="mb-6 rounded-xl border border-dashed border-gray-700 bg-gray-800 py-12 text-center">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
           <p className="text-gray-400">No activities scheduled for this day</p>
-          <Button
-            variant="outline"
-            size="sm"
-            className="mt-4"
-            onClick={() => setOpenGameModal(true)}
-          >
-            <Plus className="mr-1 h-4 w-4" /> Add Activity
-          </Button>
+          {
+            <Button
+              variant="outline"
+              size="sm"
+              className="mt-4"
+              onClick={() => setOpenGameModal(true)}
+            >
+              <Plus className="mr-1 h-4 w-4" /> Add Activity
+            </Button>
+          }
         </div>
       )}
-      {openGameModal && (
+      {openGameModal && selectedDate && (
         <GameForm
           team={team}
           mode="create"
           onClose={() => setOpenGameModal(false)}
         />
       )}
-      {openPracticeModal && (
+      {openPracticeModal && selectedDate && (
         <PracticeForm
           team={team}
           mode="create"
@@ -106,26 +105,25 @@ export function ActivityList({ activities, team }: ActivityListProps) {
         />
       )}
       <div className="mt-4 flex w-full justify-center gap-4">
-        {isCoach && (
-          <>
-            <Button
-              onClick={() => setOpenGameModal(true)}
-              type="button"
-              variant="outline"
-              className="w-1/2"
-            >
-              Create Game
-            </Button>
-            <Button
-              onClick={() => setOpenPracticeModal(true)}
-              type="button"
-              variant="outline"
-              className="w-1/2"
-            >
-              Create Practice
-            </Button>
-          </>
-        )}
+        <Button
+          onClick={() => setOpenGameModal(true)}
+          type="button"
+          variant="outline"
+          className="w-1/2"
+        >
+          Create Game
+        </Button>
+        <Button
+          onClick={() => {
+            console.log("Create Practice button clicked");
+            setOpenPracticeModal(true);
+          }}
+          type="button"
+          variant="outline"
+          className="w-1/2"
+        >
+          Create Practice
+        </Button>
       </div>
     </div>
   );

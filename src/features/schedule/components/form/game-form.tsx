@@ -7,15 +7,13 @@ import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { createGameActivity } from "../../lib/create-game";
 import { editGameActivity } from "../../lib/edit-activity";
 import { getTypeBgColor } from "../../utils/utils";
 import { gameSchema, type GameData } from "../../zod";
-import { ActivityModalWrapper } from "./activity-modal-wrapper";
 
 export type Mode = "view" | "edit" | "create";
 
@@ -32,12 +30,8 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
   const router = useRouter();
   const isCoach = useIsCoach();
 
-  const {
-    selectedDate,
-    selectedActivity,
-    setOpenGameDetails,
-    setOpenPracticeDetails,
-  } = useStore();
+  const { selectedDate, selectedActivity, setOpenGameModal, openGameModal } =
+    useStore();
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
@@ -81,80 +75,82 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
       router.push(`/${team}/schedule`);
     }
   };
+  useEffect(() => {
+    console.log("Modal state changed:", openGameModal);
+  }, [openGameModal]);
+
+  if ((isViewMode || isEditMode) && !selectedActivity) return null;
+  if (isCreateMode && !selectedDate) return null;
 
   return (
-    <ActivityModalWrapper
-      onClose={() => {
-        setOpenGameDetails(false);
-        setOpenPracticeDetails(false);
-      }}
-      title={isViewMode ? selectedActivity?.title : "Create Game"}
-    >
-      {(isEditMode || isCreateMode) && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-          <Input
-            label="Opponent Name"
-            aria-label="Input the name of the opponent team"
-            id="title"
-            type="text"
-            placeholder="E.g. Eagles FC"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("title")}
-          />
-          <Input
-            label="Start Time"
-            aria-label="Input the start time of the game"
-            id="time"
-            type="time"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("time")}
-          />
-          <Input
-            label="Duration"
-            aria-label="Input the duration of the game in hours"
-            id="duration"
-            type="number"
-            step="0.5"
-            min="0.5"
-            placeholder="E.g. 2"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("duration", {
-              required: "Duration is required",
-              min: 0.5,
-            })}
-          />
-          <Input
-            label="date"
-            aria-label="Input the date of the game"
-            id="date"
-            type="date"
-            className=""
-            {...register("date")}
-          />
-          <div className="flex justify-end border-t border-gray-800 pt-4">
-            {isCoach && <Button variant="outline">{buttonText()}</Button>}
-          </div>
-        </form>
-      )}
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+          <h2 className="text-lg font-normal sm:text-xl">
+            {isViewMode
+              ? selectedActivity?.title
+              : isEditMode
+                ? (selectedActivity?.title ?? "Edit Game")
+                : "Create Game"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-xl font-bold text-gray-400 hover:text-white"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
 
-      {isViewMode && selectedActivity && (
-        <div className="fixed inset-0 z-40 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
-          <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-            <div className="flex items-center justify-between border-b border-gray-800 p-4">
-              <h2 className="text-lg font-normal sm:text-xl">
-                {selectedActivity.title}
-              </h2>
-              <button
-                className="text-xl font-bold text-gray-400 hover:text-white"
-                onClick={() => {
-                  setOpenGameDetails(false);
-                  setOpenPracticeDetails(false);
-                }}
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" />
-              </button>
+        {(isEditMode || isCreateMode) && (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+            <Input
+              label="Opponent Name"
+              aria-label="Input the name of the opponent team"
+              id="title"
+              type="text"
+              placeholder="E.g. Eagles FC"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("title")}
+            />
+            <Input
+              label="Start Time"
+              aria-label="Input the start time of the game"
+              id="time"
+              type="time"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("time")}
+            />
+            <Input
+              label="Duration"
+              aria-label="Input the duration of the game in hours"
+              id="duration"
+              type="number"
+              step="0.5"
+              min="0.5"
+              placeholder="E.g. 2"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("duration", {
+                required: "Duration is required",
+                min: 0.5,
+              })}
+            />
+            <Input
+              label="Date"
+              aria-label="Input the date of the game"
+              id="date"
+              type="date"
+              className=""
+              {...register("date")}
+            />
+            <div className="flex justify-end border-t border-gray-800 pt-4">
+              {isCoach && <Button variant="outline">{buttonText()}</Button>}
             </div>
+          </form>
+        )}
+
+        {isViewMode && selectedActivity && (
+          <>
             <div className="flex flex-col gap-2 space-y-2 p-4 text-sm sm:text-base">
               <div className="flex flex-col gap-2">
                 <div className="text-xs text-gray-400 sm:text-sm">Type</div>
@@ -178,7 +174,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
                 </div>
               )}
               <div className="flex flex-col space-x-2">
-                <div className="text-xs text-gray-400 sm:text-sm"> Time</div>
+                <div className="text-xs text-gray-400 sm:text-sm">Time</div>
                 <div>{selectedActivity.time}</div>
               </div>
               {selectedActivity.duration && (
@@ -212,13 +208,13 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
                 }}
                 variant="outline"
               >
-                {buttonText()}
+                Edit Game
               </Button>
             </div>
-          </div>
-        </div>
-      )}
-    </ActivityModalWrapper>
+          </>
+        )}
+      </div>
+    </div>
   );
 };
 

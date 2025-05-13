@@ -15,6 +15,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     selectedDate,
     setSelectedDate,
     setOpenGameDetails,
+    setOpenPracticeDetails,
     setSelectedActivity,
   } = useStore();
 
@@ -35,7 +36,11 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
   ) => {
     e.stopPropagation(); // Prevent event bubbling
     setSelectedActivity(activity);
-    setOpenGameDetails(true);
+    if (activity.type === "Game") {
+      setOpenGameDetails(true); // Open Game details modal
+    } else {
+      setOpenPracticeDetails(true); // Open Practice details modal
+    }
   };
 
   return (
