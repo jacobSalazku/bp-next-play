@@ -10,7 +10,7 @@ const ScheduleBlock = ({
   team: string;
 }) => {
   return (
-    <div className="bg-background font-roboto flex w-full items-center justify-center p-4">
+    <div className="font-roboto flex w-full items-center justify-center p-4">
       <div className="h-full w-full max-w-7xl">
         <HorizontalCalender activities={activities} />
         <ActivityList activities={activities} team={team} />

@@ -1,5 +1,3 @@
-"use client";
-
 import { Button } from "@/components/button/button";
 import { Trophy, Users } from "lucide-react";
 
@@ -24,11 +22,8 @@ export function ActivityFilter({
           onClick={() => onFilterChange(type as ActivityType)}
           className="rounded-none"
         >
-          {type === "game" ? (
-            <Trophy className="mr-1 h-4 w-4" />
-          ) : type === "practice" ? (
-            <Users className="mr-1 h-4 w-4" />
-          ) : null}
+          {type === "game" && <Trophy className="mr-1 h-4 w-4" />}
+          {type === "practice" && <Users className="mr-1 h-4 w-4" />}
           {type.charAt(0).toUpperCase() + type.slice(1)}
         </Button>
       ))}

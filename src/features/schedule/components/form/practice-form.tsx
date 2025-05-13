@@ -8,7 +8,6 @@ import useStore from "@/store/store";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import type { Mode } from "fs";
-import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -16,7 +15,7 @@ import { createPracticeActivity } from "../../lib/create-practice";
 import { editPracticeActivity } from "../../lib/edit-activity";
 import { getTypeBgColor } from "../../utils/utils";
 import { practiceSchema, PracticeType, type PracticeData } from "../../zod";
-import { ActivityModalWrapper } from "./activity-modal-wrapper";
+
 type PracticeProps = {
   mode: Mode;
   team: string;
@@ -34,8 +33,6 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
     selectedDate,
     openGameDetails,
     openPracticeDetails,
-    setOpenGameDetails,
-    setOpenPracticeDetails,
     selectedActivity,
   } = useStore();
 
@@ -53,10 +50,6 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
   const isViewMode = formState === "view";
   const isEditMode = formState === "edit";
   const isCreateMode = formState === "create";
-
-  const isModalOpen = openGameDetails || openPracticeDetails;
-
-  if (!selectedActivity || !isModalOpen) return null;
 
   const onSubmit = async (data: PracticeData) => {
     const date = new Date(data.date);
@@ -78,33 +71,33 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
       void router.push(`/${team}/schedule`);
     }
   };
+  const shouldShowModal =
+    formState === "create" ||
+    (selectedActivity && (openGameDetails || openPracticeDetails));
+
+  if (!shouldShowModal) return null;
 
   return (
-    <ActivityModalWrapper
-      onClose={() => {
-        setOpenGameDetails(false);
-        setOpenPracticeDetails(false);
-      }}
-      title={isViewMode ? selectedActivity?.title : "Create Practice"}
-    >
-      {isViewMode && selectedActivity && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
-          <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-            <div className="flex items-center justify-between border-b border-gray-800 p-4">
-              <h2 className="text-lg font-normal sm:text-xl">
-                {selectedActivity?.title}
-              </h2>
-              <button
-                className="text-xl font-bold text-gray-400 hover:text-white"
-                onClick={() => {
-                  setOpenGameDetails(false);
-                  setOpenPracticeDetails(false);
-                }}
-                aria-label="Close"
-              >
-                <X className="h-5 w-5" />
-              </button>
-            </div>
+    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
+      <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
+        <div className="flex items-center justify-between border-b border-gray-800 p-4">
+          <h2 className="text-lg font-normal sm:text-xl">
+            {isViewMode
+              ? selectedActivity?.title
+              : isEditMode
+                ? (selectedActivity?.title ?? "Edit Game")
+                : "Create Game"}
+          </h2>
+          <button
+            onClick={onClose}
+            className="text-xl font-bold text-gray-400 hover:text-white"
+            aria-label="Close"
+          >
+            ×
+          </button>
+        </div>
+        {isViewMode && selectedActivity && (
+          <>
             <div className="flex flex-col gap-2 space-y-2 p-4 text-sm sm:text-base">
               <div className="flex flex-col gap-2">
                 <div className="text-xs text-gray-400 sm:text-sm">Type</div>
@@ -167,86 +160,86 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
                 Edit practice
               </Button>
             </div>
-          </div>
-        </div>
-      )}
+          </>
+        )}
 
-      {(isEditMode || isCreateMode) && (
-        <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
-          <Input
-            label="Title"
-            aria-label="Practice title input"
-            id="title"
-            type="text"
-            placeholder="voorbereiding wedstrijd"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("title")}
-          />
-          <div>
-            <label className="mb-2 block text-sm font-semibold text-gray-100">
-              Practice Type
-            </label>
-            <div className="flex flex-col gap-3">
-              {Object.values(PracticeType).map((practice) => (
-                <label key={practice} className="flex items-center space-x-3">
-                  <input
-                    aria-label={`Practice type radio input${practice}`}
-                    type="radio"
-                    value={practice}
-                    {...register("practiceType", {
-                      required: "Please select a practice type",
-                    })}
-                    className="form-radio text-blue-600 focus:ring-blue-500"
-                  />
-                  <span className="text-gray-300">{practice}</span>
-                </label>
-              ))}
+        {(isEditMode || isCreateMode) && (
+          <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
+            <Input
+              label="Title"
+              aria-label="Practice title input"
+              id="title"
+              type="text"
+              placeholder="voorbereiding wedstrijd"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("title")}
+            />
+            <div>
+              <label className="mb-2 block text-sm font-semibold text-gray-100">
+                Practice Type
+              </label>
+              <div className="flex flex-col gap-3">
+                {Object.values(PracticeType).map((practice) => (
+                  <label key={practice} className="flex items-center space-x-3">
+                    <input
+                      aria-label={`Practice type radio input${practice}`}
+                      type="radio"
+                      value={practice}
+                      {...register("practiceType", {
+                        required: "Please select a practice type",
+                      })}
+                      className="form-radio text-blue-600 focus:ring-blue-500"
+                    />
+                    <span className="text-gray-300">{practice}</span>
+                  </label>
+                ))}
+              </div>
             </div>
-          </div>
 
-          <Input
-            label="Start Time"
-            aria-label="Practice start time input"
-            id="time"
-            type="time"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("time")}
-          />
-          <Input
-            label="Duration"
-            aria-label="Practice duration input"
-            id="duration"
-            type="number"
-            step="0.5"
-            min="0.5"
-            placeholder="E.g. 2"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("duration", {
-              required: "Duration is required",
-              min: 0.5,
-            })}
-          />
-          <Input
-            label="Date"
-            aria-label="Practice date input"
-            id="date"
-            type="date"
-            className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
-            {...register("date")}
-          />
-          <div className="flex justify-end gap-3 pt-4">
-            {isCoach && (
-              <Button type="submit" variant="outline">
-                Edit Practice
+            <Input
+              label="Start Time"
+              aria-label="Practice start time input"
+              id="time"
+              type="time"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("time")}
+            />
+            <Input
+              label="Duration"
+              aria-label="Practice duration input"
+              id="duration"
+              type="number"
+              step="0.5"
+              min="0.5"
+              placeholder="E.g. 2"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("duration", {
+                required: "Duration is required",
+                min: 0.5,
+              })}
+            />
+            <Input
+              label="Date"
+              aria-label="Practice date input"
+              id="date"
+              type="date"
+              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
+              {...register("date")}
+            />
+            <div className="flex justify-end gap-3 pt-4">
+              {isCoach && isEditMode && (
+                <Button type="submit" variant="outline">
+                  Edit Practice
+                </Button>
+              )}
+              <Button type="button" onClick={onClose} variant="outline">
+                Cancel
               </Button>
-            )}
-            <Button type="button" onClick={onClose} variant="outline">
-              Cancel
-            </Button>
-          </div>
-        </form>
-      )}
-    </ActivityModalWrapper>
+            </div>
+          </form>
+        )}
+      </div>
+    </div>
   );
 };
 
