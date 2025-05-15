@@ -1,8 +1,10 @@
 "use client";
+
 import { Button } from "@/components/button/button";
 import {
   Table,
   TableBody,
+  TableFooter,
   TableHead,
   TableHeader,
   TableRow,
@@ -10,8 +12,11 @@ import {
 import type { TeamMember } from "@/types";
 import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
+import { createNewStatline } from "../lib/create-statline";
+import { statRows } from "../utils/const";
 import type { StatlineData } from "../zod/player-stats";
 import { PlayerStatsRow } from "./player-stat-row";
+import { TeamStatsRow } from "./team-stats-row";
 
 export type PlayerWithStats = TeamMember & {
   statlines: StatlineData[];
@@ -19,7 +24,10 @@ export type PlayerWithStats = TeamMember & {
 
 export type PlayersData = {
   players: PlayerWithStats[];
+  teamId: string;
+  activityId: string;
 };
+
 const defaultStatline: StatlineData = {
   fieldGoalsMade: 0,
   fieldGoalsMissed: 0,
@@ -34,23 +42,56 @@ const defaultStatline: StatlineData = {
   blocks: 0,
 };
 
-const PlayerBoxScore: FC<PlayersData> = ({ players }) => {
+const PlayerBoxScore: FC<PlayersData> = ({ players, teamId, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+
   const { control, setValue, handleSubmit } = useForm<PlayersData>({
     defaultValues: {
       players: players.map((player) => ({
         ...player,
         statlines: player.statlines.map((statline) => ({
           ...defaultStatline,
-          id: statline.id,
         })),
       })),
     },
   });
 
+  const createStatline = createNewStatline();
+
   const stats = useWatch({ control });
 
   if (!stats) return null;
+
+  const playerStats = stats.players?.map((player) => {
+    return player.statlines?.[0] ?? defaultStatline;
+  });
+
+  const totalTeamStats = playerStats?.reduce(
+    (acc, statline) => {
+      return {
+        ...acc,
+        fieldGoalsMade:
+          (acc.fieldGoalsMade ?? 0) + (statline?.fieldGoalsMade ?? 0),
+        fieldGoalsMissed:
+          (acc.fieldGoalsMissed ?? 0) + (statline?.fieldGoalsMissed ?? 0),
+        threePointersMade:
+          (acc.threePointersMade ?? 0) + (statline?.threePointersMade ?? 0),
+        threePointersMissed:
+          (acc.threePointersMissed ?? 0) + (statline?.threePointersMissed ?? 0),
+        freeThrows: (acc.freeThrows ?? 0) + (statline?.freeThrows ?? 0),
+        missedFreeThrows:
+          (acc.missedFreeThrows ?? 0) + (statline?.missedFreeThrows ?? 0),
+        rebounds: (acc.rebounds ?? 0) + (statline?.rebounds ?? 0),
+        assists: (acc.assists ?? 0) + (statline?.assists ?? 0),
+        turnovers: (acc.turnovers ?? 0) + (statline?.turnovers ?? 0),
+        steals: (acc.steals ?? 0) + (statline?.steals ?? 0),
+        blocks: (acc.blocks ?? 0) + (statline?.blocks ?? 0),
+      };
+    },
+    {
+      ...defaultStatline,
+    },
+  );
 
   const handleChange = (
     playerIndex: number,
@@ -63,23 +104,26 @@ const PlayerBoxScore: FC<PlayersData> = ({ players }) => {
       Math.max(0, Number(current) + amount),
     );
   };
+  const onSubmit = async (data: PlayersData) => {
+    const stalineData = {
+      players: data.players.map((player) => ({
+        id: player.id,
+        activityId: activityId,
+        statlines: player.statlines.map((statline) => ({
+          ...statline,
+          id: statline.id,
+        })),
+      })),
+    };
 
-  const statRows: { key: keyof StatlineData; label: string }[] = [
-    { key: "fieldGoalsMade", label: "FGM" },
-    { key: "fieldGoalsMissed", label: "FG Missed" },
-    { key: "threePointersMade", label: "3PM" },
-    { key: "threePointersMissed", label: "3P Missed" },
-    { key: "freeThrows", label: "FTM" },
-    { key: "missedFreeThrows", label: "FT Missed" },
-    { key: "rebounds", label: "REB" },
-    { key: "assists", label: "AST" },
-    { key: "steals", label: "STL" },
-    { key: "blocks", label: "BLK" },
-    { key: "turnovers", label: "TO" },
-  ];
+    await createStatline.mutateAsync(stalineData);
+  };
 
   return (
-    <div className="mx-auto h-full w-full max-w-5xl p-4">
+    <form
+      onSubmit={handleSubmit(onSubmit)}
+      className="mx-auto h-full w-full max-w-5xl p-4"
+    >
       <h2 className="mb-6 text-xl font-bold text-gray-200 sm:text-2xl md:text-3xl">
         Player Box Score
       </h2>
@@ -88,16 +132,16 @@ const PlayerBoxScore: FC<PlayersData> = ({ players }) => {
           <TableHeader>
             <TableRow className="bg-gray-200 font-semibold text-gray-600 uppercase">
               <TableHead className="p-3 text-left">Name</TableHead>
+              <TableHead className="p-3 text-center">PTS</TableHead>
               <TableHead className="p-3 text-center">FG</TableHead>
-              <TableHead className="p-3 text-center">3Pt</TableHead>
+              <TableHead className="p-3 text-center">3PT</TableHead>
               <TableHead className="p-3 text-center">FT</TableHead>
               <TableHead className="p-3 text-center">REB</TableHead>
               <TableHead className="p-3 text-center">AST</TableHead>
               <TableHead className="p-3 text-center">STL</TableHead>
               <TableHead className="p-3 text-center">BLK</TableHead>
               <TableHead className="p-3 text-center">TO</TableHead>
-              <TableHead className="p-3 text-center">PTS</TableHead>
-              <TableHead className="p-3 text-center">Action</TableHead>
+              <TableHead className="p-3 text-center">Select</TableHead>
             </TableRow>
           </TableHeader>
           <TableBody>
@@ -117,6 +161,13 @@ const PlayerBoxScore: FC<PlayersData> = ({ players }) => {
               );
             })}
           </TableBody>
+          <TableFooter className="bg-gray-700 font-semibold text-gray-600 uppercase">
+            <TableRow>
+              {totalTeamStats && (
+                <TeamStatsRow totalTeamStats={totalTeamStats} />
+              )}
+            </TableRow>
+          </TableFooter>
         </Table>
       </div>
       <div className="mt-8 grid grid-cols-2 gap-6 sm:grid-cols-3 md:grid-cols-6">
@@ -150,7 +201,10 @@ const PlayerBoxScore: FC<PlayersData> = ({ players }) => {
           // </div>
         ))}
       </div>
-    </div>
+      <Button type="submit" variant="outline">
+        Submit Stats
+      </Button>
+    </form>
   );
 };
 

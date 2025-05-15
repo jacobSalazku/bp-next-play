@@ -1,14 +1,29 @@
 import type { StatlineData } from "../zod/player-stats";
 
-export const STAT_BUTTONS: { label: string; key: keyof StatlineData }[] = [
-  { label: "FG Made", key: "fieldGoalsMade" },
-  { label: "FG Missed", key: "fieldGoalsMissed" },
-  { label: "3PT Made", key: "threePointersMade" },
-  { label: "3PT Missed", key: "threePointersMissed" },
-  { label: "FT Made", key: "freeThrows" },
-  { label: "FT Missed", key: "missedFreeThrows" },
-  { label: "Assists", key: "assists" },
-  { label: "Steals", key: "steals" },
-  { label: "Turnovers", key: "turnovers" },
-  { label: "Rebounds", key: "rebounds" },
+export const statRows: { key: keyof StatlineData; label: string }[] = [
+  { key: "fieldGoalsMade", label: "FGM" },
+  { key: "fieldGoalsMissed", label: "FG Missed" },
+  { key: "threePointersMade", label: "3PM" },
+  { key: "threePointersMissed", label: "3P Missed" },
+  { key: "freeThrows", label: "FTM" },
+  { key: "missedFreeThrows", label: "FT Missed" },
+  { key: "rebounds", label: "REB" },
+  { key: "assists", label: "AST" },
+  { key: "steals", label: "STL" },
+  { key: "blocks", label: "BLK" },
+  { key: "turnovers", label: "TO" },
+];
+
+export const statKeys: (keyof StatlineData)[] = [
+  "fieldGoalsMade",
+  "fieldGoalsMissed",
+  "threePointersMade",
+  "threePointersMissed",
+  "freeThrows",
+  "missedFreeThrows",
+  "assists",
+  "steals",
+  "turnovers",
+  "rebounds",
+  "blocks",
 ];

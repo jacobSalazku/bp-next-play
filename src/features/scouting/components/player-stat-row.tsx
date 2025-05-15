@@ -19,26 +19,16 @@ export const PlayerStatsRow = ({
   activePlayerIndex,
   setActivePlayerIndex,
 }: PlayerStatsRowProps) => {
-  const { fieldGoals, freeThrows, threePointers, totalPoints } = calculateStats(
-    {
-      fieldGoalsMade: statsForPlayer.fieldGoalsMade ?? 0,
-      fieldGoalsMissed: statsForPlayer.fieldGoalsMissed ?? 0,
-      threePointersMade: statsForPlayer.threePointersMade ?? 0,
-      threePointersMissed: statsForPlayer.threePointersMissed ?? 0,
-      freeThrows: statsForPlayer.freeThrows ?? 0,
-      missedFreeThrows: statsForPlayer.missedFreeThrows ?? 0,
-      assists: statsForPlayer.assists ?? 0,
-      steals: statsForPlayer.steals ?? 0,
-      turnovers: statsForPlayer.turnovers ?? 0,
-      rebounds: statsForPlayer.rebounds ?? 0,
-      blocks: statsForPlayer.blocks ?? 0,
-    },
-  );
+  const { fieldGoals, freeThrows, threePointers, totalPoints } =
+    calculateStats(statsForPlayer);
 
   return (
     <TableRow>
       <TableCell className="p-3 text-left font-medium dark:text-white">
         {player.name}
+      </TableCell>
+      <TableCell className="p-3 text-center align-middle dark:text-gray-300">
+        {totalPoints}
       </TableCell>
       <TableCell className="p-3 text-center align-middle dark:text-gray-300">
         {fieldGoals.made}/{fieldGoals.attempted}
@@ -64,12 +54,11 @@ export const PlayerStatsRow = ({
       <TableCell className="p-3 text-center align-middle dark:text-gray-300">
         {statsForPlayer?.turnovers ?? 0}
       </TableCell>
-      <TableCell className="p-3 text-center align-middle dark:text-gray-300">
-        {totalPoints}
-      </TableCell>
+
       <TableCell className="p-3 text-center align-middle">
         <Button
-          variant={index === activePlayerIndex ? "default" : "outline"}
+          type="button"
+          variant={index === activePlayerIndex ? "danger" : "outline"}
           onClick={() => setActivePlayerIndex(index)}
           size="sm"
         >
