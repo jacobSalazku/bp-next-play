@@ -129,7 +129,6 @@ model Activity {
 // Statline table
 model Statline {
   id                 String      @id @default(cuid())
-  playerId           String
   teamMemberId       String
   fieldGoalsMade     Int
   fieldGoalsMissed   Int
