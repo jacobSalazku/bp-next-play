@@ -1,7 +1,10 @@
+import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
 import { cn } from "@/lib/utils";
-import { ChevronRight } from "lucide-react";
+import useStore from "@/store/store";
+import { ChevronRight, User } from "lucide-react";
 import type { FC } from "react";
 import type { NavItemType } from ".";
+import { Button } from "../button/button";
 import { NavItem } from "./nav-item";
 
 type DesktopNavProps = {
@@ -17,6 +20,8 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
   onToggle,
   children,
 }) => {
+  const { openLoginModal, setOpenLoginModal } = useStore();
+
   return (
     <>
       <aside
@@ -59,6 +64,16 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
                 </NavItem>
               </li>
             ))}
+            <Button
+              className={cn(
+                "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
+                isOpen ? "justify-start" : "justify-center",
+              )}
+              onClick={() => setOpenLoginModal(true)}
+            >
+              <User /> Logout
+            </Button>
+            {openLoginModal && <AuthLogoutModal />}
           </ul>
         </nav>
       </aside>

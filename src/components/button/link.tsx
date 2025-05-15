@@ -8,28 +8,26 @@ export type LinkProps = {
   label?: string;
   children?: React.ReactNode;
   disabled?: boolean;
-  href: string;
-} & React.AnchorHTMLAttributes<HTMLAnchorElement> &
+  href: Parameters<typeof NavLink>[0]["href"]; // ensure href is required and correct type
+} & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> &
   VariantProps<typeof buttonVariants>;
-
 const Link: FC<LinkProps> = ({
   className,
-  size,
   variant,
   children,
   label,
-  href = "",
+  href,
   ...rest
 }) => {
   return (
     <NavLink
+      href={href}
       className={cn(
         buttonVariants({
           variant,
           className,
         }),
       )}
-      href={href}
       {...rest}
       aria-label={label}
       prefetch

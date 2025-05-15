@@ -41,16 +41,15 @@ const Navigation: FC<NavigationProps> = ({ children, team }) => {
       icon: Calendar,
       active: false,
     },
-    { label: "Logout", href: `/${team}/logout`, icon: User, active: false },
   ];
 
   return (
-    <div className="bg-background text-foreground flex h-screen flex-col dark:bg-gray-950 dark:text-gray-100">
-      <header className="border-border flex items-center justify-between border-b p-4 md:hidden dark:border-gray-700">
+    <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
+      <header className="flex items-center justify-between border border-b border-gray-700 p-4 md:hidden">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="hover:bg-muted rounded p-2 dark:hover:bg-gray-800"
+            className="hover:bg-muted rounded p-2 hover:bg-gray-800"
           >
             <Menu className="h-5 w-5" />
           </button>
