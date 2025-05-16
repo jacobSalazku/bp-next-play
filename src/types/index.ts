@@ -10,3 +10,5 @@ export type TeamMember =
 export type UserRequests = RouterOutput["team"]["requestToJoin"];
 export type PendingRequest =
   RouterOutput["team"]["getIncomingRequests"][number];
+
+export type TeamInformation = RouterOutput["team"]["getTeam"];

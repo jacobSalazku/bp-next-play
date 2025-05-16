@@ -1,6 +1,9 @@
 import { api } from "@/trpc/react";
 
-export const editPracticeActivity = (teamId: string, onClose: () => void) => {
+export const useEditPracticeActivity = (
+  teamId: string,
+  onClose: () => void,
+) => {
   const utils = api.useUtils();
 
   const editPractice = api.activity.editPractice.useMutation({
@@ -16,7 +19,7 @@ export const editPracticeActivity = (teamId: string, onClose: () => void) => {
   return editPractice;
 };
 
-export const editGameActivity = (teamId: string, onClose: () => void) => {
+export const useEditGameActivity = (teamId: string, onClose: () => void) => {
   const utils = api.useUtils();
 
   const editPractice = api.activity.editGame.useMutation({

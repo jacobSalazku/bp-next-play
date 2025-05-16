@@ -1,6 +1,6 @@
 import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
-import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
+import { cn } from "@/utils/tw-merge";
 import { ChevronRight, User } from "lucide-react";
 import type { FC } from "react";
 import type { NavItemType } from ".";

@@ -1,5 +1,5 @@
 import { api } from "@/trpc/server";
-import { TeamMemberRole } from "@/types/enum";
+
 import { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -30,15 +30,6 @@ export const getUser = cache(async () => {
   }
 });
 
-export const getTeams = cache(async () => {
-  const teams = await api.team.getTeams();
-
-  if (!teams) {
-    throw new Error("No teams found.");
-  }
-  return { teams };
-});
-
 export const getTeamMembers = cache(async (teamId: string) => {
   const members = await api.user.getTeamMembers({
     teamId: teamId,
@@ -47,17 +38,10 @@ export const getTeamMembers = cache(async (teamId: string) => {
   return members;
 });
 
-export const getPendingRequests = cache(async () => {
-  const { teamMember } = await getUser();
+export const getTeamMember = cache(async () => {
+  const team = await api.team.getTeam();
 
-  if (!teamMember) {
-    throw new Error("Team member is null. Cannot fetch pending requests.");
-  }
-  const isCoach = (teamMember.role as TeamMemberRole) !== TeamMemberRole.COACH;
+  const members = await api.team.getTeamMembers({ teamCode: team.code });
 
-  const requests = await api.team.getIncomingRequests({
-    teamId: teamMember.team.id,
-  });
-
-  return { requests, isCoach };
+  return members;
 });

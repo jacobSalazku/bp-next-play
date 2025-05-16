@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tw-merge";
 import { forwardRef } from "react";
 import { type FieldError, type UseFormRegisterReturn } from "react-hook-form";
 

@@ -1,4 +1,4 @@
-import { cn } from "@/lib/utils";
+import { cn } from "@/utils/tw-merge";
 import type { VariantProps } from "class-variance-authority";
 import NavLink from "next/link";
 import type { FC } from "react";

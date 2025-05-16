@@ -1,18 +1,24 @@
 "use client";
 
 import { Button } from "@/components/button/button";
-import { cn } from "@/lib/utils";
+import { Link } from "@/components/button/link";
+import { useIsCoach } from "@/hooks/use-is-coach";
+
 import useStore from "@/store/store";
+import type { TeamInformation } from "@/types";
+import { getActivityStyle } from "@/utils";
+import { cn } from "@/utils/tw-merge";
 import type { Activity } from "@prisma/client";
 import { Clock } from "lucide-react";
 import { type FC } from "react";
-import { getActivityStyle } from "../../utils/utils";
 
 type ActivityCardProps = {
   activity: Activity;
+  team: TeamInformation;
 };
 
-export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
+export const ActivityCard: FC<ActivityCardProps> = ({ activity, team }) => {
+  const isCoach = useIsCoach();
   const { setOpenPracticeDetails, setOpenGameDetails, setSelectedActivity } =
     useStore();
 
@@ -26,6 +32,10 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
       setOpenPracticeDetails(true);
     }
   };
+
+  const boxScoreSearchParams = new URLSearchParams();
+  boxScoreSearchParams.set("activityId", activity.id);
+  boxScoreSearchParams.set("teamId", team.id);
 
   return (
     <>
@@ -50,14 +60,19 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
           </div>
         </div>
         <div>
-          <Button
-            onClick={handleViewDetails}
-            variant="outline"
-            size="sm"
-            className="mt-3 sm:mt-0 sm:ml-2"
-          >
-            Create Box Score
-          </Button>
+          {activity.type === "Game" && isCoach && (
+            <Link
+              href={{
+                pathname: `/${team.name.toLowerCase()}/box-score`,
+                query: { activityId: activity.id, teamId: team.id },
+              }}
+              variant="outline"
+              size="sm"
+              className="mt-3 sm:mt-0 sm:ml-2"
+            >
+              Create Box Score
+            </Link>
+          )}
           <Button
             onClick={handleViewDetails}
             variant="outline"

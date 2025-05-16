@@ -1,7 +1,7 @@
 import { z } from "zod";
 
 export const joinTeamSchema = z.object({
-  teamId: z
+  teamCode: z
     .string()
     .min(3, { message: "Team name must be at least 3 characters." }),
 });

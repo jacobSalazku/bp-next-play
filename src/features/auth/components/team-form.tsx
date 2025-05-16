@@ -64,7 +64,7 @@ const CreateTeamForm = () => {
         {
           onSuccess: (newTeam) => {
             createTeam.reset();
-            router.push(`/${newTeam.team.name.toLowerCase()}/dashboard`);
+            router.push("/");
             console.log("Team created successfully:", newTeam);
           },
           onError: (error) => {
@@ -77,7 +77,6 @@ const CreateTeamForm = () => {
 
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
-      {/* Image upload or preview */}
       {!previewUrl ? (
         <div
           onDrop={onDrop}
@@ -125,11 +124,10 @@ const CreateTeamForm = () => {
         </div>
       )}
 
-      {/* Team Name Input */}
       <div className="mb-4">
         <label
           htmlFor="name"
-          className="mb-2 block text-sm font-bold text-white"
+          className="mb-2 block text-sm font-bold text-gray-700"
         >
           Team Name:
         </label>

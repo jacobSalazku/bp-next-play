@@ -2,6 +2,9 @@ import type { Activity } from "@prisma/client";
 import { create } from "zustand";
 
 type StoreState = {
+  openLoginModal: boolean;
+  setOpenLoginModal: (open: boolean) => void;
+
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
 
@@ -22,6 +25,9 @@ type StoreState = {
 };
 
 const useStore = create<StoreState>((set) => ({
+  openLoginModal: false,
+  setOpenLoginModal: (open) => set({ openLoginModal: open }),
+
   selectedDate: new Date(),
   setSelectedDate: (date) => set({ selectedDate: date }),
   selectedActivity: null,

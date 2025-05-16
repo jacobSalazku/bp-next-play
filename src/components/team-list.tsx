@@ -1,4 +1,4 @@
-import { getTeams } from "@/features/auth/lib";
+import { getTeams } from "@/api/team";
 import { Link } from "./button/link";
 import TeamCard from "./card/team-card";
 

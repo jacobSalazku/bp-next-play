@@ -47,16 +47,18 @@ const JoinTeamForm = () => {
         <input
           type="text"
           id="teamCode"
-          {...register("teamId")}
+          {...register("teamCode")}
           className="focus:shadow-outline w-full rounded border border-neutral-300 px-3 py-2 leading-tight text-black shadow focus:outline-none"
         />
-        {errors.teamId && (
-          <p className="text-xs text-red-500 italic">{errors.teamId.message}</p>
+        {errors.teamCode && (
+          <p className="text-xs text-red-500 italic">
+            {errors.teamCode.message}
+          </p>
         )}
       </div>
 
       <div className="flex items-center justify-between">
-        <Button type="submit" variant="outline" disabled={isPending}>
+        <Button type="submit" variant="secondary" disabled={isPending}>
           {isPending ? "Creating..." : "Request to Join"}
         </Button>
       </div>

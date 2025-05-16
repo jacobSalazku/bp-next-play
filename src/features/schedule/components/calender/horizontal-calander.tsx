@@ -2,7 +2,8 @@
 
 import { Button } from "@/components/button/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import { cn } from "@/lib/utils";
+import type { TeamInformation } from "@/types";
+import { cn } from "@/utils/tw-merge";
 import type { Activity } from "@prisma/client";
 import { addDays, format, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
@@ -11,6 +12,7 @@ import { CalendarDay } from "./calendar-day";
 
 type HorizontalCalendarProps = {
   activities: Activity[];
+  team: TeamInformation;
 };
 
 export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
@@ -43,14 +45,14 @@ export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
         <div className="flex space-x-2">
           <Button
             onClick={handlePrevious}
-            className="rounded-full bg-blue-600 p-1 text-white shadow-md transition-colors duration-200 hover:bg-blue-700"
+            className="rounded-full p-1 text-white shadow-md transition-colors duration-200"
             aria-label="Previous"
           >
             <ChevronLeft className="h-4 w-4 md:h-5 md:w-5" />
           </Button>
           <Button
             onClick={handleNext}
-            className="rounded-full bg-blue-600 p-1 text-white shadow-md transition-colors duration-200 hover:bg-blue-700"
+            className="rounded-full p-1 text-white shadow-md transition-colors duration-200"
             aria-label="Next"
           >
             <ChevronRight className="h-4 w-4 md:h-5 md:w-5" />

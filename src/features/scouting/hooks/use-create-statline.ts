@@ -1,6 +1,6 @@
 import { api } from "@/trpc/react";
 
-export const createNewStatline = () => {
+export const useCreateNewStatline = () => {
   const utils = api.useUtils();
 
   const createStatline = api.stats.submit.useMutation({

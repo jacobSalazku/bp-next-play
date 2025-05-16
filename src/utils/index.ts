@@ -1,5 +1,4 @@
 import { Trophy, Users } from "lucide-react";
-type ActivityType = "Game" | "Practice" | "Other";
 
 export function getTypeBgColor(type: string): string {
   switch (type.toLowerCase()) {

@@ -1,5 +1,4 @@
 "use client";
-
 import { Button } from "@/components/button/button";
 import {
   Table,
@@ -12,7 +11,7 @@ import {
 import type { TeamMember } from "@/types";
 import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
-import { createNewStatline } from "../lib/create-statline";
+import { useCreateNewStatline } from "../hooks/use-create-statline";
 import { statRows } from "../utils/const";
 import type { StatlineData } from "../zod/player-stats";
 import { PlayerStatsRow } from "./player-stat-row";
@@ -24,7 +23,7 @@ export type PlayerWithStats = TeamMember & {
 
 export type PlayersData = {
   players: PlayerWithStats[];
-  teamId: string;
+
   activityId: string;
 };
 
@@ -42,21 +41,21 @@ const defaultStatline: StatlineData = {
   blocks: 0,
 };
 
-const PlayerBoxScore: FC<PlayersData> = ({ players, teamId, activityId }) => {
+const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
 
   const { control, setValue, handleSubmit } = useForm<PlayersData>({
     defaultValues: {
       players: players.map((player) => ({
         ...player,
-        statlines: player.statlines.map((statline) => ({
+        statlines: player.statlines.map((_statline) => ({
           ...defaultStatline,
         })),
       })),
     },
   });
 
-  const createStatline = createNewStatline();
+  const createStatline = useCreateNewStatline();
 
   const stats = useWatch({ control });
 
