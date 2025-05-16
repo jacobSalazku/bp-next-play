@@ -1,4 +1,4 @@
-import type { CreateTeamData, JoinTeamFormData } from "@/features/auth/zod";
+import type { CreateTeamData } from "@/features/auth/zod";
 import { TeamMemberRole, TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
@@ -30,12 +30,9 @@ export async function createNewTeam(ctx: Context, input: CreateTeamData) {
   return team;
 }
 
-export async function getActiveTeamMembers(
-  ctx: Context,
-  input: JoinTeamFormData,
-) {
+export async function getActiveTeamMembers(ctx: Context, teamId: string) {
   const team = await ctx.db.team.findUnique({
-    where: { id: input.teamCode },
+    where: { id: teamId },
     include: {
       members: {
         where: { status: "ACTIVE", role: "PLAYER" },

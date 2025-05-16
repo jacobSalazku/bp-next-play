@@ -28,7 +28,11 @@ async function PlayerPage({ searchParams }: PageProps) {
   return (
     <main className="max flex min-h-screen flex-col items-center justify-center text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row items-center justify-center">
-        <PlayerBoxScore activityId={activityId} players={members} />
+        <PlayerBoxScore
+          activityId={activityId}
+          teamId={teamId}
+          players={members}
+        />
       </div>
     </main>
   );

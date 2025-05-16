@@ -1,7 +1,5 @@
 import { getTeamMembers, getUser } from "@/api/user";
-import SignOut from "@/components/sign-out";
 import Teamlist from "@/components/team-list";
-
 import { TeamMemberRole } from "@/types/enum";
 
 async function Dashboard() {
@@ -21,9 +19,6 @@ async function Dashboard() {
                 {user.email} - Role: {teamMember?.role}
               </p>
             </div>
-            <nav className="flex w-1/3 items-center space-x-4">
-              <SignOut />
-            </nav>
           </header>
           <section className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold text-white">
