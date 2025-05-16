@@ -1,5 +1,6 @@
+import { getTeamActivities } from "@/api/team";
 import { ScheduleBlock } from "@/features/schedule";
-import { getTeamActivities } from "@/features/schedule/lib/get-team";
+
 import { redirect } from "next/navigation";
 
 export default async function SchedulePage() {
@@ -8,5 +9,6 @@ export default async function SchedulePage() {
   if (!team) {
     redirect("/create-team");
   }
-  return <ScheduleBlock activities={activities} team={team.id} />;
+
+  return <ScheduleBlock activities={activities} team={team} />;
 }

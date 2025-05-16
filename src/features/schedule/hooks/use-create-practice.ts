@@ -1,6 +1,9 @@
 import { api } from "@/trpc/react";
 
-export const createPracticeActivity = (teamId: string, onClose: () => void) => {
+export const useCreatePracticeActivity = (
+  teamId: string,
+  onClose: () => void,
+) => {
   const utils = api.useUtils();
 
   const createPractice = api.activity.createPractice.useMutation({

@@ -1,5 +1,5 @@
+import { getPendingRequests } from "@/api/team";
 import TeamRequests from "@/components/team-request";
-import { getPendingRequests } from "@/features/auth/lib";
 
 async function ProfilePage() {
   const { requests, isCoach } = await getPendingRequests();
@@ -17,7 +17,7 @@ async function ProfilePage() {
   }
   return (
     <main className="max flex min-h-screen flex-col items-center justify-center bg-black text-white">
-      {isCoach ? <TeamRequests request={requests} /> : null}
+      <TeamRequests request={requests} />
     </main>
   );
 }

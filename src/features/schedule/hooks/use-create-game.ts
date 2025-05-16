@@ -1,6 +1,6 @@
 import { api } from "@/trpc/react";
 
-export const createGameActivity = (teamId: string, onClose: () => void) => {
+export const useCreateGameActivity = (teamId: string, onClose: () => void) => {
   const utils = api.useUtils();
 
   const createGame = api.activity.createGame.useMutation({
