@@ -1,4 +1,10 @@
 import { gameSchema, practiceSchema } from "@/features/schedule/zod";
+import {
+  createGame,
+  createPractice,
+  editGame,
+  editPractice,
+} from "@/server/service/activity-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { checkTeamMembership } from "../utils/check-membership";
@@ -12,19 +18,9 @@ export const activityRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const activity = await ctx.db.activity.create({
-        data: {
-          title: input.title,
-          time: input.time,
-          duration: input.duration,
-          date: input.date,
-          type: input.type,
-          teamId: input.teamId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
-      return { success: true, activity };
+      const activity = createGame(ctx, input);
+
+      return { activity, success: true };
     }),
   createPractice: protectedProcedure
     .input(
@@ -34,20 +30,36 @@ export const activityRouter = createTRPCRouter({
       }),
     )
     .mutation(async ({ ctx, input }) => {
-      const activity = await ctx.db.activity.create({
-        data: {
-          title: input.title,
-          time: input.time,
-          duration: input.duration,
-          date: input.date,
-          type: input.type,
-          practiceType: input.practiceType,
-          teamId: input.teamId,
-          createdAt: new Date(),
-          updatedAt: new Date(),
-        },
-      });
-      return { success: true, activity };
+      const activity = await createPractice(ctx, input);
+
+      return { activity, success: true };
+    }),
+  editPractice: protectedProcedure
+    .input(
+      z.object(practiceSchema.shape).extend({
+        id: z.string(),
+        teamId: z.string(),
+        type: z.literal("Practice"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const updatedPractice = await editPractice(ctx, input);
+
+      return { success: true, activity: updatedPractice };
+    }),
+
+  editGame: protectedProcedure
+    .input(
+      z.object(gameSchema.shape).extend({
+        id: z.string(),
+        teamId: z.string(),
+        type: z.literal("Game"),
+      }),
+    )
+    .mutation(async ({ ctx, input }) => {
+      const updatedGame = await editGame(ctx, input);
+
+      return { success: true, activity: updatedGame };
     }),
 
   getActivities: protectedProcedure
@@ -59,6 +71,7 @@ export const activityRouter = createTRPCRouter({
         where: { teamId: input.teamId },
         orderBy: { date: "asc" },
       });
+
       return activities;
     }),
 });
