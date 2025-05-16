@@ -1,6 +1,4 @@
-import { WithAuth } from "@/components/auth";
 import { api } from "@/trpc/server";
-
 import Link from "next/link";
 import { redirect } from "next/navigation";
 
@@ -38,4 +36,4 @@ async function CreatePage() {
   );
 }
 
-export default WithAuth(CreatePage);
+export default CreatePage;
