@@ -3,35 +3,36 @@
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
 import { useIsCoach } from "@/hooks/use-is-coach";
-import { cn } from "@/lib/utils";
+
 import useStore from "@/store/store";
+import type { TeamInformation } from "@/types";
+import { getTypeBgColor } from "@/utils";
+import { cn } from "@/utils/tw-merge";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
-import { createGameActivity } from "../../lib/create-game";
-import { editGameActivity } from "../../lib/edit-activity";
-import { getTypeBgColor } from "../../utils/utils";
+import { useCreateGameActivity } from "../../hooks/use-create-game";
+import { useEditGameActivity } from "../../hooks/use-edit-activity";
 import { gameSchema, type GameData } from "../../zod";
 
 export type Mode = "view" | "edit" | "create";
 
 type GameFormProps = {
   mode: Mode;
-  team: string;
+  team: TeamInformation;
   onClose: () => void;
 };
 
 const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
   const [formState, setFormState] = useState<Mode>(mode);
-  const createGame = createGameActivity(team, onClose);
-  const editGame = editGameActivity(team, onClose);
+  const createGame = useCreateGameActivity(team.id, onClose);
+  const editGame = useEditGameActivity(team.id, onClose);
   const router = useRouter();
   const isCoach = useIsCoach();
 
-  const { selectedDate, selectedActivity, setOpenGameModal, openGameModal } =
-    useStore();
+  const { selectedDate, selectedActivity, openGameModal } = useStore();
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
@@ -62,17 +63,17 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
       ...data,
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
-      teamId: team,
+      teamId: team.id,
       type: "Game" as const,
     };
 
     if (formState === "edit") {
       await editGame.mutateAsync(gameData);
-      router.push(`/${team}/schedule`);
+      router.push(`/${team.name}/schedule`);
       setFormState("view");
     } else {
       await createGame.mutateAsync(gameData);
-      router.push(`/${team}/schedule`);
+      router.push(`/${team.name}/schedule`);
     }
   };
   useEffect(() => {

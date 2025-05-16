@@ -1,7 +1,7 @@
-import { cn } from "@/lib/utils";
+import { getTypeBgColor } from "@/utils/";
+import { cn } from "@/utils/tw-merge";
 import type { Activity } from "@prisma/client";
 import type { MouseEvent } from "react";
-import { getTypeBgColor } from "../../utils/utils";
 
 type ActivityType = "Game" | "Practice" | "Multiple";
 

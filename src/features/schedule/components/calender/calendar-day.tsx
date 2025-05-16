@@ -1,5 +1,5 @@
-import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
+import { cn } from "@/utils/tw-merge";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import type { FC, MouseEvent } from "react";

@@ -3,29 +3,31 @@
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
 import { useIsCoach } from "@/hooks/use-is-coach";
-import { cn } from "@/lib/utils";
+
 import useStore from "@/store/store";
+import type { TeamInformation } from "@/types";
+import { getTypeBgColor } from "@/utils";
+import { cn } from "@/utils/tw-merge";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import type { Mode } from "fs";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
-import { createPracticeActivity } from "../../lib/create-practice";
-import { editPracticeActivity } from "../../lib/edit-activity";
-import { getTypeBgColor } from "../../utils/utils";
+import { useCreatePracticeActivity } from "../../hooks/use-create-practice";
+import { useEditPracticeActivity } from "../../hooks/use-edit-activity";
 import { practiceSchema, PracticeType, type PracticeData } from "../../zod";
 
 type PracticeProps = {
   mode: Mode;
-  team: string;
+  team: TeamInformation;
   onClose: () => void;
 };
 
 const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
   const [formState, setFormState] = useState<Mode>(mode);
-  const createPractice = createPracticeActivity(team, onClose);
-  const editPractice = editPracticeActivity(team, onClose);
+  const createPractice = useCreatePracticeActivity(team.id, onClose);
+  const editPractice = useEditPracticeActivity(team.id, onClose);
   const router = useRouter();
   const isCoach = useIsCoach();
 
@@ -54,23 +56,24 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
   const onSubmit = async (data: PracticeData) => {
     const date = new Date(data.date);
 
-    const practiceeData = {
+    const practiceData = {
       ...data,
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
-      teamId: team,
+      teamId: team.id,
       type: "Practice" as const,
     };
 
     if (formState === "edit") {
-      await editPractice.mutateAsync(practiceeData);
-      void router.push(`/${team}/schedule`);
+      await editPractice.mutateAsync(practiceData);
+      void router.push(`/${team.name}/schedule`);
       setFormState("view");
     } else {
-      await createPractice.mutateAsync(practiceeData);
-      void router.push(`/${team}/schedule`);
+      await createPractice.mutateAsync(practiceData);
+      void router.push(`/${team.name}/schedule`);
     }
   };
+
   const shouldShowModal =
     formState === "create" ||
     (selectedActivity && (openGameDetails || openPracticeDetails));
@@ -232,9 +235,11 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
                   Edit Practice
                 </Button>
               )}
-              <Button type="button" onClick={onClose} variant="outline">
-                Cancel
-              </Button>
+              {isCoach && isCreateMode && (
+                <Button type="submit" variant="outline">
+                  Create Practice
+                </Button>
+              )}
             </div>
           </form>
         )}

@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/button/button";
 import useStore from "@/store/store";
+import type { TeamInformation } from "@/types";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import { AlertCircle, CalendarClock, Plus } from "lucide-react";
@@ -13,7 +14,7 @@ import { ActivityFilter } from "./activity-filter";
 
 type ActivityListProps = {
   activities: Activity[];
-  team: string;
+  team: TeamInformation;
 };
 
 export function ActivityList({ activities, team }: ActivityListProps) {
@@ -57,7 +58,7 @@ export function ActivityList({ activities, team }: ActivityListProps) {
       {filteredActivities.length > 0 ? (
         <div className="scrollbar-none mb-6 max-h-96 space-y-2 overflow-y-auto pr-2">
           {filteredActivities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
+            <ActivityCard key={activity.id} activity={activity} team={team} />
           ))}
         </div>
       ) : (
