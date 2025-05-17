@@ -38,8 +38,8 @@ export const getTeamMembers = cache(async (teamId: string) => {
   return members;
 });
 
-export const getTeamMember = cache(async () => {
-  const team = await api.team.getTeam();
+export const getTeamMember = cache(async (teamId: string) => {
+  const team = await api.team.getTeam({ teamId });
 
   const members = await api.team.getTeamMembers({ teamId: team.id });
 

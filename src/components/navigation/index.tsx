@@ -1,5 +1,6 @@
 "use client";
 
+import { useTeam } from "@/context/use-team";
 import {
   Calendar,
   Home,
@@ -20,24 +21,29 @@ export type NavItemType = {
 
 type NavigationProps = {
   children: React.ReactNode;
-  team: string;
 };
 
-const Navigation: FC<NavigationProps> = ({ children, team }) => {
+const Navigation: FC<NavigationProps> = ({ children }) => {
+  const { teamSlug } = useTeam();
   const [mobileNavOpen, setMobileNavOpen] = useState(false);
   const [navOpen, setNavOpen] = useState(true);
 
   const navItems = [
     {
       label: "Dashboard",
-      href: `/${team}/dashboard`,
+      href: `/${teamSlug}/dashboard`,
       icon: Home,
       active: true,
     },
-    { label: "Profile", href: `/${team}/profile`, icon: User, active: false },
+    {
+      label: "Players",
+      href: `/${teamSlug}/players`,
+      icon: User,
+      active: false,
+    },
     {
       label: "Schedule",
-      href: `/${team}/schedule`,
+      href: `/${teamSlug}/schedule`,
       icon: Calendar,
       active: false,
     },

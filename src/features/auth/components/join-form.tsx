@@ -1,5 +1,6 @@
 "use client";
 import { Button } from "@/components/button/button";
+import { Input } from "@/components/ui/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -12,7 +13,7 @@ const JoinTeamForm = () => {
   const {
     register,
     handleSubmit,
-    formState: { errors },
+    formState: {},
   } = useForm<JoinTeamFormData>({
     resolver: zodResolver(joinTeamSchema),
   });
@@ -38,25 +39,16 @@ const JoinTeamForm = () => {
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <div>
-        <label
-          htmlFor="teamCode"
-          className="mb-2 block text-sm font-semibold text-neutral-500"
-        >
-          Enter team code:
-        </label>
-        <input
+        <Input
+          label="Enter team code:"
+          aria-label="Enter team code:"
           type="text"
           id="teamCode"
+          variant="dark"
           {...register("teamCode")}
-          className="focus:shadow-outline w-full rounded border border-neutral-300 px-3 py-2 leading-tight text-black shadow focus:outline-none"
+          className="border-gray-700 bg-white text-black focus:ring-2 focus:ring-yellow-500 focus:outline-none"
         />
-        {errors.teamCode && (
-          <p className="text-xs text-red-500 italic">
-            {errors.teamCode.message}
-          </p>
-        )}
       </div>
-
       <div className="flex items-center justify-between">
         <Button type="submit" variant="secondary" disabled={isPending}>
           {isPending ? "Creating..." : "Request to Join"}

@@ -1,7 +1,7 @@
 import { getPendingRequests } from "@/api/team";
 
 async function ProfilePage() {
-  const { requests, isCoach } = await getPendingRequests();
+  const { requests } = await getPendingRequests();
 
   if (!requests) {
     return (
