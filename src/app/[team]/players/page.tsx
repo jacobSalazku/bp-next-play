@@ -1,12 +1,17 @@
-import { getTeamMember } from "@/api/user";
+import { getTeam } from "@/api/team";
+import { getTeamMembers } from "@/api/user";
 
-async function PlayerPage() {
-  const { members } = await getTeamMember();
+import { PlayerBlock } from "@/features/player-table";
 
-  if (!members) {
+async function PlayerPage({ params }: { params: Promise<{ slug: string }> }) {
+  const { slug } = await params;
+  const { team } = await getTeam(slug);
+  const members = await getTeamMembers(team.id);
+
+  if (!members || members.length === 0) {
     return (
       <main className="max flex min-h-screen flex-col items-center justify-center bg-black text-white">
-        <div className="flex h-screen max-h-[1024px] w-full max-w-7xl flex-row items-center justify-center border-2">
+        <div className="flex h-screen max-h-[1024px] w-full max-w-7xl flex-row items-center justify-center border">
           <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-white px-4">
             <div> No players found</div>
           </div>
@@ -14,11 +19,12 @@ async function PlayerPage() {
       </main>
     );
   }
+
+  // Map members to match the expected User type for PlayerBlock
+
   return (
-    <main className="max flex min-h-screen flex-col items-center justify-center text-white">
-      <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row items-center justify-center">
-        Players
-      </div>
+    <main className="max flex min-h-screen flex-col items-center text-white">
+      <PlayerBlock members={members} team={team} />
     </main>
   );
 }
