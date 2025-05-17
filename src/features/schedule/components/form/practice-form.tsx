@@ -4,6 +4,7 @@ import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
 import { useIsCoach } from "@/hooks/use-is-coach";
 
+import { useTeam } from "@/context/use-team";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
@@ -24,10 +25,11 @@ type PracticeProps = {
   onClose: () => void;
 };
 
-const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
+const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
+  const { teamSlug } = useTeam();
   const [formState, setFormState] = useState<Mode>(mode);
-  const createPractice = useCreatePracticeActivity(team.id, onClose);
-  const editPractice = useEditPracticeActivity(team.id, onClose);
+  const createPractice = useCreatePracticeActivity(teamSlug, onClose);
+  const editPractice = useEditPracticeActivity(teamSlug, onClose);
   const router = useRouter();
   const isCoach = useIsCoach();
 
@@ -60,17 +62,17 @@ const PracticeForm: FC<PracticeProps> = ({ team, mode, onClose }) => {
       ...data,
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
-      teamId: team.id,
+      teamId: teamSlug,
       type: "Practice" as const,
     };
 
     if (formState === "edit") {
       await editPractice.mutateAsync(practiceData);
-      void router.push(`/${team.name}/schedule`);
+      void router.push(`/${teamSlug}/schedule`);
       setFormState("view");
     } else {
       await createPractice.mutateAsync(practiceData);
-      void router.push(`/${team.name}/schedule`);
+      void router.push(`/${teamSlug}/schedule`);
     }
   };
 

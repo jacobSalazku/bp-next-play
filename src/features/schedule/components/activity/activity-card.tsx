@@ -2,6 +2,7 @@
 
 import { Button } from "@/components/button/button";
 import { Link } from "@/components/button/link";
+import { useTeam } from "@/context/use-team";
 import { useIsCoach } from "@/hooks/use-is-coach";
 
 import useStore from "@/store/store";
@@ -17,7 +18,8 @@ type ActivityCardProps = {
   team: TeamInformation;
 };
 
-export const ActivityCard: FC<ActivityCardProps> = ({ activity, team }) => {
+export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
+  const { teamSlug } = useTeam();
   const isCoach = useIsCoach();
   const { setOpenPracticeDetails, setOpenGameDetails, setSelectedActivity } =
     useStore();
@@ -35,7 +37,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, team }) => {
 
   const boxScoreSearchParams = new URLSearchParams();
   boxScoreSearchParams.set("activityId", activity.id);
-  boxScoreSearchParams.set("teamId", team.id);
 
   return (
     <>
@@ -63,8 +64,8 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, team }) => {
           {activity.type === "Game" && isCoach && (
             <Link
               href={{
-                pathname: `/${team.name.toLowerCase()}/box-score`,
-                query: { activityId: activity.id, teamId: team.id },
+                pathname: `/${teamSlug}/box-score`,
+                query: { activityId: activity.id },
               }}
               variant="outline"
               size="sm"

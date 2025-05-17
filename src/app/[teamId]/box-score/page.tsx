@@ -5,13 +5,14 @@ import type { SearchParams } from "nuqs/server";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
+  params: Promise<{ teamId: string }>;
 };
 
-async function PlayerPage({ searchParams }: PageProps) {
-  const { members } = await getTeamMember();
+async function PlayerPage({ params, searchParams }: PageProps) {
+  const { teamId } = await params;
+  const { members } = await getTeamMember(teamId);
 
-  const { activityId, teamId } =
-    await boxScoreSearchParamsCache.parse(searchParams);
+  const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
   console.log("activityId", activityId);
 
   if (!members) {

@@ -4,6 +4,7 @@ import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
 import { useIsCoach } from "@/hooks/use-is-coach";
 
+import { useTeam } from "@/context/use-team";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
@@ -25,10 +26,11 @@ type GameFormProps = {
   onClose: () => void;
 };
 
-const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
+const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
+  const { teamSlug } = useTeam();
   const [formState, setFormState] = useState<Mode>(mode);
-  const createGame = useCreateGameActivity(team.id, onClose);
-  const editGame = useEditGameActivity(team.id, onClose);
+  const createGame = useCreateGameActivity(teamSlug, onClose);
+  const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
   const isCoach = useIsCoach();
 
@@ -58,22 +60,23 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
+    console.log("Sibmit:");
 
     const gameData = {
       ...data,
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
-      teamId: team.id,
+      teamId: teamSlug,
       type: "Game" as const,
     };
 
     if (formState === "edit") {
       await editGame.mutateAsync(gameData);
-      router.push(`/${team.name}/schedule`);
+      router.push(`/${teamSlug}/schedule`);
       setFormState("view");
     } else {
       await createGame.mutateAsync(gameData);
-      router.push(`/${team.name}/schedule`);
+      router.push(`/${teamSlug}/schedule`);
     }
   };
   useEffect(() => {

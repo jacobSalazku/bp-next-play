@@ -75,7 +75,7 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
           </span>
         </div>
         <Link
-          href={`${team.name.toLowerCase()}/schedule`}
+          href={`${team.id.toLowerCase()}/schedule`}
           aria-label={`View ${team.name} details`}
           variant="outline"
         >

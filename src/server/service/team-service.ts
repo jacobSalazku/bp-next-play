@@ -140,22 +140,42 @@ export async function getTeams(ctx: Context) {
   return teams;
 }
 
-export async function getTeam(ctx: Context) {
-  const { user } = await getUserbyId(ctx);
-
+export async function getTeam(ctx: Context, teamId: string) {
   const team = await ctx.db.team.findFirst({
     where: {
-      members: {
-        some: {
-          userId: user.id,
-        },
-      },
+      id: teamId,
     },
     select: {
       id: true,
       name: true,
       code: true,
       image: true,
+      members: {
+        select: {
+          userId: true,
+          role: true,
+          status: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      },
+      activities: {
+        select: {
+          id: true,
+          title: true,
+          duration: true,
+          date: true,
+          time: true,
+          type: true,
+          practiceType: true,
+        },
+        orderBy: { date: "desc" },
+      },
     },
   });
 

@@ -3,9 +3,9 @@ import { getTeamMembers } from "@/api/user";
 
 import { PlayerBlock } from "@/features/player-table";
 
-async function PlayerPage({ params }: { params: Promise<{ slug: string }> }) {
-  const { slug } = await params;
-  const { team } = await getTeam(slug);
+async function PlayerPage({ params }: { params: Promise<{ teamId: string }> }) {
+  const { teamId } = await params;
+  const { team } = await getTeam(teamId);
   const members = await getTeamMembers(team.id);
 
   if (!members || members.length === 0) {
