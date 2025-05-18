@@ -1,4 +1,4 @@
-import { createTeamSchema, joinTeamSchema } from "@/features/auth/zod";
+import { createTeamSchema } from "@/features/auth/zod";
 import { requestToJoinTeam } from "@/server/service/team-request-service";
 import {
   createNewTeam,
@@ -19,9 +19,11 @@ export const teamRouter = createTRPCRouter({
       return newTeam;
     }),
 
-  getTeam: protectedProcedure.query(async ({ ctx }) => {
-    return await getTeam(ctx);
-  }),
+  getTeam: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await getTeam(ctx, input.teamId);
+    }),
 
   getTeams: protectedProcedure.query(async ({ ctx }) => {
     const teams = await getTeams(ctx);
@@ -30,9 +32,9 @@ export const teamRouter = createTRPCRouter({
   }),
 
   getTeamMembers: protectedProcedure
-    .input(z.object(joinTeamSchema.shape))
+    .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const members = await getActiveTeamMembers(ctx, input);
+      const members = await getActiveTeamMembers(ctx, input.teamId);
 
       return { members };
     }),

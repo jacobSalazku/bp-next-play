@@ -31,7 +31,7 @@ export async function createGame(ctx: Context, input: CreateGameInput) {
       updatedAt: new Date(),
     },
   });
-  return { success: true, activity };
+  return activity;
 }
 
 export async function editGame(ctx: Context, input: EditGameInput) {

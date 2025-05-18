@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
-import { useIsCoach } from "@/hooks/use-is-coach";
-
 import { useTeam } from "@/context/use-team";
+import { useIsCoach } from "@/hooks/use-is-coach";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
@@ -42,7 +41,12 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
-  const { register, handleSubmit, reset } = useForm<PracticeData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<PracticeData>({
     resolver: zodResolver(practiceSchema),
     defaultValues: {
       date: formattedDate,
@@ -171,13 +175,16 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
         {(isEditMode || isCreateMode) && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
             <Input
-              label="Title"
-              aria-label="Practice title input"
               id="title"
+              aria-label="Practice title input"
+              className="border-gray-700"
+              label="Title"
+              labelColor="light"
               type="text"
               placeholder="voorbereiding wedstrijd"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("title")}
+              error={errors.title}
+              errorMessage={errors.title?.message}
             />
             <div>
               <label className="mb-2 block text-sm font-semibold text-gray-100">
@@ -202,34 +209,42 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
             </div>
 
             <Input
-              label="Start Time"
-              aria-label="Practice start time input"
               id="time"
+              aria-label="Practice start time input"
+              className="border-gray-700"
+              label="Start Time"
+              labelColor="light"
               type="time"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("time")}
+              error={errors.time}
+              errorMessage={errors.time?.message}
             />
             <Input
-              label="Duration"
-              aria-label="Practice duration input"
               id="duration"
+              aria-label="Practice duration input"
+              className="border-gray-700"
+              label="Duration"
+              labelColor="light"
               type="number"
               step="0.5"
               min="0.5"
               placeholder="E.g. 2"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("duration", {
                 required: "Duration is required",
                 min: 0.5,
               })}
+              error={errors.duration}
+              errorMessage={errors.duration?.message}
             />
             <Input
-              label="Date"
-              aria-label="Practice date input"
               id="date"
+              aria-label="Practice date input"
+              className="border-gray-700"
+              label="Date"
               type="date"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("date")}
+              error={errors.date}
+              errorMessage={errors.date?.message}
             />
             <div className="flex justify-end gap-3 pt-4">
               {isCoach && isEditMode && (
