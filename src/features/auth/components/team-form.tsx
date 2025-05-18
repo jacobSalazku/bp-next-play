@@ -143,7 +143,7 @@ const CreateTeamForm = () => {
       </div>
 
       <div className="flex items-center justify-between">
-        <Button type="submit" disabled={isPending} variant="outline">
+        <Button type="submit" disabled={isPending}>
           {isPending ? "Creating..." : "Create Team"}
         </Button>
       </div>

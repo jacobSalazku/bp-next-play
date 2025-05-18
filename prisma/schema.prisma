@@ -17,13 +17,18 @@ datasource db {
 
 // User table
 model User {
-  id          String        @id @default(cuid())
-  name        String?
-  email       String?     @unique
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?     @unique
   emailVerified DateTime?
-  image       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  image         String?
+  DateOfBirth   DateTime?
+  phone         String?     @unique
+  height        Float?
+  weight        Float?
+  dominantHand  String?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @default(now())
   
   // Relationships
   accounts     Account[]
@@ -93,16 +98,17 @@ model Team {
 
 // TeamMember table
 model TeamMember {
-  id         String        @id @default(cuid())
+  id           String        @id @default(cuid())
+  userId       String
+  teamId       String
+  role         String
+  status       String
+  number       String?
+  position     String?
 
-  userId     String
-  teamId     String
-  role       String
-  status     String
-
-  user       User          @relation(fields: [userId], references: [id])
-  team       Team          @relation(fields: [teamId], references: [id])
-  statlines  Statline[]
+  user         User          @relation(fields: [userId], references: [id])
+  team         Team          @relation(fields: [teamId], references: [id])
+  statlines    Statline[]
 }
 
 // Activity table
