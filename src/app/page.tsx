@@ -1,11 +1,16 @@
 import { getTeamMembers, getUser } from "@/api/user";
 import Teamlist from "@/components/team-list";
 import { TeamMemberRole } from "@/types/enum";
+import { redirect } from "next/navigation";
 
 async function Dashboard() {
   const { user, teamMember } = await getUser();
 
   const members = teamMember ? await getTeamMembers(teamMember.team.id) : [];
+
+  if (user.hasOnBoarded === false) {
+    redirect("/create/onboarding");
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-950 text-white">

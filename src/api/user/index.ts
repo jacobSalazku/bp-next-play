@@ -8,14 +8,6 @@ export const getUser = cache(async () => {
   try {
     const { user, teamMember } = await api.user.getUser();
 
-    if (!user) redirect("/login");
-
-    const isFirstLogin = user.createdAt.getTime() === user.updatedAt.getTime();
-
-    if (!teamMember && isFirstLogin) {
-      redirect("/create");
-    }
-
     return { user, teamMember };
   } catch (error) {
     if (error instanceof TRPCError) {

@@ -29,9 +29,11 @@ export const userRouter = createTRPCRouter({
   }),
 
   updateUser: protectedProcedure
-    .input(updateUserSchema)
+    .input(updateUserSchema.extend({ hasOnBoarded: z.boolean() }))
     .mutation(async ({ ctx, input }) => {
-      return await updateUser(ctx, input);
+      const { user } = await updateUser(ctx, input);
+
+      return user;
     }),
 
   // getPendingRequests: protectedProcedure

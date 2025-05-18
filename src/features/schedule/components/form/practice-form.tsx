@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
-import { useIsCoach } from "@/hooks/use-is-coach";
-
 import { useTeam } from "@/context/use-team";
+import { useIsCoach } from "@/hooks/use-is-coach";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
