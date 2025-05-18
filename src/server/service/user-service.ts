@@ -2,6 +2,8 @@ import { TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
 
+import type { UpdateUserData } from "@/features/auth/zod";
+
 export async function getUserbyId(ctx: Context) {
   if (!ctx.session?.user) {
     throw new TRPCError({
@@ -112,4 +114,25 @@ export async function getTeamMember(ctx: Context) {
   }
 
   return teamMember;
+}
+
+export async function updateUser(ctx: Context, input: UpdateUserData) {
+  if (!ctx.session?.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User is not logged in",
+    });
+  }
+  const user = await ctx.db.user.update({
+    where: { id: ctx.session.user.id },
+    data: {
+      DateOfBirth: input.DateOfBirth,
+      phone: input.phone,
+      height: input.height,
+      weight: input.weight,
+      dominantHand: input.dominantHand,
+    },
+  });
+
+  return { user, success: true };
 }
