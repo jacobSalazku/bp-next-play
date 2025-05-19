@@ -1,5 +1,6 @@
 import { activityRouter } from "./routers/activity";
 import { drawRouter } from "./routers/draw";
+import { memberRouter } from "./routers/member";
 import { statsRouter } from "./routers/stats";
 import { teamRouter } from "./routers/team";
 import { userRouter } from "./routers/user";
@@ -16,6 +17,7 @@ export const appRouter = createTRPCRouter({
   user: userRouter,
   activity: activityRouter,
   stats: statsRouter,
+  member: memberRouter,
 });
 
 // export type definition of API

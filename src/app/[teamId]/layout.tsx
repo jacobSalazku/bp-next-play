@@ -1,6 +1,5 @@
 import { Navigation } from "@/components/navigation";
-import { TeamProvider } from "@/context/use-team";
-
+import { TeamProvider } from "@/context/team-context";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
 

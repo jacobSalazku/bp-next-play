@@ -2,9 +2,8 @@
 
 import { Button } from "@/components/button/button";
 import { Link } from "@/components/button/link";
-import { useTeam } from "@/context/use-team";
-import { useIsCoach } from "@/hooks/use-is-coach";
-
+import { useTeam } from "@/context/team-context";
+import { useRole } from "@/hooks/use-role";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getActivityStyle } from "@/utils";
@@ -20,7 +19,7 @@ type ActivityCardProps = {
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
   const { teamSlug } = useTeam();
-  const isCoach = useIsCoach();
+  const role = useRole();
   const { setOpenPracticeDetails, setOpenGameDetails, setSelectedActivity } =
     useStore();
 
@@ -61,7 +60,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
           </div>
         </div>
         <div>
-          {activity.type === "Game" && isCoach && (
+          {activity.type === "Game" && role && (
             <Link
               href={{
                 pathname: `/${teamSlug}/box-score`,
