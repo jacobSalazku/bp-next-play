@@ -2,21 +2,21 @@
 
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
-import { useTeam } from "@/context/use-team";
-import { useIsCoach } from "@/hooks/use-is-coach";
+import { useTeam } from "@/context/team-context";
+import { useRole } from "@/hooks/use-role";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { cn } from "@/utils/tw-merge";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
-import type { Mode } from "fs";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreatePracticeActivity } from "../../hooks/use-create-practice";
 import { useEditPracticeActivity } from "../../hooks/use-edit-activity";
 import { practiceSchema, PracticeType, type PracticeData } from "../../zod";
+import type { Mode } from "./game-form";
 
 type PracticeProps = {
   mode: Mode;
@@ -30,7 +30,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
   const createPractice = useCreatePracticeActivity(teamSlug, onClose);
   const editPractice = useEditPracticeActivity(teamSlug, onClose);
   const router = useRouter();
-  const isCoach = useIsCoach();
+  const role = useRole();
 
   const {
     selectedDate,
@@ -247,12 +247,12 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
               errorMessage={errors.date?.message}
             />
             <div className="flex justify-end gap-3 pt-4">
-              {isCoach && isEditMode && (
+              {role && isEditMode && (
                 <Button type="submit" variant="outline">
                   Edit Practice
                 </Button>
               )}
-              {isCoach && isCreateMode && (
+              {role && isCreateMode && (
                 <Button type="submit" variant="outline">
                   Create Practice
                 </Button>

@@ -3,6 +3,7 @@
 import { Button } from "@/components/button/button";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
+import { TeamMemberRole } from "@/types/enum";
 import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import { AlertCircle, CalendarClock, Plus } from "lucide-react";
@@ -15,9 +16,10 @@ import { ActivityFilter } from "./activity-filter";
 type ActivityListProps = {
   activities: Activity[];
   team: TeamInformation;
+  role: TeamMemberRole;
 };
 
-export function ActivityList({ activities, team }: ActivityListProps) {
+export function ActivityList({ activities, team, role }: ActivityListProps) {
   const {
     selectedDate,
     openGameModal,
@@ -106,25 +108,29 @@ export function ActivityList({ activities, team }: ActivityListProps) {
         />
       )}
       <div className="mt-4 flex w-full justify-center gap-4">
-        <Button
-          onClick={() => setOpenGameModal(true)}
-          type="button"
-          variant="outline"
-          className="w-1/2"
-        >
-          Create Game
-        </Button>
-        <Button
-          onClick={() => {
-            console.log("Create Practice button clicked");
-            setOpenPracticeModal(true);
-          }}
-          type="button"
-          variant="outline"
-          className="w-1/2"
-        >
-          Create Practice
-        </Button>
+        {role === TeamMemberRole.COACH && (
+          <>
+            <Button
+              onClick={() => setOpenGameModal(true)}
+              type="button"
+              variant="outline"
+              className="w-1/2"
+            >
+              Create Game
+            </Button>
+            <Button
+              onClick={() => {
+                console.log("Create Practice button clicked");
+                setOpenPracticeModal(true);
+              }}
+              type="button"
+              variant="outline"
+              className="w-1/2"
+            >
+              Create Practice
+            </Button>
+          </>
+        )}
       </div>
     </div>
   );

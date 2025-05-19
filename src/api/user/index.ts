@@ -1,5 +1,4 @@
 import { api } from "@/trpc/server";
-
 import { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -23,7 +22,7 @@ export const getUser = cache(async () => {
 });
 
 export const getTeamMembers = cache(async (teamId: string) => {
-  const members = await api.user.getTeamMembers({
+  const members = await api.member.getTeamMembers({
     teamId: teamId,
   });
 
@@ -33,7 +32,7 @@ export const getTeamMembers = cache(async (teamId: string) => {
 export const getTeamMember = cache(async (teamId: string) => {
   const team = await api.team.getTeam({ teamId });
 
-  const members = await api.team.getTeamMembers({ teamId: team.id });
+  const members = await api.member.getActiveTeamMembers({ teamId: team.id });
 
   return members;
 });

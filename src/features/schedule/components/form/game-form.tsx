@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
-import { useTeam } from "@/context/use-team";
-import { useIsCoach } from "@/hooks/use-is-coach";
+import { useTeam } from "@/context/team-context";
+
+import { useRole } from "@/hooks/use-role";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
@@ -31,7 +32,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
   const createGame = useCreateGameActivity(teamSlug, onClose);
   const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
-  const isCoach = useIsCoach();
+  const role = useRole();
 
   const { selectedDate, selectedActivity, openGameModal } = useStore();
 
@@ -165,7 +166,11 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
               errorMessage={errors.date?.message}
             />
             <div className="flex justify-end border-t border-gray-800 pt-4">
-              {isCoach && <Button variant="outline">{buttonText()}</Button>}
+              {role && (
+                <Button type="submit" variant="outline">
+                  {buttonText()}
+                </Button>
+              )}
             </div>
           </form>
         )}
