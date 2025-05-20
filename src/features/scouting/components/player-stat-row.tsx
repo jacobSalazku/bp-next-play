@@ -4,7 +4,7 @@ import type { TeamMember } from "@/types";
 import { Controller, type Control } from "react-hook-form";
 import { calculateStats } from "../utils/update-stat";
 import type { StatlineData } from "../zod/player-stats";
-import type { PlayersData } from "../zod/types";
+import type { PlayersData } from "./multi-stats-tracker";
 
 type PlayerStatsRowProps = {
   player: TeamMember;

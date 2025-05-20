@@ -8,35 +8,33 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-
+import type { TeamMembers } from "@/types";
 import { useEffect, useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
-
 import { statRows } from "../utils/const";
-import { PlayerStatsRow } from "./player-stat-row";
-
 import type { StatlineData } from "../zod/player-stats";
-import { defaultStatline, type PlayersData } from "../zod/types";
+import { defaultStatline } from "../zod/types";
+import { PlayerStatsRow } from "./player-stat-row";
 import { TeamStatsRow } from "./team-stats-row";
+
+export type PlayersData = {
+  players: TeamMembers;
+  activityId: string;
+};
 
 const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
+  const createStatline = useCreateNewStatline();
 
-  const inititalPLayers = players.map((player) => ({
-    ...player,
-    id: player.id,
-    statlines: player.statlines,
+  const initialPlayers = players.map((p) => ({
+    ...p,
+    statlines: p.statlines,
   }));
 
   const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
-    defaultValues: {
-      players: inititalPLayers,
-      activityId,
-    },
+    defaultValues: { players: initialPlayers, activityId },
   });
-
-  const createStatline = useCreateNewStatline();
 
   const stats = useWatch<PlayersData>({ control });
 
@@ -85,9 +83,10 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
       for (const key of Object.keys(
         defaultStatline,
       ) as (keyof StatlineData)[]) {
-        // Skip non-numeric fields like 'id'
-        if (key === "id") continue;
-        acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
+        // Only sum numeric fields, skip 'id'
+        if (key !== "id") {
+          acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
+        }
       }
       return acc;
     },
@@ -129,46 +128,35 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   const onSubmit = async (data: PlayersData) => {
     const updatedPlayers = data.players.map((player, i) => {
-      const previousStats = players[i]?.statlines?.[0] ?? defaultStatline;
-      const currentStats = player.statlines?.[0] ?? defaultStatline;
+      const prev = players[i]?.statlines?.[0] ?? defaultStatline;
+      const curr = player.statlines?.[0] ?? defaultStatline;
 
-      // Calculate difference for each stat (current - previous)
-      const diffStatline = {
-        id: currentStats.id || "", // keep current statline id if available
-        activityId: activityId,
-        fieldGoalsMade:
-          (currentStats.fieldGoalsMade ?? 0) -
-          (previousStats.fieldGoalsMade ?? 0),
+      const diff: StatlineData = {
+        id: "",
+        fieldGoalsMade: (curr.fieldGoalsMade ?? 0) - (prev.fieldGoalsMade ?? 0),
         fieldGoalsMissed:
-          (currentStats.fieldGoalsMissed ?? 0) -
-          (previousStats.fieldGoalsMissed ?? 0),
+          (curr.fieldGoalsMissed ?? 0) - (prev.fieldGoalsMissed ?? 0),
         threePointersMade:
-          (currentStats.threePointersMade ?? 0) -
-          (previousStats.threePointersMade ?? 0),
+          (curr.threePointersMade ?? 0) - (prev.threePointersMade ?? 0),
         threePointersMissed:
-          (currentStats.threePointersMissed ?? 0) -
-          (previousStats.threePointersMissed ?? 0),
-        freeThrows:
-          (currentStats.freeThrows ?? 0) - (previousStats.freeThrows ?? 0),
+          (curr.threePointersMissed ?? 0) - (prev.threePointersMissed ?? 0),
+        freeThrows: (curr.freeThrows ?? 0) - (prev.freeThrows ?? 0),
         missedFreeThrows:
-          (currentStats.missedFreeThrows ?? 0) -
-          (previousStats.missedFreeThrows ?? 0),
-        assists: (currentStats.assists ?? 0) - (previousStats.assists ?? 0),
-        steals: (currentStats.steals ?? 0) - (previousStats.steals ?? 0),
-        turnovers:
-          (currentStats.turnovers ?? 0) - (previousStats.turnovers ?? 0),
-        rebounds: (currentStats.rebounds ?? 0) - (previousStats.rebounds ?? 0),
-        blocks: (currentStats.blocks ?? 0) - (previousStats.blocks ?? 0),
+          (curr.missedFreeThrows ?? 0) - (prev.missedFreeThrows ?? 0),
+        assists: (curr.assists ?? 0) - (prev.assists ?? 0),
+        steals: (curr.steals ?? 0) - (prev.steals ?? 0),
+        turnovers: (curr.turnovers ?? 0) - (prev.turnovers ?? 0),
+        rebounds: (curr.rebounds ?? 0) - (prev.rebounds ?? 0),
+        blocks: (curr.blocks ?? 0) - (prev.blocks ?? 0),
       };
 
       return {
         id: player.id,
         activityId,
-        statlines: [diffStatline],
+        statlines: [diff],
       };
     });
 
-    // After submit, update your local players to reflect new state, e.g. refetch or:
     await createStatline.mutateAsync({ players: updatedPlayers });
     reset(data);
   };

@@ -1,0 +1,79 @@
+import type { playersDataSchema } from "@/features/scouting/zod/player-stats";
+import { TRPCError } from "@trpc/server";
+import type { z } from "zod";
+import type { Context } from "../api/trpc";
+
+type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
+
+export async function submitStatlines(
+  ctx: Context,
+  input: InputSubmitStatlines,
+) {
+  const { players } = input;
+
+  const statlinesToUpsert = await Promise.all(
+    players.flatMap(async (player) => {
+      const teamMember = await ctx.db.teamMember.findFirst({
+        where: { userId: player.id },
+        select: { id: true },
+      });
+
+      if (!teamMember) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: `Team member not found for player ID: ${player.id}`,
+        });
+      }
+
+      return player.statlines.map((statline) => ({
+        activityId: player.activityId,
+        teamMemberId: teamMember.id,
+        fieldGoalsMade: statline.fieldGoalsMade ?? 0,
+        fieldGoalsMissed: statline.fieldGoalsMissed ?? 0,
+        threePointersMade: statline.threePointersMade ?? 0,
+        threePointersMissed: statline.threePointersMissed ?? 0,
+        freeThrows: statline.freeThrows ?? 0,
+        missedFreeThrows: statline.missedFreeThrows ?? 0,
+        assists: statline.assists ?? 0,
+        rebounds: statline.rebounds ?? 0,
+        steals: statline.steals ?? 0,
+        blocks: statline.blocks ?? 0,
+        turnovers: statline.turnovers ?? 0,
+      }));
+    }),
+  ).then((results) => results.flat());
+
+  try {
+    await Promise.all(
+      statlinesToUpsert.map((statline) =>
+        ctx.db.statline.upsert({
+          where: {
+            teamMemberId_activityId: {
+              teamMemberId: statline.teamMemberId,
+              activityId: statline.activityId,
+            },
+          },
+          update: {
+            ...statline,
+
+            createdAt: undefined,
+            updatedAt: new Date(),
+          },
+          create: {
+            ...statline,
+            createdAt: new Date(),
+            updatedAt: new Date(),
+          },
+        }),
+      ),
+    );
+
+    return { success: true, count: statlinesToUpsert.length };
+  } catch (error) {
+    console.error("Error upserting statlines:", error);
+    throw new TRPCError({
+      code: "INTERNAL_SERVER_ERROR",
+      message: "Failed to save statlines",
+    });
+  }
+}
