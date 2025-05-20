@@ -5,10 +5,10 @@ import { Link } from "@/components/button/link";
 import { useTeam } from "@/context/team-context";
 import { useRole } from "@/hooks/use-role";
 import useStore from "@/store/store";
-import type { TeamInformation } from "@/types";
+import type { Activity, TeamInformation } from "@/types";
 import { getActivityStyle } from "@/utils";
 import { cn } from "@/utils/tw-merge";
-import type { Activity } from "@prisma/client";
+
 import { Clock } from "lucide-react";
 import { type FC } from "react";
 
@@ -19,9 +19,16 @@ type ActivityCardProps = {
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
   const { teamSlug } = useTeam();
-  const role = useRole();
-  const { setOpenPracticeDetails, setOpenGameDetails, setSelectedActivity } =
-    useStore();
+  const { role } = useRole();
+
+  const {
+    selectedActivity,
+    setOpenPracticeDetails,
+    setOpenGameDetails,
+    setSelectedActivity,
+    setOpenGameAttendance,
+    setOpenPracticeAttendance,
+  } = useStore();
 
   const { bgColor, textColor, Icon } = getActivityStyle(activity.type);
 
@@ -34,9 +41,19 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
     }
   };
 
+  const handleAttendance = () => {
+    setSelectedActivity(activity);
+    if (activity.type === "Game") {
+      setOpenGameAttendance(true);
+    } else {
+      setOpenPracticeAttendance(true);
+    }
+  };
+
   const boxScoreSearchParams = new URLSearchParams();
   boxScoreSearchParams.set("activityId", activity.id);
 
+  if (!role) return null;
   return (
     <>
       <div className="group flex flex-col rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center">
@@ -60,18 +77,28 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
           </div>
         </div>
         <div>
-          {activity.type === "Game" && role && (
+          {activity.type === "Game" && role === "COACH" && (
             <Link
               href={{
                 pathname: `/${teamSlug}/box-score`,
                 query: { activityId: activity.id },
               }}
-              variant="outline"
               size="sm"
-              className="mt-3 sm:mt-0 sm:ml-2"
+              variant="default"
+              className="py-2"
             >
               Create Box Score
             </Link>
+          )}
+          {role === "PLAYER" && (
+            <Button
+              onClick={handleAttendance}
+              size="sm"
+              variant="default"
+              className="py-2"
+            >
+              Attendance
+            </Button>
           )}
           <Button
             onClick={handleViewDetails}

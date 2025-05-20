@@ -115,6 +115,23 @@ export const activityRouter = createTRPCRouter({
       const activities = await ctx.db.activity.findMany({
         where: { teamId: input.teamId },
         orderBy: { date: "asc" },
+        select: {
+          id: true,
+          title: true,
+          date: true,
+          time: true,
+          duration: true,
+          type: true,
+          practiceType: true,
+          createdAt: true,
+          updatedAt: true,
+          attendees: {
+            select: {
+              teamMemberId: true,
+              attendanceStatus: true,
+            },
+          },
+        },
       });
 
       return activities;

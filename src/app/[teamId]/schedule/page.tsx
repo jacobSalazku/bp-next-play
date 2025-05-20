@@ -9,7 +9,7 @@ export default async function SchedulePage({
   params: Promise<{ teamId: string }>;
 }) {
   const { teamId } = await params;
-  console.log("SchedulePage slug", teamId);
+
   const { team, activities } = await getTeamActivities(teamId);
 
   if (!team) {
