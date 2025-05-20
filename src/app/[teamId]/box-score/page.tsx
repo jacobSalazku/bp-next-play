@@ -1,4 +1,4 @@
-import { getTeamMember } from "@/api/user";
+import { getActiveTeamMember } from "@/api/user";
 import { PlayerBoxScore } from "@/features/scouting/components/multi-stats-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
 import type { SearchParams } from "nuqs/server";
@@ -10,14 +10,16 @@ type PageProps = {
 
 async function PlayerPage({ params, searchParams }: PageProps) {
   const { teamId } = await params;
-  const { members } = await getTeamMember(teamId);
-
   const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
-  console.log("activityId", activityId);
+  const members = await getActiveTeamMember(teamId);
+
+  const players = members.map((member) => ({
+    ...member,
+  }));
 
   if (!members) {
     return (
-      <main className="max flex min-h-screen flex-col items-center justify-center bg-black text-white">
+      <main className="max scrollbar-none flex min-h-screen flex-col items-center justify-center bg-black text-white">
         <div className="flex h-screen max-h-[1024px] w-full max-w-7xl flex-row items-center justify-center border-2">
           <div className="flex h-full w-full flex-col items-center justify-center gap-4 bg-white px-4">
             <div> No players found</div>
@@ -26,14 +28,11 @@ async function PlayerPage({ params, searchParams }: PageProps) {
       </main>
     );
   }
+
   return (
     <main className="max flex min-h-screen flex-col items-center justify-center text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row items-center justify-center">
-        <PlayerBoxScore
-          activityId={activityId}
-          teamId={teamId}
-          players={members}
-        />
+        <PlayerBoxScore activityId={activityId} players={players} />
       </div>
     </main>
   );
