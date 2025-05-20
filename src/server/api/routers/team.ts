@@ -1,16 +1,29 @@
-import { createTeamSchema, joinTeamSchema } from "@/features/auth/zod";
+import { createTeamSchema } from "@/features/auth/zod";
 import { requestToJoinTeam } from "@/server/service/team-request-service";
 import {
   createNewTeam,
-  getActiveTeamMembers,
   getTeam,
   getTeams,
 } from "@/server/service/team-service";
+import { getTeamRole } from "@/server/service/user-role-service";
 import { TRPCError } from "@trpc/server";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const teamRouter = createTRPCRouter({
+  getTeamRole: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
+      if (!role) {
+        throw new TRPCError({
+          code: "NOT_FOUND",
+          message: "Role not found",
+        });
+      }
+      return role;
+    }),
+
   createTeam: protectedProcedure
     .input(z.object(createTeamSchema.shape))
     .mutation(async ({ ctx, input }) => {
@@ -19,23 +32,17 @@ export const teamRouter = createTRPCRouter({
       return newTeam;
     }),
 
-  getTeam: protectedProcedure.query(async ({ ctx }) => {
-    return await getTeam(ctx);
-  }),
+  getTeam: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      return await getTeam(ctx, input.teamId);
+    }),
 
   getTeams: protectedProcedure.query(async ({ ctx }) => {
     const teams = await getTeams(ctx);
 
     return teams;
   }),
-
-  getTeamMembers: protectedProcedure
-    .input(z.object(joinTeamSchema.shape))
-    .query(async ({ ctx, input }) => {
-      const members = await getActiveTeamMembers(ctx, input);
-
-      return { members };
-    }),
 
   requestToJoin: protectedProcedure
     .input(z.object({ teamCode: z.string() }))

@@ -1,6 +1,11 @@
+import type { UpdateUserData } from "@/features/auth/zod";
 import { TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
+
+type User = UpdateUserData & {
+  hasOnBoarded: boolean;
+};
 
 export async function getUserbyId(ctx: Context) {
   if (!ctx.session?.user) {
@@ -18,6 +23,7 @@ export async function getUserbyId(ctx: Context) {
       image: true,
       createdAt: true,
       updatedAt: true,
+      hasOnBoarded: true,
     },
   });
 
@@ -112,4 +118,25 @@ export async function getTeamMember(ctx: Context) {
   }
 
   return teamMember;
+}
+
+export async function updateUser(ctx: Context, input: User) {
+  if (!ctx.session?.user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User is not logged in",
+    });
+  }
+  const user = await ctx.db.user.update({
+    where: { id: ctx.session.user.id },
+    data: {
+      dateOfBirth: input.dateOfBirth ?? undefined,
+      phone: input.phone ?? undefined,
+      height: input.height ?? undefined,
+      weight: input.height ?? undefined,
+      dominantHand: input.dominantHand ?? undefined,
+      hasOnBoarded: input.hasOnBoarded,
+    },
+  });
+  return { user, success: true };
 }

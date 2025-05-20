@@ -1,7 +1,19 @@
 import { getTeamMember } from "@/api/user";
+import { PlayerBoxScore } from "@/features/scouting/components/multi-stats-tracker";
+import { boxScoreSearchParamsCache } from "@/utils/search-params";
+import type { SearchParams } from "nuqs/server";
 
-async function PlayerPage() {
-  const { members } = await getTeamMember();
+type PageProps = {
+  searchParams: Promise<SearchParams>;
+  params: Promise<{ teamId: string }>;
+};
+
+async function PlayerPage({ params, searchParams }: PageProps) {
+  const { teamId } = await params;
+  const { members } = await getTeamMember(teamId);
+
+  const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
+  console.log("activityId", activityId);
 
   if (!members) {
     return (
@@ -17,7 +29,11 @@ async function PlayerPage() {
   return (
     <main className="max flex min-h-screen flex-col items-center justify-center text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row items-center justify-center">
-        Players
+        <PlayerBoxScore
+          activityId={activityId}
+          teamId={teamId}
+          players={members}
+        />
       </div>
     </main>
   );

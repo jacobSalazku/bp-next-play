@@ -1,8 +1,5 @@
-import {
-  getAllMembers,
-  getTeamMember,
-  getUserbyId,
-} from "@/server/service/user-service";
+import { updateUserSchema } from "@/features/auth/zod";
+import { getUserbyId, updateUser } from "@/server/service/user-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -13,18 +10,14 @@ export const userRouter = createTRPCRouter({
     return { user, teamMember };
   }),
 
-  getTeamMembers: protectedProcedure
-    .input(z.object({ teamId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const team = await getAllMembers(ctx, input.teamId);
+  updateUser: protectedProcedure
+    .input(updateUserSchema.extend({ hasOnBoarded: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { user } = await updateUser(ctx, input);
 
-      return team.members;
+      return user;
     }),
 
-  getTeamMember: protectedProcedure.query(async ({ ctx }) => {
-    const teamMember = await getTeamMember(ctx);
-    return teamMember;
-  }),
   // getPendingRequests: protectedProcedure
   //   .input(z.object({ teamId: z.string() }))
   //   .query(async ({ ctx, input }) => {

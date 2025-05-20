@@ -1,4 +1,5 @@
 import { cn } from "@/utils/tw-merge";
+import { cva } from "class-variance-authority";
 import { forwardRef } from "react";
 import { type FieldError, type UseFormRegisterReturn } from "react-hook-form";
 
@@ -8,7 +9,32 @@ type InputProps = React.InputHTMLAttributes<HTMLInputElement> & {
   error?: FieldError;
   errorMessage?: string;
   register?: UseFormRegisterReturn;
+  labelColor?: "default" | "light" | "danger";
+  variant?: "default" | "error" | "dark";
 };
+
+const labelColorMap = {
+  default: "text-gray-900",
+  light: "text-white",
+  danger: "text-red-500",
+};
+
+const inputVariants = cva(
+  "w-full rounded-md border px-3 py-2 text-sm focus:outline-none focus:ring-2 transition-colors disabled:cursor-not-allowed disabled:opacity-50",
+  {
+    variants: {
+      variant: {
+        default: "border-gray-300 focus:ring-yellow-500 bg-gray-800",
+        error:
+          "border-red-500 text-red-900 placeholder-red-300 focus:ring-red-500 dark:border-red-500 dark:text-red-200",
+        dark: "bg-gray-800 text-white border-gray-700 focus:ring-yellow-500 placeholder-gray-400",
+      },
+    },
+    defaultVariants: {
+      variant: "default",
+    },
+  },
+);
 
 const Input = forwardRef<HTMLInputElement, InputProps>(
   (
@@ -19,7 +45,8 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       errorMessage,
       register,
       className,
-      type = "text",
+      labelColor,
+      variant = "default",
       ...props
     },
     ref,
@@ -28,26 +55,30 @@ const Input = forwardRef<HTMLInputElement, InputProps>(
       <div className="space-y-2">
         <label
           htmlFor={id}
-          className="block text-sm font-medium text-white dark:text-gray-200"
+          className={cn(
+            labelColorMap[labelColor ?? "default"],
+            "block text-sm font-medium",
+          )}
         >
           {label}
         </label>
         <input
           id={id}
-          type={type}
           className={cn(
-            "w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none",
-            "focus-visible:ring-ring focus-visible:ring-2 focus-visible:ring-offset-2 focus-visible:outline-none",
-            "disabled:cursor-not-allowed disabled:opacity-50",
-            error && "border-red-500 focus-visible:ring-red-500",
+            inputVariants({ variant: error ? "error" : variant }),
             className,
           )}
-          ref={ref}
-          {...register}
+          {...(register ?? {})}
           {...props}
+          ref={ref}
         />
         {error && errorMessage && (
-          <p className="text-sm text-red-500">{errorMessage}</p>
+          <p
+            aria-errormessage={`${errorMessage}`}
+            className="text-sm text-red-500"
+          >
+            {errorMessage}
+          </p>
         )}
       </div>
     );

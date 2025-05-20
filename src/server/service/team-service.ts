@@ -1,4 +1,4 @@
-import type { CreateTeamData, JoinTeamFormData } from "@/features/auth/zod";
+import type { CreateTeamData } from "@/features/auth/zod";
 import { TeamMemberRole, TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
@@ -30,12 +30,9 @@ export async function createNewTeam(ctx: Context, input: CreateTeamData) {
   return team;
 }
 
-export async function getActiveTeamMembers(
-  ctx: Context,
-  input: JoinTeamFormData,
-) {
+export async function getActiveTeamMembers(ctx: Context, teamId: string) {
   const team = await ctx.db.team.findUnique({
-    where: { id: input.teamCode },
+    where: { id: teamId },
     include: {
       members: {
         where: { status: "ACTIVE", role: "PLAYER" },
@@ -143,22 +140,42 @@ export async function getTeams(ctx: Context) {
   return teams;
 }
 
-export async function getTeam(ctx: Context) {
-  const { user } = await getUserbyId(ctx);
-
+export async function getTeam(ctx: Context, teamId: string) {
   const team = await ctx.db.team.findFirst({
     where: {
-      members: {
-        some: {
-          userId: user.id,
-        },
-      },
+      id: teamId,
     },
     select: {
       id: true,
       name: true,
       code: true,
       image: true,
+      members: {
+        select: {
+          userId: true,
+          role: true,
+          status: true,
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+            },
+          },
+        },
+      },
+      activities: {
+        select: {
+          id: true,
+          title: true,
+          duration: true,
+          date: true,
+          time: true,
+          type: true,
+          practiceType: true,
+        },
+        orderBy: { date: "desc" },
+      },
     },
   });
 

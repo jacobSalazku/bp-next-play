@@ -13,23 +13,23 @@ export const getTeams = cache(async () => {
   return { teams };
 });
 
-export const getTeam = cache(async () => {
-  const team = await api.team.getTeam();
+export const getTeam = cache(async (teamId: string) => {
+  const team = await api.team.getTeam({ teamId });
   return { team };
 });
 
-export const getTeamActivities = cache(async () => {
-  const { user, teamMember } = await api.user.getUser();
+export const getTeamActivities = cache(async (teamId: string) => {
+  const { team } = await getTeam(teamId);
+
+  const { user } = await api.user.getUser();
 
   if (!user) {
     redirect("/login");
   }
 
-  const { team } = await getTeam();
-
   const isFirstLogin = user.createdAt === user.updatedAt;
 
-  if (!teamMember && isFirstLogin) {
+  if (!user && isFirstLogin) {
     redirect("/create");
   }
 

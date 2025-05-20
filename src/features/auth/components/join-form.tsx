@@ -1,10 +1,13 @@
 "use client";
 import { Button } from "@/components/button/button";
+import { Input } from "@/components/ui/input";
+import { RadioGroup, RadioGroupItem } from "@/components/ui/radio";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { useForm } from "react-hook-form";
+import { Controller, useForm } from "react-hook-form";
+import { positionOptions } from "../utils/constants";
 import { type JoinTeamFormData, joinTeamSchema } from "../zod";
 
 const JoinTeamForm = () => {
@@ -12,6 +15,7 @@ const JoinTeamForm = () => {
   const {
     register,
     handleSubmit,
+    control,
     formState: { errors },
   } = useForm<JoinTeamFormData>({
     resolver: zodResolver(joinTeamSchema),
@@ -23,13 +27,11 @@ const JoinTeamForm = () => {
     startTransition(() => {
       joinTeam.mutate(data, {
         onSuccess: () => {
-          // Handle success (e.g., reset form, show success message)
           console.log("request to join team successfully!");
           joinTeam.reset();
           router.push("/");
         },
         onError: (error) => {
-          // Handle error (e.g., display error message)
           console.error("Error creating team:", error);
         },
       });
@@ -37,29 +39,54 @@ const JoinTeamForm = () => {
   };
   return (
     <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
-      <div>
-        <label
-          htmlFor="teamCode"
-          className="mb-2 block text-sm font-semibold text-neutral-500"
-        >
-          Enter team code:
-        </label>
-        <input
-          type="text"
-          id="teamCode"
-          {...register("teamCode")}
-          className="focus:shadow-outline w-full rounded border border-neutral-300 px-3 py-2 leading-tight text-black shadow focus:outline-none"
-        />
-        {errors.teamCode && (
-          <p className="text-xs text-red-500 italic">
-            {errors.teamCode.message}
-          </p>
+      <Input
+        id="teamCode"
+        aria-label="Enter team code:"
+        label="Enter team code:"
+        type="text"
+        {...register("teamCode")}
+        error={errors.teamCode}
+        errorMessage={errors.teamCode?.message}
+      />
+      <Controller
+        name="position"
+        control={control}
+        render={({ field }) => (
+          <RadioGroup
+            onValueChange={field.onChange}
+            value={field.value}
+            className="flex flex-row gap-4"
+          >
+            {positionOptions.map((option) => (
+              <div key={option.value} className="flex items-center gap-2">
+                <RadioGroupItem
+                  value={option.value}
+                  id={`position-${option.value}`}
+                />
+                <label
+                  htmlFor={`position-${option.value}`}
+                  className="text-sm text-gray-800 dark:text-white"
+                >
+                  {option.value}
+                </label>
+              </div>
+            ))}
+          </RadioGroup>
         )}
-      </div>
-
-      <div className="flex items-center justify-between">
-        <Button type="submit" variant="secondary" disabled={isPending}>
-          {isPending ? "Creating..." : "Request to Join"}
+      />
+      <Input
+        id="teamCode"
+        aria-label="Enter Jersey Number:"
+        label="Jersey Number"
+        type="text"
+        variant="dark"
+        {...register("number")}
+        error={errors.number}
+        errorMessage={errors.number?.message}
+      />
+      <div className="space-2 flex items-center justify-between pt-2">
+        <Button type="submit" disabled={isPending}>
+          {isPending ? "Joining..." : "Request to Join"}
         </Button>
       </div>
     </form>

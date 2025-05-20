@@ -1,8 +1,7 @@
 import { getPendingRequests } from "@/api/team";
-import TeamRequests from "@/components/team-request";
 
 async function ProfilePage() {
-  const { requests, isCoach } = await getPendingRequests();
+  const { requests } = await getPendingRequests();
 
   if (!requests) {
     return (
@@ -17,7 +16,7 @@ async function ProfilePage() {
   }
   return (
     <main className="max flex min-h-screen flex-col items-center justify-center bg-black text-white">
-      <TeamRequests request={requests} />
+      {/* <TeamRequests request={requests} /> */}
     </main>
   );
 }

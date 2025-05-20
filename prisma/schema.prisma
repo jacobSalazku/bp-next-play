@@ -17,42 +17,47 @@ datasource db {
 
 // User table
 model User {
-  id          String        @id @default(cuid())
-  name        String?
-  email       String?     @unique
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?         @unique
   emailVerified DateTime?
-  image       String?
-  createdAt   DateTime    @default(now())
-  updatedAt   DateTime    @default(now())
+  image         String?
+  dateOfBirth   DateTime?
+  phone         String?       @unique
+  height        Float?
+  weight        Float?
+  dominantHand  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+  hasOnBoarded  Boolean       @default(false)
   
   // Relationships
-  accounts     Account[]
-  sessions     Session[]
-  teams        Team[]      @relation("TeamCreator")
-  teamMembers  TeamMember[]
+  accounts      Account[]
+  sessions      Session[]
+  teams         Team[]        @relation("TeamCreator")
+  teamMembers   TeamMember[]
   attendances  ActivityAttendance[]
 }
 
 // Account table
 model Account {
-  id                      String     @id @default(cuid())
-  userId                  String
-  type                    String
-  provider                String
-  providerAccountId       String
-  refresh_token           String?
-  access_token            String?
-  expires_at              Int?
-  token_type              String?
-  scope                   String?
-  id_token                String?
-  session_state           String?
-  refresh_token_expires_in Int?
+  id                        String     @id @default(cuid())
+  userId                    String
+  type                      String
+  provider                  String
+  providerAccountId         String
+  refresh_token             String?
+  access_token              String?
+  expires_at                Int?
+  token_type                String?
+  scope                     String?
+  id_token                  String?
+  session_state             String?
+  refresh_token_expires_in  Int?
+  image                     String?
 
-  image                    String?
-  
   // Relationships
-  user      User          @relation(fields: [userId], references: [id])
+  user      User            @relation(fields: [userId], references: [id])
 
   @@unique([provider, providerAccountId]) // <--- Add this line
   @@index([userId])
@@ -66,7 +71,7 @@ model Session {
   expires       DateTime
   
   // Relationships
-  user      User          @relation(fields: [userId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
@@ -86,23 +91,24 @@ model Team {
   createdAt  DateTime
   
   // Relationships
-  creator   User          @relation("TeamCreator", fields: [creatorId], references: [id])
-  members   TeamMember[]
+  creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
+  members    TeamMember[]
   activities Activity[]
 }
 
 // TeamMember table
 model TeamMember {
-  id         String        @id @default(cuid())
+  id           String        @id @default(cuid())
+  userId       String
+  teamId       String
+  role         String
+  status       String
+  number       String?
+  position     String?
 
-  userId     String
-  teamId     String
-  role       String
-  status     String
-
-  user       User          @relation(fields: [userId], references: [id])
-  team       Team          @relation(fields: [teamId], references: [id])
-  statlines  Statline[]
+  user         User          @relation(fields: [userId], references: [id])
+  team         Team          @relation(fields: [teamId], references: [id])
+  statlines    Statline[]
 }
 
 // Activity table

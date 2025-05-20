@@ -1,13 +1,16 @@
 import { getTeamMembers, getUser } from "@/api/user";
-import SignOut from "@/components/sign-out";
 import Teamlist from "@/components/team-list";
-
 import { TeamMemberRole } from "@/types/enum";
+import { redirect } from "next/navigation";
 
 async function Dashboard() {
   const { user, teamMember } = await getUser();
 
   const members = teamMember ? await getTeamMembers(teamMember.team.id) : [];
+
+  if (user.hasOnBoarded === false) {
+    redirect("/create/onboarding");
+  }
 
   return (
     <main className="flex min-h-screen flex-col items-center justify-center bg-gray-950 text-white">
@@ -21,9 +24,6 @@ async function Dashboard() {
                 {user.email} - Role: {teamMember?.role}
               </p>
             </div>
-            <nav className="flex w-1/3 items-center space-x-4">
-              <SignOut />
-            </nav>
           </header>
           <section className="mb-8">
             <h2 className="mb-4 text-2xl font-semibold text-white">

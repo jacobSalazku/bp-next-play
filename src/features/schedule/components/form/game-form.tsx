@@ -2,8 +2,9 @@
 
 import { Button } from "@/components/button/button";
 import { Input } from "@/components/ui/input";
-import { useIsCoach } from "@/hooks/use-is-coach";
+import { useTeam } from "@/context/team-context";
 
+import { useRole } from "@/hooks/use-role";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
@@ -25,18 +26,24 @@ type GameFormProps = {
   onClose: () => void;
 };
 
-const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
+const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
+  const { teamSlug } = useTeam();
   const [formState, setFormState] = useState<Mode>(mode);
-  const createGame = useCreateGameActivity(team.id, onClose);
-  const editGame = useEditGameActivity(team.id, onClose);
+  const createGame = useCreateGameActivity(teamSlug, onClose);
+  const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
-  const isCoach = useIsCoach();
+  const role = useRole();
 
   const { selectedDate, selectedActivity, openGameModal } = useStore();
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
-  const { register, handleSubmit, reset } = useForm<GameData>({
+  const {
+    register,
+    handleSubmit,
+    reset,
+    formState: { errors },
+  } = useForm<GameData>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
       date: formattedDate,
@@ -58,24 +65,26 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
+    console.log("Submit:");
 
     const gameData = {
       ...data,
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
-      teamId: team.id,
+      teamId: teamSlug,
       type: "Game" as const,
     };
 
     if (formState === "edit") {
       await editGame.mutateAsync(gameData);
-      router.push(`/${team.name}/schedule`);
+      router.push(`/${teamSlug}/schedule`);
       setFormState("view");
     } else {
       await createGame.mutateAsync(gameData);
-      router.push(`/${team.name}/schedule`);
+      router.push(`/${teamSlug}/schedule`);
     }
   };
+
   useEffect(() => {
     console.log("Modal state changed:", openGameModal);
   }, [openGameModal]);
@@ -106,46 +115,62 @@ const GameForm: FC<GameFormProps> = ({ onClose, team, mode }) => {
         {(isEditMode || isCreateMode) && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
             <Input
-              label="Opponent Name"
-              aria-label="Input the name of the opponent team"
               id="title"
+              aria-label="Input the name of the opponent team"
+              className="border-gray-700"
+              label="Opponent Name"
+              labelColor="light"
               type="text"
               placeholder="E.g. Eagles FC"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("title")}
+              error={errors.title}
+              errorMessage={errors.title?.message}
             />
             <Input
-              label="Start Time"
-              aria-label="Input the start time of the game"
               id="time"
+              aria-label="Input the start time of the game"
+              className="border-gray-700"
+              label="Start Time"
+              labelColor="light"
               type="time"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("time")}
+              error={errors.time}
+              errorMessage={errors.time?.message}
             />
             <Input
-              label="Duration"
-              aria-label="Input the duration of the game in hours"
               id="duration"
+              aria-label="Input the duration of the game in hours"
+              className="border-gray-700"
+              label="Duration"
+              labelColor="light"
               type="number"
               step="0.5"
               min="0.5"
               placeholder="E.g. 2"
-              className="w-full rounded-lg border border-gray-700 bg-gray-800 px-3 py-2 text-white placeholder-gray-400 focus:ring-2 focus:ring-yellow-500 focus:outline-none"
               {...register("duration", {
                 required: "Duration is required",
                 min: 0.5,
               })}
+              error={errors.duration}
+              errorMessage={errors.duration?.message}
             />
             <Input
-              label="Date"
-              aria-label="Input the date of the game"
               id="date"
+              aria-label="Input the date of the game"
+              className="border-gray-700"
+              label="Date"
+              labelColor="light"
               type="date"
-              className=""
               {...register("date")}
+              error={errors.date}
+              errorMessage={errors.date?.message}
             />
             <div className="flex justify-end border-t border-gray-800 pt-4">
-              {isCoach && <Button variant="outline">{buttonText()}</Button>}
+              {role && (
+                <Button type="submit" variant="outline">
+                  {buttonText()}
+                </Button>
+              )}
             </div>
           </form>
         )}

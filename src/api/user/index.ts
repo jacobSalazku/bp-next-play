@@ -1,5 +1,4 @@
 import { api } from "@/trpc/server";
-
 import { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
 import { cache } from "react";
@@ -7,14 +6,6 @@ import { cache } from "react";
 export const getUser = cache(async () => {
   try {
     const { user, teamMember } = await api.user.getUser();
-
-    if (!user) redirect("/login");
-
-    const isFirstLogin = user.createdAt.getTime() === user.updatedAt.getTime();
-
-    if (!teamMember && isFirstLogin) {
-      redirect("/create");
-    }
 
     return { user, teamMember };
   } catch (error) {
@@ -31,17 +22,17 @@ export const getUser = cache(async () => {
 });
 
 export const getTeamMembers = cache(async (teamId: string) => {
-  const members = await api.user.getTeamMembers({
+  const members = await api.member.getTeamMembers({
     teamId: teamId,
   });
 
   return members;
 });
 
-export const getTeamMember = cache(async () => {
-  const team = await api.team.getTeam();
+export const getTeamMember = cache(async (teamId: string) => {
+  const team = await api.team.getTeam({ teamId });
 
-  const members = await api.team.getTeamMembers({ teamCode: team.code });
+  const members = await api.member.getActiveTeamMembers({ teamId: team.id });
 
   return members;
 });
