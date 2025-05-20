@@ -1,10 +1,10 @@
 "use client";
 
 import { Button } from "@/components/button/button";
+import AttendanceModal from "@/features/attendance/components/attendance-modal";
 import useStore from "@/store/store";
-import type { TeamInformation } from "@/types";
+import type { Activity, TeamInformation, UserTeamMember } from "@/types";
 import { TeamMemberRole } from "@/types/enum";
-import type { Activity } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import { AlertCircle, CalendarClock, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -17,18 +17,26 @@ type ActivityListProps = {
   activities: Activity[];
   team: TeamInformation;
   role: TeamMemberRole;
+  member: UserTeamMember;
 };
 
-export function ActivityList({ activities, team, role }: ActivityListProps) {
+export function ActivityList({
+  activities,
+  team,
+  role,
+  member,
+}: ActivityListProps) {
   const {
     selectedDate,
     openGameModal,
     openGameDetails,
-    setOpenGameModal,
     openPracticeModal,
     openPracticeDetails,
-    setOpenPracticeModal,
+    openGameAttendance,
+    openPracticeAttendance,
+    setOpenGameModal,
     setOpenGameDetails,
+    setOpenPracticeModal,
     setOpenPracticeDetails,
   } = useStore();
 
@@ -46,7 +54,7 @@ export function ActivityList({ activities, team, role }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in mt-4 rounded-xl border p-6 shadow-sm duration-300">
+    <div className="animate-fade-in mt-4 rounded-xl border border-orange-200/20 p-6 shadow-sm duration-300">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
           <CalendarClock className="mr-2 h-5 w-5 text-gray-400" />
@@ -64,19 +72,19 @@ export function ActivityList({ activities, team, role }: ActivityListProps) {
           ))}
         </div>
       ) : (
-        <div className="mb-6 rounded-xl border border-dashed border-gray-700 bg-gray-800 py-12 text-center">
+        <div className="mb-6 rounded-xl border border-dashed border-gray-700 bg-gray-900 py-12 text-center">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
           <p className="text-gray-400">No activities scheduled for this day</p>
-          {
+          {role === TeamMemberRole.COACH && (
             <Button
               variant="outline"
               size="sm"
-              className="mt-4"
+              className="mt-4 bg-gray-950 hover:bg-orange-200/10"
               onClick={() => setOpenGameModal(true)}
             >
               <Plus className="mr-1 h-4 w-4" /> Add Activity
             </Button>
-          }
+          )}
         </div>
       )}
       {openGameModal && selectedDate && (
@@ -106,6 +114,10 @@ export function ActivityList({ activities, team, role }: ActivityListProps) {
           mode="view"
           onClose={() => setOpenPracticeDetails(false)}
         />
+      )}
+      {openGameAttendance && <AttendanceModal member={member} mode="Game" />}
+      {openPracticeAttendance && (
+        <AttendanceModal member={member} mode="Practice" />
       )}
       <div className="mt-4 flex w-full justify-center gap-4">
         {role === TeamMemberRole.COACH && (
