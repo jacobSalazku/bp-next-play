@@ -80,7 +80,7 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
-}
+} 
 // Team table
 model Team {
   id         String      @id @default(cuid())
@@ -134,26 +134,28 @@ model Activity {
 
 // Statline table
 model Statline {
-  id                 String      @id @default(cuid())
-  teamMemberId       String
-  fieldGoalsMade     Int
-  fieldGoalsMissed   Int
-  threePointersMade  Int
+  id                  String     @id @default(cuid())
+  teamMemberId        String
+  fieldGoalsMade      Int
+  fieldGoalsMissed    Int
+  threePointersMade   Int
   threePointersMissed Int
-  freeThrows         Int
-  missedFreeThrows   Int
-  assists            Int
-  steals             Int
-  turnovers          Int
-  rebounds           Int
-  blocks             Int
-  createdAt          DateTime
-  updatedAt          DateTime
-  activityId         String
-  
+  freeThrows          Int
+  missedFreeThrows    Int
+  assists             Int
+  steals              Int
+  turnovers           Int
+  rebounds            Int
+  blocks              Int
+  createdAt           DateTime
+  updatedAt           DateTime
+  activityId          String
+
   // Relationships
-  teamMember TeamMember  @relation(fields: [teamMemberId], references: [id])
-  activity   Activity    @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember @relation(fields: [teamMemberId], references: [id])
+  activity            Activity   @relation(fields: [activityId], references: [id])
+
+  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") // ✅ Add this line
 }
 
 // ActivityAttendance table
