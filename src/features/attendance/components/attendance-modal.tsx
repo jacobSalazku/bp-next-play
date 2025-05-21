@@ -1,3 +1,5 @@
+"use client";
+
 import { Button } from "@/components/button/button";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio";
 import { Textarea } from "@/components/ui/textarea";
