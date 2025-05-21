@@ -21,3 +21,7 @@ export type User = RouterOutput["user"]["getUser"];
 export type TeamMembers = RouterOutput["member"]["getActiveTeamMembers"];
 
 export type Role = RouterOutput["team"]["getTeamRole"];
+
+export type PlayerInformation = RouterOutput["member"]["getTeamMember"];
+
+export type UserTeamMember = RouterOutput["user"]["getUser"]["teamMember"];

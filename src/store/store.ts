@@ -1,7 +1,13 @@
-import type { Activity } from "@prisma/client";
+import type { Activity } from "@/types";
 import { create } from "zustand";
 
 type StoreState = {
+  openGameAttendance: boolean;
+  setOpenGameAttendance: (open: boolean) => void;
+
+  openPracticeAttendance: boolean;
+  setOpenPracticeAttendance: (open: boolean) => void;
+
   openLoginModal: boolean;
   setOpenLoginModal: (open: boolean) => void;
 
@@ -25,6 +31,12 @@ type StoreState = {
 };
 
 const useStore = create<StoreState>((set) => ({
+  openGameAttendance: false,
+  setOpenGameAttendance: (open) => set({ openGameAttendance: open }),
+
+  openPracticeAttendance: false,
+  setOpenPracticeAttendance: (open) => set({ openPracticeAttendance: open }),
+
   openLoginModal: false,
   setOpenLoginModal: (open) => set({ openLoginModal: open }),
 

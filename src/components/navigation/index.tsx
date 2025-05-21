@@ -1,15 +1,10 @@
 "use client";
 
-import { useTeam } from "@/context/use-team";
-import {
-  Calendar,
-  Home,
-  Menu,
-  Search,
-  User,
-  type LucideIcon,
-} from "lucide-react";
-import { useState, type FC } from "react";
+import { useTeam } from "@/context/team-context";
+import { useNavRoute } from "@/hooks/use-nav-route";
+import { useNavigationStore } from "@/store/use-navigation-store";
+import { Calendar, Home, Menu, User, type LucideIcon } from "lucide-react";
+import { type FC } from "react";
 import { DesktopNavigation } from "./desktop-navigation";
 import { MobileNav } from "./mobile-nav";
 
@@ -25,8 +20,8 @@ type NavigationProps = {
 
 const Navigation: FC<NavigationProps> = ({ children }) => {
   const { teamSlug } = useTeam();
-  const [mobileNavOpen, setMobileNavOpen] = useState(false);
-  const [navOpen, setNavOpen] = useState(true);
+  const { navOpen, setNavOpen, setMobileNavOpen, mobileNavOpen } =
+    useNavigationStore();
 
   const navItems = [
     {
@@ -48,22 +43,20 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
       active: false,
     },
   ];
+  const title = useNavRoute();
 
   return (
     <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
-      <header className="flex items-center justify-between border border-b border-gray-700 p-4 md:hidden">
+      <header className="flex items-center justify-between border-b border-gray-800 p-4 md:hidden">
         <div className="flex items-center gap-2">
           <button
             onClick={() => setMobileNavOpen(true)}
-            className="hover:bg-muted rounded p-2 hover:bg-gray-800"
+            className="rounded p-2 hover:bg-gray-800"
           >
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-xl font-bold">Team Roster</h1>
+          <h1 className="text-xl font-bold">{title}</h1>
         </div>
-        <button className="hover:bg-muted rounded p-2 dark:hover:bg-gray-800">
-          <Search className="h-5 w-5" />
-        </button>
       </header>
       {mobileNavOpen && (
         <MobileNav items={navItems} onClose={() => setMobileNavOpen(false)} />

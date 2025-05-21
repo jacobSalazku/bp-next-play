@@ -1,7 +1,9 @@
 import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
+import { useIsMobile } from "@/hooks/use-is-mobile";
 import useStore from "@/store/store";
+import { useNavigationStore } from "@/store/use-navigation-store";
 import { cn } from "@/utils/tw-merge";
-import { ChevronRight, User } from "lucide-react";
+import { ChevronRight, LogOut } from "lucide-react";
 import type { FC } from "react";
 import type { NavItemType } from ".";
 import { Button } from "../button/button";
@@ -21,42 +23,48 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
   children,
 }) => {
   const { openLoginModal, setOpenLoginModal } = useStore();
+  const { setPlayerSideBar } = useNavigationStore();
+  const isMobile = useIsMobile();
+
+  const handleToggle = () => {
+    onToggle();
+    setPlayerSideBar(false);
+  };
 
   return (
     <>
       <aside
         className={cn(
-          "border-border bg-background z-40 hidden flex-col border-r bg-gray-950 transition-all duration-300 md:flex",
+          "z-40 hidden flex-col border-r border-orange-200/20 bg-gray-950 pb-10 transition-all duration-300 md:flex",
           isOpen ? "w-64" : "w-16",
         )}
       >
-        <div className="border-border flex items-center justify-between border-b p-4 dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-6 dark:border-gray-700">
           <h2
             className={cn(
-              "font-righteous text-2xl font-semibold opacity-0 transition-opacity delay-300 duration-300",
+              "font-righteous text-2xl transition-opacity delay-1000 duration-300",
               isOpen ? "opacity-100" : "hidden",
             )}
           >
             NextPlay
           </h2>
-
           <button
-            onClick={onToggle}
+            onClick={handleToggle}
             className={cn(
               !isOpen && "mx-auto",
-              "hover:bg-muted rounded p-2 dark:hover:bg-gray-800",
+              "cursor-pointer rounded p-2 transition-all hover:bg-gray-800",
             )}
           >
             <ChevronRight
               className={cn(
-                isOpen ? "rotate-180" : null,
+                isOpen && "rotate-180",
                 "h-5 w-5 transition-transform duration-300",
               )}
             />
           </button>
         </div>
         <nav className="flex-1 overflow-y-auto bg-gray-950 py-4">
-          <ul className="space-y-1">
+          <ul>
             {items.map((item, idx) => (
               <li key={idx}>
                 <NavItem href={item.href} icon={item.icon}>
@@ -64,18 +72,25 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
                 </NavItem>
               </li>
             ))}
-            <Button
-              className={cn(
-                "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
-                isOpen ? "justify-start" : "justify-center",
-              )}
-              onClick={() => setOpenLoginModal(true)}
-            >
-              <User /> Logout
-            </Button>
+
             {openLoginModal && <AuthLogoutModal />}
           </ul>
         </nav>
+        <Button
+          className={cn(
+            "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
+            isOpen ? "justify-start" : "justify-center",
+          )}
+          onClick={() => setOpenLoginModal(true)}
+        >
+          <LogOut
+            className={cn(
+              "mr-2 h-5 w-5 rotate-180",
+              !isOpen ? "mx-auto block" : "mr-1",
+            )}
+          />
+          {isOpen && <span>Lougout</span>}
+        </Button>
       </aside>
 
       <main className="flex-1 overflow-y-auto p-4">{children}</main>
