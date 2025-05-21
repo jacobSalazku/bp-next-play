@@ -1,9 +1,9 @@
 "use client";
 
-import { Button } from "@/components/button/button";
+import { Button } from "@/components/foundation/button/button";
 import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 import type { Activity, TeamInformation } from "@/types";
-import { cn } from "@/utils/tw-merge";
 import { addDays, format, subDays } from "date-fns";
 import { ChevronLeft, ChevronRight } from "lucide-react";
 import { useMemo, useState } from "react";

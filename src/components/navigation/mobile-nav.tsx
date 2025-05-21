@@ -1,5 +1,5 @@
+import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { cn } from "@/utils/tw-merge";
 import { X } from "lucide-react";
 import type { NavItemType } from ".";
 import { NavItem } from "./nav-item";

@@ -1,4 +1,4 @@
-import { cn } from "@/utils/tw-merge";
+import { cn } from "@/lib/utils";
 import type { LucideIcon } from "lucide-react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";

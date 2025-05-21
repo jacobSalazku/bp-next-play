@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/button/button";
-import { Input } from "@/components/ui/input";
+import { Button } from "@/components/foundation/button/button";
+import { Input } from "@/components/foundation/input";
 import { useTeam } from "@/context/team-context";
 import { useRole } from "@/hooks/use-role";
+import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { TeamInformation } from "@/types";
 import { getTypeBgColor } from "@/utils";
-import { cn } from "@/utils/tw-merge";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";

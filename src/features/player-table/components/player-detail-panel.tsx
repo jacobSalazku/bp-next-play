@@ -1,12 +1,13 @@
 "use client";
 
-import { Button } from "@/components/button/button";
-import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
+import { Button } from "@/components/foundation/button/button";
+import { TabsContent } from "@/components/foundation/table/table-content";
+import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
+import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import { useIsMobile } from "@/hooks/use-is-mobile";
-import type { TeamMember } from "@/types";
-import { cn } from "@/utils/tw-merge";
-
+import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
+import type { TeamMember } from "@/types";
 import { Calendar, User, X } from "lucide-react";
 import Image from "next/image";
 import { getFullPosition } from "../utils";

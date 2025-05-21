@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/button/button";
+import { Button } from "@/components/foundation/button/button";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Image from "next/image";

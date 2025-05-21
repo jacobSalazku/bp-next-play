@@ -1,24 +1,23 @@
 "use client";
 
-import { Button } from "@/components/button/button";
+import { Button } from "@/components/foundation/button/button";
 import {
   Card,
   CardContent,
   CardDescription,
   CardHeader,
   CardTitle,
-} from "@/components/ui/card";
-import {
-  Table,
-  TableBody,
-  TableCell,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+} from "@/components/foundation/card";
+
+import { Table } from "@/components/foundation/table/table";
+import { TableBody } from "@/components/foundation/table/table-body";
+import { TableCell } from "@/components/foundation/table/table-cell";
+import { TableHead } from "@/components/foundation/table/table-head";
+import { TableHeader } from "@/components/foundation/table/table-header";
+import { TableRow } from "@/components/foundation/table/table-row";
+import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import type { TeamInformation, TeamMember } from "@/types";
-import { cn } from "@/utils/tw-merge";
 import { useState, type FC } from "react";
 import PlayerDetailPanel from "./components/player-detail-panel";
 import { getFullPosition } from "./utils";
@@ -35,6 +34,7 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
   const handlePlayerClick = (player: TeamMember) => {
     setSelectedPlayer(player);
     setPlayerSideBar(true);
+    setNavOpen(false); // Optional: collapse side nav on click
   };
 
   const closeSidebar = () => {

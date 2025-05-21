@@ -1,6 +1,6 @@
 import { getTeams } from "@/api/team";
-import { Link } from "./button/link";
 import TeamCard from "./card/team-card";
+import { Link } from "./foundation/button/link";
 
 const Teamlist = async () => {
   const { teams } = await getTeams();

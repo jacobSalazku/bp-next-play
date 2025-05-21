@@ -1,5 +1,8 @@
-import { Button } from "@/components/button/button";
-import { TableCell, TableRow } from "@/components/ui/table";
+"use client";
+
+import { Button } from "@/components/foundation/button/button";
+import { TableCell } from "@/components/foundation/table/table-cell";
+import { TableRow } from "@/components/foundation/table/table-row";
 import type { TeamMember } from "@/types";
 import { Controller, type Control } from "react-hook-form";
 import { calculateStats } from "../utils/update-stat";

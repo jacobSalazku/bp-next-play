@@ -1,14 +1,13 @@
 "use client";
 
 import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
-import { useIsMobile } from "@/hooks/use-is-mobile";
+import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { cn } from "@/utils/tw-merge";
 import { ChevronRight, LogOut } from "lucide-react";
 import type { FC } from "react";
 import type { NavItemType } from ".";
-import { Button } from "../button/button";
+import { Button } from "../foundation/button/button";
 import { NavItem } from "./nav-item";
 
 type DesktopNavProps = {
@@ -26,7 +25,6 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
 }) => {
   const { openLoginModal, setOpenLoginModal } = useStore();
   const { setPlayerSideBar } = useNavigationStore();
-  const isMobile = useIsMobile();
 
   const handleToggle = () => {
     onToggle();

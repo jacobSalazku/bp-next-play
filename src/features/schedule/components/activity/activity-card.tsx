@@ -1,13 +1,13 @@
 "use client";
 
-import { Button } from "@/components/button/button";
-import { Link } from "@/components/button/link";
+import { Button } from "@/components/foundation/button/button";
+import { Link } from "@/components/foundation/button/link";
 import { useTeam } from "@/context/team-context";
 import { useRole } from "@/hooks/use-role";
+import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { Activity, TeamInformation } from "@/types";
 import { getActivityStyle } from "@/utils";
-import { cn } from "@/utils/tw-merge";
 
 import { Clock } from "lucide-react";
 import { type FC } from "react";

@@ -1,4 +1,4 @@
-import { Link } from "@/components/button/link";
+import { Link } from "@/components/foundation/button/link";
 
 async function CreatePage() {
   // if (user.teamMember && Object.keys(user.teamMember).length > 0) {

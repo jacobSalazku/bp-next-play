@@ -1,6 +1,8 @@
+"use client";
+
+import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { Activity } from "@/types";
-import { cn } from "@/utils/tw-merge";
 import { format, isSameDay } from "date-fns";
 import type { FC, MouseEvent } from "react";
 import { CalendarActivityButton } from "./calendar-activity-button";

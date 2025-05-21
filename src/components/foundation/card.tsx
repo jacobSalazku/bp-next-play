@@ -1,4 +1,4 @@
-import { cn } from "@/utils/tw-merge";
+import { cn } from "@/lib/utils";
 import { forwardRef } from "react";
 
 const Card = forwardRef<HTMLDivElement, React.HTMLAttributes<HTMLDivElement>>(

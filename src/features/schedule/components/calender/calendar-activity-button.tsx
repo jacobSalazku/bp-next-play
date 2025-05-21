@@ -1,6 +1,8 @@
+"use client";
+
+import { cn } from "@/lib/utils";
 import type { Activity } from "@/types";
 import { getTypeBgColor } from "@/utils/";
-import { cn } from "@/utils/tw-merge";
 
 import type { MouseEvent } from "react";
 

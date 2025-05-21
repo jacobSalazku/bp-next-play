@@ -1,4 +1,4 @@
-import { Button } from "@/components/button/button";
+import { Button } from "@/components/foundation/button/button";
 import { Trophy, Users } from "lucide-react";
 
 type ActivityType = "all" | "game" | "practice";

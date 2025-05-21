@@ -3,7 +3,7 @@ import type { Team } from "@/types";
 import { format } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import type { FC } from "react";
-import { Link } from "../button/link";
+import { Link } from "../foundation/button/link";
 
 type TeamCardProps = {
   team: Team;

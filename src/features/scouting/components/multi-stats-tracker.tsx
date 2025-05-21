@@ -1,13 +1,12 @@
 "use client";
-import { Button } from "@/components/button/button";
-import {
-  Table,
-  TableBody,
-  TableFooter,
-  TableHead,
-  TableHeader,
-  TableRow,
-} from "@/components/ui/table";
+
+import { Button } from "@/components/foundation/button/button";
+import { Table } from "@/components/foundation/table/table";
+import { TableBody } from "@/components/foundation/table/table-body";
+import { TableFooter } from "@/components/foundation/table/table-footer";
+import { TableHead } from "@/components/foundation/table/table-head";
+import { TableHeader } from "@/components/foundation/table/table-header";
+import { TableRow } from "@/components/foundation/table/table-row";
 import type { TeamMembers } from "@/types";
 import { useEffect, useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";

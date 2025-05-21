@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/button/button";
-import { Input } from "@/components/ui/input";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio";
+import { Button } from "@/components/foundation/button/button";
+import { Input } from "@/components/foundation/input";
+import { RadioGroup } from "@/components/foundation/radio/radio-group";
+import { RadioGroupItem } from "@/components/foundation/radio/radio-group-item";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
 import { useForm } from "react-hook-form";

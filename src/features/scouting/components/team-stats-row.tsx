@@ -1,4 +1,4 @@
-import { TableCell } from "@/components/ui/table";
+import { TableCell } from "@/components/foundation/table/table-cell";
 import { calculateTeamStats } from "../utils/update-stat";
 import type { StatlineData } from "../zod/player-stats";
 

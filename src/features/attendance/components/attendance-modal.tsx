@@ -1,8 +1,9 @@
 "use client";
 
-import { Button } from "@/components/button/button";
-import { RadioGroup, RadioGroupItem } from "@/components/ui/radio";
-import { Textarea } from "@/components/ui/textarea";
+import { Button } from "@/components/foundation/button/button";
+import { RadioGroup } from "@/components/foundation/radio/radio-group";
+import { RadioGroupItem } from "@/components/foundation/radio/radio-group-item";
+import { Textarea } from "@/components/foundation/textarea";
 import useStore from "@/store/store";
 import type { UserTeamMember } from "@/types";
 import { format } from "date-fns";
@@ -25,7 +26,34 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
     useStore();
 
   const [state, setFormState] = useState<Mode>(mode);
-  const { handleSubmit, register, control } = useForm<AttendanceData>();
+
+  const { handleSubmit, register, control, reset } = useForm<AttendanceData>({
+    defaultValues: {
+      activityId: selectedActivity?.id ?? "",
+      teamMemberId: member?.id ?? "",
+      attendanceStatus:
+        (selectedActivity?.attendees?.find((a) => a.teamMemberId === member?.id)
+          ?.attendanceStatus as
+          | "ATTENDING"
+          | "NOT_ATTENDING"
+          | "LATE"
+          | undefined) ?? undefined,
+      reason:
+        selectedActivity?.attendees?.find(
+          (a) => a.teamMemberId === member?.id,
+        ) &&
+        "reason" in
+          (selectedActivity?.attendees?.find(
+            (a) => a.teamMemberId === member?.id,
+          ) as object)
+          ? (
+              selectedActivity?.attendees?.find(
+                (a) => a.teamMemberId === member?.id,
+              ) as { reason?: string }
+            ).reason
+          : undefined,
+    },
+  });
 
   const isGame = state === "Game";
 
@@ -50,6 +78,13 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
     if (!member) {
       throw new Error("Team member is required.");
     }
+
+    // Save to localStorage
+    localStorage.setItem(
+      `attendance-${member.id}-${selectedActivity.id}`,
+      JSON.stringify(attendance),
+    );
+
     await submitAttendance.mutateAsync({
       ...attendance,
       activityId: selectedActivity.id,

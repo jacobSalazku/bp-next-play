@@ -1,3 +1,4 @@
+import type { TeamMember } from "@/types";
 import { create } from "zustand";
 
 type NavigationState = {
@@ -7,6 +8,8 @@ type NavigationState = {
   setMobileNavOpen: (open: boolean) => void;
   navOpen: boolean;
   setNavOpen: (open: boolean) => void;
+  selectedPlayer: TeamMember | null;
+  setSelectedPlayer: (player: TeamMember | null) => void;
 };
 
 export const useNavigationStore = create<NavigationState>((set) => ({
@@ -18,4 +21,7 @@ export const useNavigationStore = create<NavigationState>((set) => ({
 
   mobileNavOpen: false,
   setMobileNavOpen: (open) => set({ mobileNavOpen: open }),
+
+  selectedPlayer: null,
+  setSelectedPlayer: (player) => set({ selectedPlayer: player }),
 }));

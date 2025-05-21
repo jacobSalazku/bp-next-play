@@ -1,6 +1,6 @@
 "use client";
 
-import { Button } from "@/components/button/button";
+import { Button } from "@/components/foundation/button/button";
 import AttendanceModal from "@/features/attendance/components/attendance-modal";
 import useStore from "@/store/store";
 import type { Activity, TeamInformation, UserTeamMember } from "@/types";
