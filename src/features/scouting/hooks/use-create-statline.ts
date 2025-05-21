@@ -1,11 +1,10 @@
 import { api } from "@/trpc/react";
 
 export const useCreateNewStatline = () => {
-  const utils = api.useUtils();
-
   const createStatline = api.stats.submit.useMutation({
-    // onSuccess: async () => {
-    //       await utils.stats.getStatlines.invalidate();
+    onSuccess: async () => {
+      console.log("Statline created successfully");
+    },
     onError: (error) => {
       console.error("Error creating statline:", error);
     },

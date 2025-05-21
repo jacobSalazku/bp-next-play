@@ -2,9 +2,9 @@ import { TableCell } from "@/components/ui/table";
 import { calculateTeamStats } from "../utils/update-stat";
 import type { StatlineData } from "../zod/player-stats";
 
-interface TeamStatsRowProps {
+type TeamStatsRowProps = {
   totalTeamStats: StatlineData;
-}
+};
 
 export const TeamStatsRow = ({ totalTeamStats }: TeamStatsRowProps) => {
   const teamStats = calculateTeamStats(totalTeamStats);

@@ -78,7 +78,7 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
-}
+} 
 // Team table
 model Team {
   id         String      @id @default(cuid())
@@ -155,8 +155,10 @@ model Statline {
   activityId          String
   
   // Relationships
-  teamMember TeamMember  @relation(fields: [teamMemberId], references: [id])
-  activity   Activity    @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember @relation(fields: [teamMemberId], references: [id])
+  activity            Activity   @relation(fields: [activityId], references: [id])
+
+  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") // ✅ Add this line
 }
 
 model ActivityAttendance {

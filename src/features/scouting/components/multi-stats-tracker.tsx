@@ -8,88 +8,89 @@ import {
   TableHeader,
   TableRow,
 } from "@/components/ui/table";
-import type { TeamMember } from "@/types";
-import { useState, type FC } from "react";
+import type { TeamMembers } from "@/types";
+import { useEffect, useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
 import { statRows } from "../utils/const";
 import type { StatlineData } from "../zod/player-stats";
+import { defaultStatline } from "../zod/types";
 import { PlayerStatsRow } from "./player-stat-row";
 import { TeamStatsRow } from "./team-stats-row";
 
-export type PlayerWithStats = TeamMember & {
-  statlines: StatlineData[];
-};
-
 export type PlayersData = {
-  players: PlayerWithStats[];
-
+  players: TeamMembers;
   activityId: string;
-};
-
-const defaultStatline: StatlineData = {
-  fieldGoalsMade: 0,
-  fieldGoalsMissed: 0,
-  threePointersMade: 0,
-  threePointersMissed: 0,
-  freeThrows: 0,
-  missedFreeThrows: 0,
-  assists: 0,
-  steals: 0,
-  turnovers: 0,
-  rebounds: 0,
-  blocks: 0,
 };
 
 const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
-
-  const { control, setValue, handleSubmit } = useForm<PlayersData>({
-    defaultValues: {
-      players: players.map((player) => ({
-        ...player,
-        statlines: player.statlines.map((_statline) => ({
-          ...defaultStatline,
-        })),
-      })),
-    },
-  });
-
   const createStatline = useCreateNewStatline();
 
-  const stats = useWatch({ control });
+  const initialPlayers = players.map((p) => ({
+    ...p,
+    statlines: p.statlines,
+  }));
 
-  if (!stats) return null;
-
-  const playerStats = stats.players?.map((player) => {
-    return player.statlines?.[0] ?? defaultStatline;
+  const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
+    defaultValues: { players: initialPlayers, activityId },
   });
 
-  const totalTeamStats = playerStats?.reduce(
-    (acc, statline) => {
-      return {
-        ...acc,
-        fieldGoalsMade:
-          (acc.fieldGoalsMade ?? 0) + (statline?.fieldGoalsMade ?? 0),
-        fieldGoalsMissed:
-          (acc.fieldGoalsMissed ?? 0) + (statline?.fieldGoalsMissed ?? 0),
-        threePointersMade:
-          (acc.threePointersMade ?? 0) + (statline?.threePointersMade ?? 0),
-        threePointersMissed:
-          (acc.threePointersMissed ?? 0) + (statline?.threePointersMissed ?? 0),
-        freeThrows: (acc.freeThrows ?? 0) + (statline?.freeThrows ?? 0),
-        missedFreeThrows:
-          (acc.missedFreeThrows ?? 0) + (statline?.missedFreeThrows ?? 0),
-        rebounds: (acc.rebounds ?? 0) + (statline?.rebounds ?? 0),
-        assists: (acc.assists ?? 0) + (statline?.assists ?? 0),
-        turnovers: (acc.turnovers ?? 0) + (statline?.turnovers ?? 0),
-        steals: (acc.steals ?? 0) + (statline?.steals ?? 0),
-        blocks: (acc.blocks ?? 0) + (statline?.blocks ?? 0),
-      };
+  const stats = useWatch<PlayersData>({ control });
+
+  // useDebouncedSave(
+  //   stats as PlayersData,
+  //   async (data) => {
+  //     await createStatline.mutateAsync({
+  //       players: data.players.map((player) => ({
+  //         id: player.id,
+  //         activityId,
+  //         statlines: player.statlines,
+  //       })),
+  //     });
+  //   },
+  //   60000,
+  // );
+
+  useEffect(() => {
+    const stored = localStorage.getItem(activityId);
+    if (stored) {
+      try {
+        const parsed = JSON.parse(stored) as PlayersData;
+        if (parsed?.players) {
+          reset(parsed);
+        }
+      } catch (err) {
+        console.error("Failed to parse localStorage data", err);
+      }
+    } else {
+      // If nothing in localStorage, use props and reset to that
+
+      reset({
+        players: players,
+        activityId,
+      });
+    }
+  }, [activityId, players, reset]);
+
+  useEffect(() => {
+    localStorage.setItem(activityId, JSON.stringify(stats));
+  }, [stats, activityId]);
+
+  const totalTeamStats = stats.players?.reduce(
+    (acc, player) => {
+      const s = player.statlines?.[0] ?? {};
+      for (const key of Object.keys(
+        defaultStatline,
+      ) as (keyof StatlineData)[]) {
+        // Only sum numeric fields, skip 'id'
+        if (key !== "id") {
+          acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
+        }
+      }
+      return acc;
     },
-    {
-      ...defaultStatline,
-    },
+    { ...defaultStatline } as StatlineData,
   );
 
   const handleChange = (
@@ -98,38 +99,82 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
     amount: number,
   ) => {
     const current = stats.players?.[playerIndex]?.statlines?.[0]?.[field] ?? 0;
-    setValue(
-      `players.${playerIndex}.statlines.0.${field}` as const,
-      Math.max(0, Number(current) + amount),
+    const updatedValue = Math.max(0, Number(current) + amount);
+
+    setValue(`players.${playerIndex}.statlines.0.${field}`, updatedValue);
+
+    // Immediately save updated stats to localStorage
+    const updatedPlayers =
+      stats.players?.map((player, i) => {
+        if (i === playerIndex) {
+          return {
+            ...player,
+            statlines: [
+              {
+                ...player.statlines?.[0],
+                [field]: updatedValue,
+              },
+            ],
+          };
+        }
+        return player;
+      }) ?? [];
+
+    localStorage.setItem(
+      activityId,
+      JSON.stringify({ players: updatedPlayers, activityId }),
     );
   };
-  const onSubmit = async (data: PlayersData) => {
-    const stalineData = {
-      players: data.players.map((player) => ({
-        id: player.id,
-        activityId: activityId,
-        statlines: player.statlines.map((statline) => ({
-          ...statline,
-          id: statline.id,
-        })),
-      })),
-    };
 
-    await createStatline.mutateAsync(stalineData);
+  const onSubmit = async (data: PlayersData) => {
+    const updatedPlayers = data.players.map((player, i) => {
+      const prev = players[i]?.statlines?.[0] ?? defaultStatline;
+      const curr = player.statlines?.[0] ?? defaultStatline;
+
+      const diff: StatlineData = {
+        id: "",
+        fieldGoalsMade: (curr.fieldGoalsMade ?? 0) - (prev.fieldGoalsMade ?? 0),
+        fieldGoalsMissed:
+          (curr.fieldGoalsMissed ?? 0) - (prev.fieldGoalsMissed ?? 0),
+        threePointersMade:
+          (curr.threePointersMade ?? 0) - (prev.threePointersMade ?? 0),
+        threePointersMissed:
+          (curr.threePointersMissed ?? 0) - (prev.threePointersMissed ?? 0),
+        freeThrows: (curr.freeThrows ?? 0) - (prev.freeThrows ?? 0),
+        missedFreeThrows:
+          (curr.missedFreeThrows ?? 0) - (prev.missedFreeThrows ?? 0),
+        assists: (curr.assists ?? 0) - (prev.assists ?? 0),
+        steals: (curr.steals ?? 0) - (prev.steals ?? 0),
+        turnovers: (curr.turnovers ?? 0) - (prev.turnovers ?? 0),
+        rebounds: (curr.rebounds ?? 0) - (prev.rebounds ?? 0),
+        blocks: (curr.blocks ?? 0) - (prev.blocks ?? 0),
+      };
+
+      return {
+        id: player.id,
+        activityId,
+        statlines: [diff],
+      };
+    });
+
+    await createStatline.mutateAsync({ players: updatedPlayers });
+    reset(data);
   };
+
+  if (!stats) return null;
 
   return (
     <form
       onSubmit={handleSubmit(onSubmit)}
-      className="mx-auto h-full w-full max-w-5xl p-4"
+      className="scrollbar-none mx-auto h-full w-full max-w-5xl overflow-y-auto p-4"
     >
       <h2 className="mb-6 text-xl font-bold text-gray-200 sm:text-2xl md:text-3xl">
         Player Box Score
       </h2>
-      <div className="flex w-full min-w-full flex-col md:min-h-1/2">
-        <Table className="rounded-lg border shadow-md">
+      <div className="flex w-full min-w-full flex-col rounded-lg md:min-h-1/2">
+        <Table className="overflow-y-auto rounded-lg border-x shadow-md">
           <TableHeader>
-            <TableRow className="bg-gray-200 font-semibold text-gray-600 uppercase">
+            <TableRow className="bg-neutral-100/90 font-semibold text-white uppercase">
               <TableHead className="p-3 text-left">Name</TableHead>
               <TableHead className="p-3 text-center">PTS</TableHead>
               <TableHead className="p-3 text-center">FG</TableHead>
@@ -148,6 +193,7 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
               return (
                 <PlayerStatsRow
                   key={index}
+                  control={control}
                   player={player}
                   index={index}
                   statsForPlayer={{
@@ -160,10 +206,10 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
               );
             })}
           </TableBody>
-          <TableFooter className="bg-gray-700 font-semibold text-gray-600 uppercase">
-            <TableRow>
+          <TableFooter className="bg-gray-800 font-semibold uppercase">
+            <TableRow className="text-gray-200">
               {totalTeamStats && (
-                <TeamStatsRow totalTeamStats={totalTeamStats} />
+                <TeamStatsRow totalTeamStats={{ ...totalTeamStats, id: "" }} />
               )}
             </TableRow>
           </TableFooter>

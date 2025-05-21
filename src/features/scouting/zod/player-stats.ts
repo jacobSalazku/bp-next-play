@@ -1,6 +1,7 @@
 import { z } from "zod";
 
 export const statlineSchema = z.object({
+  id: z.string(),
   fieldGoalsMade: z.number().int().nonnegative().default(0).optional(),
   fieldGoalsMissed: z.number().int().nonnegative().default(0).optional(),
   threePointersMade: z.number().int().nonnegative().default(0).optional(),

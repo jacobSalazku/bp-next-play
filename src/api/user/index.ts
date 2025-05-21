@@ -29,7 +29,7 @@ export const getTeamMembers = cache(async (teamId: string) => {
   return members;
 });
 
-export const getTeamMember = cache(async (teamId: string) => {
+export const getActiveTeamMember = cache(async (teamId: string) => {
   const team = await api.team.getTeam({ teamId });
 
   const members = await api.member.getActiveTeamMembers({ teamId: team.id });
