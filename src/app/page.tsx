@@ -1,6 +1,5 @@
 import { getTeamMembers, getUser } from "@/api/user";
 import Teamlist from "@/components/team-list";
-import { TeamMemberRole } from "@/types/enum";
 import { redirect } from "next/navigation";
 
 async function Dashboard() {
@@ -25,41 +24,6 @@ async function Dashboard() {
               </p>
             </div>
           </header>
-          <section className="mb-8">
-            <h2 className="mb-4 text-2xl font-semibold text-white">
-              Team Members
-            </h2>
-            {members && members.length > 0 ? (
-              <div className="grid gap-4 md:grid-cols-2 lg:grid-cols-3">
-                {members.map(
-                  (member) =>
-                    (member.role as TeamMemberRole) !==
-                      TeamMemberRole.COACH && (
-                      <div
-                        key={member.id}
-                        className="rounded-lg border border-[#DCE6F1] bg-blue-900 p-4 shadow-sm"
-                      >
-                        <h3 className="mb-2 text-lg font-medium text-white">
-                          {member.user.name}
-                        </h3>
-                        <p className="mb-2 text-gray-400">
-                          {member.user.email}
-                        </p>
-                        <div className="text-sm text-gray-500">
-                          Role: {member.role}
-                        </div>
-                        <div className="text-sm text-gray-500">
-                          Status: {member.status}
-                        </div>
-                      </div>
-                    ),
-                )}
-              </div>
-            ) : (
-              <p className="text-gray-400">No team members found.</p>
-            )}
-          </section>
-
           <section>
             <h2 className="mb-4 text-2xl font-semibold text-white">
               Your Teams

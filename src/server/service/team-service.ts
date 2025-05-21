@@ -17,8 +17,8 @@ export async function createNewTeam(ctx: Context, input: CreateTeamData) {
       members: {
         create: {
           userId: user.id,
-          role: TeamMemberRole.COACH, // Or however your roles are represented (e.g., "COACH")
-          status: TeamMemberStatus.ACTIVE, // Set the appropriate status value
+          role: TeamMemberRole.COACH,
+          status: TeamMemberStatus.ACTIVE,
         },
       },
     },
@@ -33,7 +33,8 @@ export async function createNewTeam(ctx: Context, input: CreateTeamData) {
 export async function getActiveTeamMembers(ctx: Context, teamId: string) {
   const team = await ctx.db.team.findUnique({
     where: { id: teamId },
-    include: {
+    select: {
+      id: true,
       members: {
         where: { status: "ACTIVE", role: "PLAYER" },
         include: {
@@ -42,6 +43,12 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
               id: true,
               name: true,
               image: true,
+              email: true,
+              dateOfBirth: true,
+              phone: true,
+              height: true,
+              weight: true,
+              dominantHand: true,
             },
           },
           statlines: {
@@ -79,6 +86,19 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
     role: member.role,
     status: member.status,
     statlines: member.statlines,
+    number: member.number,
+    position: member.position,
+    user: {
+      id: member.user.id,
+      name: member.user.name,
+      image: member.user.image,
+      email: member.user.email,
+      dateOfBirth: member.user.dateOfBirth,
+      phone: member.user.phone,
+      height: member.user.height,
+      weight: member.user.weight,
+      dominantHand: member.user.dominantHand,
+    },
   }));
 
   return members;
@@ -165,6 +185,7 @@ export async function getTeam(ctx: Context, teamId: string) {
         },
       },
       activities: {
+        orderBy: { date: "desc" },
         select: {
           id: true,
           title: true,
@@ -173,8 +194,25 @@ export async function getTeam(ctx: Context, teamId: string) {
           time: true,
           type: true,
           practiceType: true,
+          attendees: {
+            select: {
+              id: true,
+              activityId: true,
+              attendanceStatus: true,
+              teamMember: {
+                select: {
+                  id: true,
+                  user: {
+                    select: {
+                      id: true,
+                      name: true,
+                    },
+                  },
+                },
+              },
+            },
+          },
         },
-        orderBy: { date: "desc" },
       },
     },
   });
