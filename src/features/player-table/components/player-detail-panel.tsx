@@ -22,13 +22,13 @@ const PlayerDetailPanel = ({
   return (
     <div
       className={cn(
-        navOpen ? "left-64 w-[400px]" : "w-full md:left-16 md:w-[400px]",
+        navOpen ? "left-64s w-[400px]" : "left-16 w-full md:w-[400px]",
         playerSideBar
-          ? "translate-x-0"
+          ? "-translate-x-14"
           : isMobile
             ? "-translate-x-full"
             : "-translate-x-full",
-        "fixed inset-y-0 z-30 transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
+        "absolute inset-y-0 z-30 transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
       )}
     >
       {selectedPlayer && (
@@ -110,7 +110,10 @@ const PlayerDetailPanel = ({
                   <h4 className="text-muted-foreground mb-1 text-sm font-medium">
                     Position
                   </h4>
-                  <p>{selectedPlayer.position}</p>
+                  <div className="flex items-center gap-2">
+                    <p>{selectedPlayer.position}</p>-
+                    <p>{getFullPosition(selectedPlayer.position)}</p>
+                  </div>
                 </div>
                 <div>
                   <h4 className="text-muted-foreground mb-1 text-sm font-medium">

@@ -45,9 +45,15 @@ export const teamRouter = createTRPCRouter({
   }),
 
   requestToJoin: protectedProcedure
-    .input(z.object({ teamCode: z.string() }))
+    .input(
+      z.object({
+        teamCode: z.string(),
+        position: z.string(),
+        number: z.string(),
+      }),
+    )
     .mutation(async ({ ctx, input }) => {
-      const request = await requestToJoinTeam(ctx, input.teamCode);
+      const request = await requestToJoinTeam(ctx, input);
 
       return request;
     }),

@@ -20,7 +20,7 @@ export function ActivityFilter({
           variant={currentFilter === type ? "default" : "ghost"}
           size="sm"
           onClick={() => onFilterChange(type as ActivityType)}
-          className="rounded-none"
+          className="rounded-none border-orange-300/20 first:rounded-l-lg last:rounded-r-lg hover:bg-gray-900 hover:text-orange-300"
         >
           {type === "game" && <Trophy className="mr-1 h-4 w-4" />}
           {type === "practice" && <Users className="mr-1 h-4 w-4" />}

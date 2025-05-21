@@ -1,3 +1,5 @@
+"use client";
+
 import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import useStore from "@/store/store";
@@ -93,7 +95,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="flex-1 overflow-y-auto p-4">{children}</main>
+      <main className="relative flex w-full flex-col p-4">{children}</main>
     </>
   );
 };

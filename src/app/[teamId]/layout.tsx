@@ -11,12 +11,12 @@ export default async function TeamLayout({
   params: Promise<{ teamId: string }>;
 }>) {
   const { teamId } = await params;
-  console.log("TeamLayout slug", teamId);
+
   return (
     <TRPCReactProvider>
       <HydrateClient>
-        <main className="flex max-w-screen justify-center overflow-hidden bg-gray-950">
-          <div className="w-screen max-w-7xl border-white">
+        <main className="flex w-screen justify-center overflow-hidden bg-gray-950">
+          <div className="w-full max-w-7xl border-white">
             <TeamProvider teamSlug={teamId}>
               <Navigation>{children}</Navigation>
             </TeamProvider>

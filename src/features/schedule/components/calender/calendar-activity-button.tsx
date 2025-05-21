@@ -1,6 +1,7 @@
+import type { Activity } from "@/types";
 import { getTypeBgColor } from "@/utils/";
 import { cn } from "@/utils/tw-merge";
-import type { Activity } from "@prisma/client";
+
 import type { MouseEvent } from "react";
 
 type ActivityType = "Game" | "Practice" | "Multiple";
