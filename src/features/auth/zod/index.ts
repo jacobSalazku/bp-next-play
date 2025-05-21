@@ -24,6 +24,7 @@ export const createTeamSchema = z.object({
 });
 
 export const updateUserSchema = z.object({
+  name: z.string().min(1, "Name is required"),
   dateOfBirth: z.string().min(1, "Date of birth is required"),
   phone: z.string().min(1, "Phone number is required"),
   height: z.coerce.number({ required_error: "Height is required" }),

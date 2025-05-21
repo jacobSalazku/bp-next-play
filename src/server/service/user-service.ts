@@ -59,7 +59,7 @@ export async function getAllMembers(ctx: Context, teamId: string) {
     where: { id: teamId },
     select: {
       members: {
-        where: { status: TeamMemberStatus.ACTIVE },
+        where: { status: TeamMemberStatus.ACTIVE, role: "PLAYER" },
         select: {
           user: {
             select: {
@@ -67,11 +67,18 @@ export async function getAllMembers(ctx: Context, teamId: string) {
               name: true,
               email: true,
               image: true,
+              dominantHand: true,
+              dateOfBirth: true,
+              phone: true,
+              height: true,
+              weight: true,
             },
           },
           id: true,
           role: true,
           status: true,
+          number: true,
+          position: true,
         },
       },
     },
@@ -130,6 +137,7 @@ export async function updateUser(ctx: Context, input: User) {
   const user = await ctx.db.user.update({
     where: { id: ctx.session.user.id },
     data: {
+      name: input.name,
       dateOfBirth: input.dateOfBirth ?? undefined,
       phone: input.phone ?? undefined,
       height: input.height ?? undefined,

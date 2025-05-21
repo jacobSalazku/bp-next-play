@@ -5,13 +5,12 @@ import { Input } from "@/components/ui/input";
 import { RadioGroup, RadioGroupItem } from "@/components/ui/radio";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { redirect } from "next/navigation";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { useUpdateUser } from "../hooks/use-update-user";
 import { updateUserSchema, type UpdateUserData } from "../zod";
 
 const UserUpdateForm = () => {
   const {
-    control,
     register,
     handleSubmit,
     formState: { errors },
@@ -35,7 +34,7 @@ const UserUpdateForm = () => {
       ...data,
       dateOfBirth: date.toISOString(),
       height: Number(data.height),
-      weight: Number(data.weight),
+      weight: Number(data.weight - 100),
       hasOnBoarded: true,
     };
     console.log("userData", userData);
@@ -52,6 +51,17 @@ const UserUpdateForm = () => {
         Please fill in your details
       </span>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
+        <Input
+          id="name"
+          label="Name"
+          aria-label="Input Name"
+          type="text"
+          className="w-full"
+          placeholder="John Doe"
+          error={errors.name}
+          errorMessage={errors.name?.message}
+          {...register("name")}
+        />
         <Input
           id="dateOfBirth"
           label="Date of Birth"
@@ -74,6 +84,29 @@ const UserUpdateForm = () => {
           errorMessage={errors.phone?.message}
           {...register("phone")}
         />
+        <div className="flex w-full flex-col gap-3">
+          <span className="text-sm font-medium text-gray-700 dark:text-white">
+            Dominant Hand
+          </span>
+          <div>
+            <RadioGroup className="justify flex flex-row items-center gap-12 text-black">
+              {["Left", "Right"].map((option) => (
+                <div key={option} className="flex items-center gap-2">
+                  <RadioGroupItem
+                    {...register("dominantHand")}
+                    value={option}
+                    id={`position-${option}`}
+                  />
+                  <label htmlFor={`position-${option}`} className="text-sm">
+                    {option}
+                  </label>
+                </div>
+              ))}
+            </RadioGroup>
+
+            {errors.dominantHand && <p>{errors.dominantHand.message}</p>}
+          </div>
+        </div>
       </div>
       <div className="grid grid-cols-1 gap-4 sm:grid-cols-2">
         <Input
@@ -101,35 +134,7 @@ const UserUpdateForm = () => {
           {...register("weight")}
         />
       </div>
-      <div className="flex w-full flex-col gap-3">
-        <span className="text-sm font-medium text-gray-700 dark:text-white">
-          Position
-        </span>
-        <div>
-          <Controller
-            name="dominantHand"
-            control={control}
-            render={({ field }) => (
-              <RadioGroup
-                {...field}
-                onValueChange={field.onChange}
-                value={field.value}
-                className="flex flex-row gap-4 text-black"
-              >
-                {["Left", "Right"].map((option) => (
-                  <div key={option} className="flex items-center gap-2">
-                    <RadioGroupItem value={option} id={`position-${option}`} />
-                    <label htmlFor={`position-${option}`} className="text-sm">
-                      {option}
-                    </label>
-                  </div>
-                ))}
-              </RadioGroup>
-            )}
-          />
-          {errors.dominantHand && <p>{errors.dominantHand.message}</p>}
-        </div>
-      </div>
+
       <Button type="submit" className="bg-black">
         Continue
       </Button>

@@ -6,7 +6,7 @@ import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
 import { useTransition } from "react";
-import { Controller, useForm } from "react-hook-form";
+import { useForm } from "react-hook-form";
 import { positionOptions } from "../utils/constants";
 import { type JoinTeamFormData, joinTeamSchema } from "../zod";
 
@@ -15,7 +15,6 @@ const JoinTeamForm = () => {
   const {
     register,
     handleSubmit,
-    control,
     formState: { errors },
   } = useForm<JoinTeamFormData>({
     resolver: zodResolver(joinTeamSchema),
@@ -38,7 +37,12 @@ const JoinTeamForm = () => {
     });
   };
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
+    <form
+      onSubmit={handleSubmit(onSubmit, (errors) => {
+        console.log("Validation errors:", errors);
+      })}
+      className="space-y-4"
+    >
       <Input
         id="teamCode"
         aria-label="Enter team code:"
@@ -48,32 +52,23 @@ const JoinTeamForm = () => {
         error={errors.teamCode}
         errorMessage={errors.teamCode?.message}
       />
-      <Controller
-        name="position"
-        control={control}
-        render={({ field }) => (
-          <RadioGroup
-            onValueChange={field.onChange}
-            value={field.value}
-            className="flex flex-row gap-4"
-          >
-            {positionOptions.map((option) => (
-              <div key={option.value} className="flex items-center gap-2">
-                <RadioGroupItem
-                  value={option.value}
-                  id={`position-${option.value}`}
-                />
-                <label
-                  htmlFor={`position-${option.value}`}
-                  className="text-sm text-gray-800 dark:text-white"
-                >
-                  {option.value}
-                </label>
-              </div>
-            ))}
-          </RadioGroup>
-        )}
-      />
+      <RadioGroup className="flex flex-row gap-4">
+        {positionOptions.map((option) => (
+          <div key={option.value} className="flex items-center gap-2">
+            <RadioGroupItem
+              value={option.value}
+              id={`position-${option.value}`}
+              {...register("position")}
+            />
+            <label
+              htmlFor={`position-${option.value}`}
+              className="text-sm text-gray-800 dark:text-white"
+            >
+              {option.value}
+            </label>
+          </div>
+        ))}
+      </RadioGroup>
       <Input
         id="teamCode"
         aria-label="Enter Jersey Number:"
