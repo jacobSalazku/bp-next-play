@@ -36,7 +36,6 @@ model User {
   sessions      Session[]
   teams         Team[]        @relation("TeamCreator")
   teamMembers   TeamMember[]
-  attendances  ActivityAttendance[]
 }
 
 // Account table
@@ -58,7 +57,6 @@ model Account {
 
   // Relationships
   user      User            @relation(fields: [userId], references: [id])
-
   @@unique([provider, providerAccountId]) // <--- Add this line
   @@index([userId])
 }
@@ -89,11 +87,11 @@ model Team {
   image      String?
   creatorId  String
   createdAt  DateTime
+  members    TeamMember[]
+  activities Activity[]
   
   // Relationships
   creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
-  members    TeamMember[]
-  activities Activity[]
 }
 
 // TeamMember table
@@ -106,9 +104,12 @@ model TeamMember {
   number       String?
   position     String?
 
+  statlines    Statline[]
+  attendances  ActivityAttendance[]
+
+//relationships
   user         User          @relation(fields: [userId], references: [id])
   team         Team          @relation(fields: [teamId], references: [id])
-  statlines    Statline[]
 }
 
 // Activity table
@@ -125,46 +126,52 @@ model Activity {
   createdAt    DateTime
   updatedAt    DateTime
   teamId       String
+
+  attendees    ActivityAttendance[]
+  statlines    Statline[]
   
   // Relationships
-  team       Team          @relation(fields: [teamId], references: [id])
-  attendees  ActivityAttendance[]
-  statlines  Statline[]
+  team         Team          @relation(fields: [teamId], references: [id])
+ 
 }
 
 // Statline table
 model Statline {
-  id                 String      @id @default(cuid())
-  teamMemberId       String
-  fieldGoalsMade     Int
-  fieldGoalsMissed   Int
-  threePointersMade  Int
+  id                  String      @id @default(cuid())
+  teamMemberId        String
+  fieldGoalsMade      Int
+  fieldGoalsMissed    Int
+  threePointersMade   Int
   threePointersMissed Int
-  freeThrows         Int
-  missedFreeThrows   Int
-  assists            Int
-  steals             Int
-  turnovers          Int
-  rebounds           Int
-  blocks             Int
-  createdAt          DateTime
-  updatedAt          DateTime
-  activityId         String
+  freeThrows          Int
+  missedFreeThrows    Int
+  assists             Int
+  steals              Int
+  turnovers           Int
+  rebounds            Int
+  blocks              Int
+  createdAt           DateTime
+  updatedAt           DateTime
+  activityId          String
   
   // Relationships
   teamMember TeamMember  @relation(fields: [teamMemberId], references: [id])
   activity   Activity    @relation(fields: [activityId], references: [id])
 }
 
-// ActivityAttendance table
 model ActivityAttendance {
   id               String      @id @default(cuid())
   activityId       String
-  userId           String
+  teamMemberId     String       
   attendanceStatus String
+  reason           String?
   attendedAt       DateTime?
-  
+
   // Relationships
-  activity   Activity      @relation(fields: [activityId], references: [id])
-  user       User          @relation(fields: [userId], references: [id])
+  activity     Activity      @relation(fields: [activityId], references: [id])
+  teamMember   TeamMember    @relation(fields: [teamMemberId], references: [id])
+
+@@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
+  @@index([activityId])
+  @@index([teamMemberId])
 }

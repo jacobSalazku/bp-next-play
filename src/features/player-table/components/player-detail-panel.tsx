@@ -5,63 +5,71 @@ import { Tabs, TabsContent, TabsList, TabsTrigger } from "@/components/ui/tabs";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import type { TeamMember } from "@/types";
 import { cn } from "@/utils/tw-merge";
-import { Calendar, X } from "lucide-react";
+
+import { useNavigationStore } from "@/store/use-navigation-store";
+import { Calendar, User, X } from "lucide-react";
 import Image from "next/image";
+import { getFullPosition } from "../utils";
 
 const PlayerDetailPanel = ({
   selectedPlayer,
-  closeSidebar,
-  navOpen,
-  sidebarOpen,
 }: {
-  closeSidebar: () => void;
-  navOpen: boolean;
-  sidebarOpen: boolean;
   selectedPlayer: TeamMember;
 }) => {
+  const { navOpen, playerSideBar, setPlayerSideBar } = useNavigationStore();
   const isMobile = useIsMobile();
+
   return (
     <div
       className={cn(
-        "will-change-opacity fixed inset-y-0 z-30 transform overflow-y-auto border-r bg-gray-950 opacity-100 shadow-xl transition-all duration-300 ease-in-out will-change-transform",
-        isMobile
-          ? "w-full"
-          : navOpen
-            ? "left-64 w-[400px]"
-            : "left-16 w-[400px]",
-        sidebarOpen
+        navOpen ? "left-64 w-[400px]" : "w-full md:left-16 md:w-[400px]",
+        playerSideBar
           ? "translate-x-0"
           : isMobile
             ? "-translate-x-full"
             : "-translate-x-full",
+        "fixed inset-y-0 z-30 transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
       )}
     >
       {selectedPlayer && (
-        <div className="flex h-full flex-col">
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b p-4">
-            <h2 className="text-xl font-bold">Player Details</h2>
-            <Button variant="ghost" size="icon" onClick={closeSidebar}>
+        <div className="flex h-full flex-col text-white">
+          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-orange-200/20 px-4 py-6">
+            <h2 className="font-righteous text-xl font-bold">Player Details</h2>
+            <Button
+              variant="ghost"
+              size="icon"
+              onClick={() => setPlayerSideBar(!playerSideBar)}
+            >
               <X className="h-5 w-5" />
               <span className="sr-only">Close</span>
             </Button>
           </div>
-          <div className="flex-1 overflow-auto">
-            <div className="flex flex-col items-center border-b p-4">
-              <Image
-                width={200}
-                height={200}
-                src={selectedPlayer.user.image ?? "/placeholder.svg"}
-                alt={selectedPlayer.user.name ?? "Player image"}
-                className="h-44 w-44 rounded-full object-cover"
-              />
+          <div className="flex flex-col overflow-auto border-b border-orange-200/20 py-8">
+            <div className="flex flex-col items-center p-4">
+              {selectedPlayer.user.image ? (
+                <Image
+                  width={150}
+                  height={150}
+                  src={selectedPlayer.user.image ?? "/placeholder.svg"}
+                  alt={selectedPlayer.user.name ?? "Player image"}
+                  className="h-32 w-32 rounded-full object-cover"
+                />
+              ) : (
+                <User
+                  strokeWidth={1}
+                  className="h-32 w-32 rounded-full bg-gray-400"
+                />
+              )}
             </div>
             <h3 className="text-center text-2xl font-bold">
               #{selectedPlayer.number} {selectedPlayer.user.name}
             </h3>
-            <p className="text-muted-foreground">{selectedPlayer.position}</p>
+            <p className="text-center text-orange-300/80">
+              {getFullPosition(selectedPlayer.position)}
+            </p>
           </div>
           <Tabs defaultValue="info" className="w-full p-4">
-            <TabsList className="grid w-full grid-cols-2">
+            <TabsList className="grid w-full grid-cols-2 border border-orange-200/20 bg-gray-800">
               <TabsTrigger value="info">Personal Info</TabsTrigger>
               <TabsTrigger value="attendance">Attendance</TabsTrigger>
             </TabsList>
