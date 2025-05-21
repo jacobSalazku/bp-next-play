@@ -1,12 +1,17 @@
+import type { JoinTeamFormData } from "@/features/auth/zod";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
 import { getUserbyId } from "./user-service";
 
-export async function requestToJoinTeam(ctx: Context, teamId: string) {
+export async function requestToJoinTeam(
+  ctx: Context,
+
+  input: JoinTeamFormData,
+) {
   const { user } = await getUserbyId(ctx);
 
   const team = await ctx.db.team.findUnique({
-    where: { code: teamId },
+    where: { code: input.teamCode },
   });
 
   if (!team) {
@@ -32,6 +37,8 @@ export async function requestToJoinTeam(ctx: Context, teamId: string) {
     data: {
       userId: user.id,
       teamId: team.id,
+      position: input.position,
+      number: input.number,
       role: "PLAYER",
       status: "ACTIVE", // Assuming you want to set the status to pending when requesting
     },

@@ -150,25 +150,31 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
-              <Button
-                onClick={() => {
-                  setFormState("edit");
-                  reset({
-                    title: selectedActivity.title,
-                    date: format(new Date(selectedActivity.date), "yyyy-MM-dd"),
-                    time: selectedActivity.time,
-                    duration: selectedActivity.duration ?? undefined,
-                    practiceType:
-                      (selectedActivity.practiceType as PracticeType) ??
-                      undefined,
-                  });
-                }}
-                variant="outline"
-              >
-                Edit practice
-              </Button>
-            </div>
+
+            {role.role === "COACH" && (
+              <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
+                <Button
+                  onClick={() => {
+                    setFormState("edit");
+                    reset({
+                      title: selectedActivity.title,
+                      date: format(
+                        new Date(selectedActivity.date),
+                        "yyyy-MM-dd",
+                      ),
+                      time: selectedActivity.time,
+                      duration: selectedActivity.duration ?? undefined,
+                      practiceType:
+                        (selectedActivity.practiceType as PracticeType) ??
+                        undefined,
+                    });
+                  }}
+                  variant="outline"
+                >
+                  Edit practice
+                </Button>
+              </div>
+            )}
           </>
         )}
 
@@ -241,6 +247,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
               aria-label="Practice date input"
               className="border-gray-700"
               label="Date"
+              labelColor="light"
               type="date"
               {...register("date")}
               error={errors.date}
