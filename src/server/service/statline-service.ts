@@ -45,27 +45,33 @@ export async function submitStatlines(
 
   try {
     await Promise.all(
-      statlinesToUpsert.map((statline) =>
-        ctx.db.statline.upsert({
+      statlinesToUpsert.map(async (statline) => {
+        const existing = await ctx.db.statline.findFirst({
           where: {
-            teamMemberId_activityId: {
-              teamMemberId: statline.teamMemberId,
-              activityId: statline.activityId,
-            },
+            teamMemberId: statline.teamMemberId,
+            activityId: statline.activityId,
           },
-          update: {
-            ...statline,
+        });
 
-            createdAt: undefined,
-            updatedAt: new Date(),
-          },
-          create: {
-            ...statline,
-            createdAt: new Date(),
-            updatedAt: new Date(),
-          },
-        }),
-      ),
+        if (existing) {
+          await ctx.db.statline.update({
+            where: { id: existing.id },
+            data: {
+              ...statline,
+              createdAt: undefined,
+              updatedAt: new Date(),
+            },
+          });
+        } else {
+          await ctx.db.statline.create({
+            data: {
+              ...statline,
+              createdAt: new Date(),
+              updatedAt: new Date(),
+            },
+          });
+        }
+      }),
     );
 
     return { success: true, count: statlinesToUpsert.length };
