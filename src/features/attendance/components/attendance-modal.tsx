@@ -8,7 +8,7 @@ import useStore from "@/store/store";
 import type { UserTeamMember } from "@/types";
 import { format } from "date-fns";
 import { X } from "lucide-react";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useAttendance } from "../hooks/use-attendance";
 import { attendanceStatus } from "../utils/const";
@@ -39,19 +39,8 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
           | "LATE"
           | undefined) ?? undefined,
       reason:
-        selectedActivity?.attendees?.find(
-          (a) => a.teamMemberId === member?.id,
-        ) &&
-        "reason" in
-          (selectedActivity?.attendees?.find(
-            (a) => a.teamMemberId === member?.id,
-          ) as object)
-          ? (
-              selectedActivity?.attendees?.find(
-                (a) => a.teamMemberId === member?.id,
-              ) as { reason?: string }
-            ).reason
-          : undefined,
+        selectedActivity?.attendees?.find((a) => a.teamMemberId === member?.id)
+          ?.reason ?? "",
     },
   });
 
@@ -64,10 +53,6 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
   );
   const attendanceSelection = useWatch({ control, name: "attendanceStatus" });
 
-  useEffect(() => {
-    setFormState(mode);
-  }, [mode]);
-
   const formattedDate =
     selectedActivity && format(selectedActivity.date, "EEEE, d MMM");
 
@@ -79,16 +64,16 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
       throw new Error("Team member is required.");
     }
 
-    // Save to localStorage
-    localStorage.setItem(
-      `attendance-${member.id}-${selectedActivity.id}`,
-      JSON.stringify(attendance),
-    );
-
     await submitAttendance.mutateAsync({
       ...attendance,
       activityId: selectedActivity.id,
       teamMemberId: member.id,
+    });
+    reset({
+      activityId: selectedActivity?.id ?? "",
+      teamMemberId: member?.id ?? "",
+      attendanceStatus: attendance.attendanceStatus,
+      reason: attendance.reason,
     });
   };
   return (

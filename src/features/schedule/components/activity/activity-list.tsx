@@ -68,7 +68,7 @@ export function ActivityList({
       {filteredActivities.length > 0 ? (
         <div className="scrollbar-none mb-6 max-h-96 space-y-2 overflow-y-auto pr-2">
           {filteredActivities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} team={team} />
+            <ActivityCard key={activity.id} activity={activity} />
           ))}
         </div>
       ) : (

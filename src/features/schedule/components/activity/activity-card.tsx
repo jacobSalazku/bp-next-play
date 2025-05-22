@@ -6,15 +6,13 @@ import { useTeam } from "@/context/team-context";
 import { useRole } from "@/hooks/use-role";
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
-import type { Activity, TeamInformation } from "@/types";
+import type { Activity } from "@/types";
 import { getActivityStyle } from "@/utils";
-
 import { Clock } from "lucide-react";
 import { type FC } from "react";
 
 type ActivityCardProps = {
   activity: Activity;
-  team: TeamInformation;
 };
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
@@ -22,7 +20,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
   const { role } = useRole();
 
   const {
-    selectedActivity,
     setOpenPracticeDetails,
     setOpenGameDetails,
     setSelectedActivity,
