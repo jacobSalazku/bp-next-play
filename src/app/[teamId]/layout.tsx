@@ -16,7 +16,7 @@ export default async function TeamLayout({
     <TRPCReactProvider>
       <HydrateClient>
         <main className="flex w-screen justify-center overflow-hidden bg-gray-950">
-          <div className="w-full max-w-7xl border-white">
+          <div className="w-full border-white">
             <TeamProvider teamSlug={teamId}>
               <Navigation>{children}</Navigation>
             </TeamProvider>

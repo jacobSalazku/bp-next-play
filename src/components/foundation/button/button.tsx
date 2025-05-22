@@ -13,7 +13,7 @@ const buttonVariants = cva(
         destructive:
           "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
         outline:
-          "text-orange-300 border border-orange-300/ text-whitew transition-all duration-200 ease-in-out hover:text-white hover:bg-gray-800 hover:shadow-md px-4 py-2 rounded",
+          "border border-orange-300/20 text-white transition-all duration-200 ease-in-out hover:text-white hover:bg-gray-800 hover:shadow-md px-4 py-2 rounded",
         secondary: "bg-orange-300/70 text-white shadow-sm ",
         ghost:
           "text-gray-400 font-light hover:bg-accent hover:text-accent-foreground",
@@ -43,15 +43,7 @@ export type ButtonProps = ButtonHTMLAttributes<HTMLButtonElement> &
 
 const Button = forwardRef<HTMLButtonElement, ButtonProps>(
   (
-    {
-      className,
-      type = "button",
-      variant,
-      size,
-      asChild = false,
-
-      ...props
-    },
+    { className, type = "button", variant, size, asChild = false, ...props },
     ref,
   ) => {
     const Comp = asChild && type !== "submit" ? Slot : "button";
