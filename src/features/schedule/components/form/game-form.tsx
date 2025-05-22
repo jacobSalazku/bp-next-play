@@ -3,10 +3,9 @@
 import { Button } from "@/components/foundation/button/button";
 import { Input } from "@/components/foundation/input";
 import { useTeam } from "@/context/team-context";
-import { useRole } from "@/hooks/use-role";
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
-import type { TeamInformation } from "@/types";
+import type { TeamInformation, UserTeamMember } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -23,15 +22,15 @@ type GameFormProps = {
   mode: Mode;
   team: TeamInformation;
   onClose: () => void;
+  member: UserTeamMember;
 };
 
-const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
+const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   const { teamSlug } = useTeam();
   const [formState, setFormState] = useState<Mode>(mode);
   const createGame = useCreateGameActivity(teamSlug, onClose);
   const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
-  const role = useRole();
 
   const { selectedDate, selectedActivity, openGameModal } = useStore();
 
@@ -54,6 +53,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
   const isViewMode = formState === "view";
   const isEditMode = formState === "edit";
   const isCreateMode = formState === "create";
+  const role = member?.role === "COACH";
 
   const buttonText = () => {
     if (createGame.status === "pending") {
@@ -220,22 +220,27 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode }) => {
                 </div>
               </div>
             </div>
-            <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
-              <Button
-                onClick={() => {
-                  setFormState("edit");
-                  reset({
-                    title: selectedActivity.title,
-                    time: selectedActivity.time,
-                    duration: selectedActivity.duration ?? 2,
-                    date: format(new Date(selectedActivity.date), "yyyy-MM-dd"),
-                  });
-                }}
-                variant="outline"
-              >
-                Edit Game
-              </Button>
-            </div>
+            {role && (
+              <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
+                <Button
+                  onClick={() => {
+                    setFormState("edit");
+                    reset({
+                      title: selectedActivity.title,
+                      time: selectedActivity.time,
+                      duration: selectedActivity.duration ?? 2,
+                      date: format(
+                        new Date(selectedActivity.date),
+                        "yyyy-MM-dd",
+                      ),
+                    });
+                  }}
+                  variant="outline"
+                >
+                  Edit Game
+                </Button>
+              </div>
+            )}
           </>
         )}
       </div>

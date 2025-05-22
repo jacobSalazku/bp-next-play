@@ -3,21 +3,20 @@
 import { Button } from "@/components/foundation/button/button";
 import { Link } from "@/components/foundation/button/link";
 import { useTeam } from "@/context/team-context";
-import { useRole } from "@/hooks/use-role";
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
-import type { Activity } from "@/types";
+import type { Activity, UserTeamMember } from "@/types";
 import { getActivityStyle } from "@/utils";
 import { Clock } from "lucide-react";
 import { type FC } from "react";
 
 type ActivityCardProps = {
   activity: Activity;
+  member: UserTeamMember;
 };
 
-export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
+export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
   const { teamSlug } = useTeam();
-  const { role } = useRole();
 
   const {
     setOpenPracticeDetails,
@@ -28,6 +27,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
   } = useStore();
 
   const { bgColor, textColor, Icon } = getActivityStyle(activity.type);
+  const role = member?.role === "COACH";
 
   const handleViewDetails = () => {
     setSelectedActivity(activity);
@@ -50,7 +50,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
   const boxScoreSearchParams = new URLSearchParams();
   boxScoreSearchParams.set("activityId", activity.id);
 
-  if (!role) return null;
   return (
     <>
       <div className="group flex flex-col rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center">
@@ -74,7 +73,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
           </div>
         </div>
         <div>
-          {activity.type === "Game" && role === "COACH" && (
+          {activity.type === "Game" && role && (
             <Link
               href={{
                 pathname: `/${teamSlug}/box-score`,
@@ -87,7 +86,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity }) => {
               Create Box Score
             </Link>
           )}
-          {role === "PLAYER" && (
+          {!role && (
             <Button
               onClick={handleAttendance}
               size="sm"

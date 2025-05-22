@@ -8,7 +8,7 @@ import useStore from "@/store/store";
 import type { UserTeamMember } from "@/types";
 import { format } from "date-fns";
 import { X } from "lucide-react";
-import { useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { Controller, useForm, useWatch } from "react-hook-form";
 import { useAttendance } from "../hooks/use-attendance";
 import { attendanceStatus } from "../utils/const";
@@ -52,6 +52,10 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
       : () => setOpenPracticeAttendance(false),
   );
   const attendanceSelection = useWatch({ control, name: "attendanceStatus" });
+
+  useEffect(() => {
+    setFormState(mode);
+  }, [mode]);
 
   const formattedDate =
     selectedActivity && format(selectedActivity.date, "EEEE, d MMM");

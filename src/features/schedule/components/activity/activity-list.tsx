@@ -4,7 +4,6 @@ import { Button } from "@/components/foundation/button/button";
 import AttendanceModal from "@/features/attendance/components/attendance-modal";
 import useStore from "@/store/store";
 import type { Activity, TeamInformation, UserTeamMember } from "@/types";
-import { TeamMemberRole } from "@/types/enum";
 import { format, isSameDay } from "date-fns";
 import { AlertCircle, CalendarClock, Plus } from "lucide-react";
 import { useMemo, useState } from "react";
@@ -16,16 +15,10 @@ import { ActivityFilter } from "./activity-filter";
 type ActivityListProps = {
   activities: Activity[];
   team: TeamInformation;
-  role: TeamMemberRole;
   member: UserTeamMember;
 };
 
-export function ActivityList({
-  activities,
-  team,
-  role,
-  member,
-}: ActivityListProps) {
+export function ActivityList({ activities, team, member }: ActivityListProps) {
   const {
     selectedDate,
     openGameModal,
@@ -41,6 +34,8 @@ export function ActivityList({
   } = useStore();
 
   const [filter, setFilter] = useState<"all" | "game" | "practice">("all");
+
+  const role = member?.role === "COACH";
 
   const filteredActivities = useMemo(() => {
     const activitiesForDay = activities.filter((activity) =>
@@ -68,14 +63,18 @@ export function ActivityList({
       {filteredActivities.length > 0 ? (
         <div className="scrollbar-none mb-6 max-h-96 space-y-2 overflow-y-auto pr-2">
           {filteredActivities.map((activity) => (
-            <ActivityCard key={activity.id} activity={activity} />
+            <ActivityCard
+              key={activity.id}
+              activity={activity}
+              member={member}
+            />
           ))}
         </div>
       ) : (
         <div className="mb-6 rounded-xl border border-dashed border-gray-700 bg-gray-900 py-12 text-center">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
           <p className="text-gray-400">No activities scheduled for this day</p>
-          {role === TeamMemberRole.COACH && (
+          {role && (
             <Button
               variant="outline"
               size="sm"
@@ -91,6 +90,7 @@ export function ActivityList({
         <GameForm
           team={team}
           mode="create"
+          member={member}
           onClose={() => setOpenGameModal(false)}
         />
       )}
@@ -98,6 +98,7 @@ export function ActivityList({
         <PracticeForm
           team={team}
           mode="create"
+          member={member}
           onClose={() => setOpenPracticeModal(false)}
         />
       )}
@@ -105,6 +106,7 @@ export function ActivityList({
         <GameForm
           team={team}
           mode="view"
+          member={member}
           onClose={() => setOpenGameDetails(false)}
         />
       )}
@@ -112,6 +114,7 @@ export function ActivityList({
         <PracticeForm
           team={team}
           mode="view"
+          member={member}
           onClose={() => setOpenPracticeDetails(false)}
         />
       )}
@@ -120,7 +123,7 @@ export function ActivityList({
         <AttendanceModal member={member} mode="Practice" />
       )}
       <div className="mt-4 flex w-full justify-center gap-4">
-        {role === TeamMemberRole.COACH && (
+        {role && (
           <>
             <Button
               onClick={() => setOpenGameModal(true)}

@@ -3,10 +3,9 @@
 import { Button } from "@/components/foundation/button/button";
 import { Input } from "@/components/foundation/input";
 import { useTeam } from "@/context/team-context";
-import { useRole } from "@/hooks/use-role";
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
-import type { TeamInformation } from "@/types";
+import type { TeamInformation, UserTeamMember } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
@@ -22,15 +21,15 @@ type PracticeProps = {
   mode: Mode;
   team: TeamInformation;
   onClose: () => void;
+  member: UserTeamMember;
 };
 
-const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
+const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
   const { teamSlug } = useTeam();
   const [formState, setFormState] = useState<Mode>(mode);
   const createPractice = useCreatePracticeActivity(teamSlug, onClose);
   const editPractice = useEditPracticeActivity(teamSlug, onClose);
   const router = useRouter();
-  const role = useRole();
 
   const {
     selectedDate,
@@ -58,6 +57,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
   const isViewMode = formState === "view";
   const isEditMode = formState === "edit";
   const isCreateMode = formState === "create";
+  const role = member?.role === "COACH";
 
   const onSubmit = async (data: PracticeData) => {
     const date = new Date(data.date);
@@ -151,7 +151,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
               </div>
             </div>
 
-            {role.role === "COACH" && (
+            {role && (
               <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
                 <Button
                   onClick={() => {
@@ -177,7 +177,6 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
             )}
           </>
         )}
-
         {(isEditMode || isCreateMode) && (
           <form onSubmit={handleSubmit(onSubmit)} className="space-y-4 p-4">
             <Input
@@ -213,7 +212,6 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose }) => {
                 ))}
               </div>
             </div>
-
             <Input
               id="time"
               aria-label="Practice start time input"
