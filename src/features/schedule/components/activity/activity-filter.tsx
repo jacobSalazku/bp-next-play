@@ -1,3 +1,5 @@
+'use client";';
+
 import { Button } from "@/components/foundation/button/button";
 import { Trophy, Users } from "lucide-react";
 
@@ -17,7 +19,7 @@ export function ActivityFilter({
       {["all", "game", "practice"].map((type) => (
         <Button
           key={type}
-          variant={currentFilter === type ? "default" : "ghost"}
+          variant={currentFilter === type ? "outline" : "default"}
           size="sm"
           onClick={() => onFilterChange(type as ActivityType)}
           className="rounded-none border-orange-300/20 first:rounded-l-lg last:rounded-r-lg hover:bg-gray-900 hover:text-orange-300"
