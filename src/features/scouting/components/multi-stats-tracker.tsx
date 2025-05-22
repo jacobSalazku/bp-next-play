@@ -8,7 +8,7 @@ import { TableHead } from "@/components/foundation/table/table-head";
 import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
 import type { TeamMembers } from "@/types";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
 import { statRows } from "../utils/const";
@@ -26,6 +26,8 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const createStatline = useCreateNewStatline();
 
+  const localStorageKey = `boxscore-${activityId}`;
+
   const initialPlayers = players.map((p) => ({
     ...p,
     statlines: p.statlines,
@@ -37,44 +39,43 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   const stats = useWatch<PlayersData>({ control });
 
-  // useDebouncedSave(
-  //   stats as PlayersData,
-  //   async (data) => {
-  //     await createStatline.mutateAsync({
-  //       players: data.players.map((player) => ({
-  //         id: player.id,
-  //         activityId,
-  //         statlines: player.statlines,
-  //       })),
+  // Load from localStorage
+  // useEffect(() => {
+  //   const stored = localStorage.getItem(localStorageKey);
+  //   if (stored) {
+  //     try {
+  //       const parsed = JSON.parse(stored) as PlayersData;
+  //       if (parsed?.players) {
+  //         reset(parsed);
+  //       }
+  //     } catch (err) {
+  //       console.error("Failed to parse localStorage data", err);
+  //     }
+  //   } else {
+  //     reset({
+  //       players: initialPlayers,
+  //       activityId,
   //     });
-  //   },
-  //   60000,
-  // );
+  //   }
+  // }, [localStorageKey, reset]);
 
-  useEffect(() => {
-    const stored = localStorage.getItem(activityId);
-    if (stored) {
-      try {
-        const parsed = JSON.parse(stored) as PlayersData;
-        if (parsed?.players) {
-          reset(parsed);
-        }
-      } catch (err) {
-        console.error("Failed to parse localStorage data", err);
-      }
-    } else {
-      // If nothing in localStorage, use props and reset to that
+  // Save to localStorage on stat change
+  // useEffect(() => {
+  //   if (stats.players && stats.players.length > 0) {
+  //     localStorage.setItem(localStorageKey, JSON.stringify(stats));
+  //   }
+  // }, [stats, localStorageKey]);
 
-      reset({
-        players: players,
-        activityId,
-      });
-    }
-  }, [activityId, players, reset]);
-
-  useEffect(() => {
-    localStorage.setItem(activityId, JSON.stringify(stats));
-  }, [stats, activityId]);
+  // // Clean up on unload
+  // useEffect(() => {
+  //   const handleBeforeUnload = () => {
+  //     localStorage.removeItem(localStorageKey);
+  //   };
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [localStorageKey]);
 
   const totalTeamStats = stats.players?.reduce(
     (acc, player) => {
@@ -82,7 +83,6 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
       for (const key of Object.keys(
         defaultStatline,
       ) as (keyof StatlineData)[]) {
-        // Only sum numeric fields, skip 'id'
         if (key !== "id") {
           acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
         }
@@ -101,28 +101,6 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
     const updatedValue = Math.max(0, Number(current) + amount);
 
     setValue(`players.${playerIndex}.statlines.0.${field}`, updatedValue);
-
-    // Immediately save updated stats to localStorage
-    const updatedPlayers =
-      stats.players?.map((player, i) => {
-        if (i === playerIndex) {
-          return {
-            ...player,
-            statlines: [
-              {
-                ...player.statlines?.[0],
-                [field]: updatedValue,
-              },
-            ],
-          };
-        }
-        return player;
-      }) ?? [];
-
-    localStorage.setItem(
-      activityId,
-      JSON.stringify({ players: updatedPlayers, activityId }),
-    );
   };
 
   const onSubmit = async (data: PlayersData) => {
@@ -157,6 +135,9 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
     });
 
     await createStatline.mutateAsync({ players: updatedPlayers });
+
+    // // Clear localStorage and reset form
+    // localStorage.removeItem(localStorageKey);
     reset(data);
   };
 
@@ -164,10 +145,11 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   return (
     <form
+      key={activityId}
       onSubmit={handleSubmit(onSubmit)}
       className="scrollbar-none mx-auto h-full w-full max-w-5xl overflow-y-auto p-4"
     >
-      <h2 className="mb-6 text-xl font-bold text-gray-200 sm:text-2xl md:text-3xl">
+      <h2 className="font-righteous mb-6 text-xl font-bold text-gray-200 sm:text-2xl md:text-3xl">
         Player Box Score
       </h2>
       <div className="flex w-full min-w-full flex-col rounded-lg md:min-h-1/2">

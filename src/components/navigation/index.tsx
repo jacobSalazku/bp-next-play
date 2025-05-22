@@ -55,7 +55,7 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
           >
             <Menu className="h-5 w-5" />
           </button>
-          <h1 className="text-xl font-bold">{title}</h1>
+          <h1 className="font-righteous text-xl font-bold">{title}</h1>
         </div>
       </header>
       {mobileNavOpen && (
