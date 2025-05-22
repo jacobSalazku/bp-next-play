@@ -1,14 +1,9 @@
+import { righteous, roboto } from "@/styles/font";
+
 import "@/styles/globals.css";
 import { TRPCReactProvider } from "@/trpc/react";
 import { HydrateClient } from "@/trpc/server";
 import { type Metadata } from "next";
-import { Righteous } from "next/font/google";
-
-const righteous = Righteous({
-  variable: "--font-righteous",
-  display: "swap",
-  weight: "400",
-});
 
 export const metadata: Metadata = {
   title: "Create T3 App",
@@ -16,12 +11,12 @@ export const metadata: Metadata = {
   icons: [{ rel: "icon", url: "/favicon.ico" }],
 };
 
-export default function RootLayout({
+export default async function RootLayout({
   children,
 }: Readonly<{ children: React.ReactNode }>) {
   return (
     <html lang="en">
-      <body className={righteous.className}>
+      <body className={`${righteous.variable} ${roboto.variable}`}>
         <TRPCReactProvider>
           <HydrateClient>{children}</HydrateClient>
         </TRPCReactProvider>

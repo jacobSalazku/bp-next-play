@@ -1,66 +1,46 @@
-import { TRPCError } from "@trpc/server";
+import { updateUserSchema } from "@/features/auth/zod";
+import { getUserbyId, updateUser } from "@/server/service/user-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
-    const user = await ctx.db.user.findFirst({
-      where: { id: ctx.session.user.id },
-      select: {
-        id: true,
-        name: true,
-        email: true,
-        image: true,
-      },
-    });
-    const teamMember = await ctx.db.teamMember.findFirst({
-      where: { userId: ctx.session.user.id },
-      select: {
-        team: {
-          select: {
-            id: true,
-            name: true,
-            code: true,
-            creatorId: true,
-          },
-        },
-        id: true,
-        status: true,
-        role: true,
-      },
-    });
+    const { user, teamMember } = await getUserbyId(ctx);
+
     return { user, teamMember };
   }),
 
-  getTeamMembers: protectedProcedure
-    .input(z.object({ teamId: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const team = await ctx.db.team.findUnique({
-        where: { id: input.teamId },
-        select: {
-          members: {
-            select: {
-              user: {
-                select: {
-                  id: true,
-                  name: true,
-                  email: true,
-                  image: true,
-                },
-              },
-              id: true,
-              role: true,
-              status: true,
-            },
-          },
-        },
-      });
-      if (!team) {
-        throw new TRPCError({
-          code: "NOT_FOUND",
-          message: "Team not found.",
-        });
-      }
-      return team.members;
+  updateUser: protectedProcedure
+    .input(updateUserSchema.extend({ hasOnBoarded: z.boolean() }))
+    .mutation(async ({ ctx, input }) => {
+      const { user } = await updateUser(ctx, input);
+
+      return user;
     }),
+
+  // getPendingRequests: protectedProcedure
+  //   .input(z.object({ teamId: z.string() }))
+  //   .query(async ({ ctx, input }) => {
+  //     const pendingRequests = await ctx.db.teamMember.findMany({
+  //       where: {
+  //         teamId: input.teamId,
+  //         status: TeamMemberStatus.PENDING,
+  //       },
+  //       select: {
+  //         user: {
+  //           select: {
+  //             id: true,
+  //             name: true,
+  //             email: true,
+  //             image: true,
+  //           },
+  //         },
+  //         id: true,
+  //         role: true,
+  //         status: true,
+  //       },
+  //     });
+
+  //     return pendingRequests;
+  //   }),
 });

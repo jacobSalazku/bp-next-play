@@ -17,44 +17,46 @@ datasource db {
 
 // User table
 model User {
-  id          String        @id @default(cuid())
-  name        String?
-  email       String?     @unique
+  id            String        @id @default(cuid())
+  name          String?
+  email         String?         @unique
   emailVerified DateTime?
-  image       String?
-  createdAt   DateTime    @default(now())
+  image         String?
+  dateOfBirth   DateTime?
+  phone         String?       @unique
+  height        Float?
+  weight        Float?
+  dominantHand  String?
+  createdAt     DateTime      @default(now())
+  updatedAt     DateTime      @default(now())
+  hasOnBoarded  Boolean       @default(false)
   
   // Relationships
-  accounts     Account[]
-  sessions     Session[]
-  posts        Post[]
-  teams        Team[]      @relation("TeamCreator")
-  teamMembers  TeamMember[]
-  statlines    Statline[]
-  attendances  ActivityAttendance[]
+  accounts      Account[]
+  sessions      Session[]
+  teams         Team[]        @relation("TeamCreator")
+  teamMembers   TeamMember[]
 }
 
 // Account table
 model Account {
-  id                      String     @id @default(cuid())
-  userId                  String
-  type                    String
-  provider                String
-  providerAccountId       String
-  refresh_token           String?
-  access_token            String?
-  expires_at              Int?
-  token_type              String?
-  scope                   String?
-  id_token                String?
-  session_state           String?
-  refresh_token_expires_in Int?
+  id                        String     @id @default(cuid())
+  userId                    String
+  type                      String
+  provider                  String
+  providerAccountId         String
+  refresh_token             String?
+  access_token              String?
+  expires_at                Int?
+  token_type                String?
+  scope                     String?
+  id_token                  String?
+  session_state             String?
+  refresh_token_expires_in  Int?
+  image                     String?
 
-  image                    String?
-  
   // Relationships
-  user      User          @relation(fields: [userId], references: [id])
-
+  user      User            @relation(fields: [userId], references: [id])
   @@unique([provider, providerAccountId]) // <--- Add this line
   @@index([userId])
 }
@@ -67,7 +69,7 @@ model Session {
   expires       DateTime
   
   // Relationships
-  user      User          @relation(fields: [userId], references: [id])
+  user          User        @relation(fields: [userId], references: [id])
 }
 
 model VerificationToken {
@@ -76,20 +78,7 @@ model VerificationToken {
     expires    DateTime
 
     @@unique([identifier, token])
-}
-
-// Post table
-model Post {
-  id          Int         @id @default(autoincrement())
-  name        String
-  createdAt   DateTime
-  updatedAt   DateTime
-  createdById String
-  
-  // Relationships
-  createdBy  User          @relation(fields: [createdById], references: [id])
-}
-
+} 
 // Team table
 model Team {
   id         String      @id @default(cuid())
@@ -98,24 +87,29 @@ model Team {
   image      String?
   creatorId  String
   createdAt  DateTime
+  members    TeamMember[]
+  activities Activity[]
   
   // Relationships
-  creator   User          @relation("TeamCreator", fields: [creatorId], references: [id])
-  members   TeamMember[]
-  activities Activity[]
+  creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
 }
 
 // TeamMember table
 model TeamMember {
-  id         String        @id @default(cuid())
-  userId     String
-  teamId     String
-  role       String
-  status     String
-  
-  // Relationships
-  user      User          @relation(fields: [userId], references: [id])
-  team      Team          @relation(fields: [teamId], references: [id])
+  id           String        @id @default(cuid())
+  userId       String
+  teamId       String
+  role         String
+  status       String
+  number       String?
+  position     String?
+
+  statlines    Statline[]
+  attendances  ActivityAttendance[]
+
+//relationships
+  user         User          @relation(fields: [userId], references: [id])
+  team         Team          @relation(fields: [teamId], references: [id])
 }
 
 // Activity table
@@ -132,46 +126,56 @@ model Activity {
   createdAt    DateTime
   updatedAt    DateTime
   teamId       String
+
+  attendees    ActivityAttendance[]
+  statlines    Statline[]
   
   // Relationships
-  team       Team          @relation(fields: [teamId], references: [id])
-  attendees  ActivityAttendance[]
-  statlines  Statline[]
+  team         Team          @relation(fields: [teamId], references: [id])
+ 
 }
 
 // Statline table
 model Statline {
-  id                 String      @id @default(cuid())
-  playerId           String
-  fieldGoalsMade     Int
-  fieldGoalsMissed   Int
-  threePointersMade  Int
+  id                  String      @id @default(cuid())
+  teamMemberId        String
+  fieldGoalsMade      Int
+  fieldGoalsMissed    Int
+  threePointersMade   Int
   threePointersMissed Int
-  freeThrows         Int
-  missedFreeThrows   Int
-  assists            Int
-  steals             Int
-  turnovers          Int
-  rebounds           Int
-  blocks             Int
-  createdAt          DateTime
-  updatedAt          DateTime
-  activityId         String
+  freeThrows          Int
+  missedFreeThrows    Int
+  assists             Int
+  steals              Int
+  turnovers           Int
+  rebounds            Int
+  blocks              Int
+  createdAt           DateTime
+  updatedAt           DateTime
+  activityId          String
   
   // Relationships
-  player    User          @relation(fields: [playerId], references: [id])
-  activity  Activity      @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember @relation(fields: [teamMemberId], references: [id])
+  activity            Activity   @relation(fields: [activityId], references: [id])
+
+  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") // ✅ Add this line
 }
 
-// ActivityAttendance table
 model ActivityAttendance {
   id               String      @id @default(cuid())
   activityId       String
-  userId           String
+  teamMemberId     String       
   attendanceStatus String
-  attendedAt       DateTime?
-  
+  reason           String?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+
   // Relationships
-  activity   Activity      @relation(fields: [activityId], references: [id])
-  user       User          @relation(fields: [userId], references: [id])
+  activity     Activity      @relation(fields: [activityId], references: [id])
+  teamMember   TeamMember    @relation(fields: [teamMemberId], references: [id])
+
+@@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
+  @@index([activityId])
+  @@index([teamMemberId])
 }
