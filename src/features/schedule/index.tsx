@@ -12,7 +12,7 @@ const ScheduleBlock = async ({
   activities: Activity[];
   team: TeamInformation;
 }) => {
-  const role = (await getRole()) as TeamMemberRole;
+  const role = await getRole();
   const { teamMember } = await getUser();
 
   return (
@@ -20,7 +20,7 @@ const ScheduleBlock = async ({
       <div className="h-full w-full max-w-7xl">
         <HorizontalCalender activities={activities} team={team} />
         <ActivityList
-          role={role}
+          role={role as TeamMemberRole}
           activities={activities}
           team={team}
           member={teamMember}

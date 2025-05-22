@@ -167,7 +167,9 @@ model ActivityAttendance {
   teamMemberId     String       
   attendanceStatus String
   reason           String?
-  attendedAt       DateTime?
+
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
 
   // Relationships
   activity     Activity      @relation(fields: [activityId], references: [id])
