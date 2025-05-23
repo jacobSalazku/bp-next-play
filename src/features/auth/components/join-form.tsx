@@ -4,6 +4,7 @@ import { Button } from "@/components/foundation/button/button";
 import { Input } from "@/components/foundation/input";
 import { RadioGroup } from "@/components/foundation/radio/radio-group";
 import { RadioGroupItem } from "@/components/foundation/radio/radio-group-item";
+import { cn } from "@/lib/utils";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useRouter } from "next/navigation";
@@ -61,10 +62,14 @@ const JoinTeamForm = () => {
               value={option.value}
               id={`position-${option.value}`}
               {...register("position")}
+              className={cn(
+                "h-5 w-5 rounded-full border-2 border-gray-400 duration-150 ease-in-out focus:ring-2 focus:ring-gray-100",
+                "transition-colors hover:border-gray-950 focus:outline-none data-[state=checked]:bg-gray-950",
+              )}
             />
             <label
               htmlFor={`position-${option.value}`}
-              className="text-sm text-gray-800 dark:text-white"
+              className="text-sm text-gray-800"
             >
               {option.value}
             </label>
