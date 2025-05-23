@@ -130,6 +130,7 @@ const PlayerDetailPanel = ({
                 </div>
               </div>
             </TabsContent>
+
             <TabsContent value="attendance" className="pt-4">
               <div className="space-y-4">
                 <div className="flex items-center gap-2">
@@ -137,49 +138,10 @@ const PlayerDetailPanel = ({
                   <h4 className="text-sm font-medium">Recent Attendance</h4>
                 </div>
                 <div className="overflow-x-auto">
-                  {/* <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selectedPlayer.attendance.map((record, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              {new Date(record.date).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  record.status === "present"
-                                    ? "success"
-                                    : "destructive"
-                                }
-                              >
-                                {record.status === "present"
-                                  ? "Present"
-                                  : "Absent"}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table> */}
+                  {/* Table component or other content */}
                 </div>
 
-                {/* <div className="text-muted-foreground text-sm">
-                    Attendance Rate:{" "}
-                    {Math.round(
-                      (selectedPlayer.attendance.filter(
-                        (a) => a.status === "present",
-                      ).length /
-                        selectedPlayer.attendance.length) *
-                        100,
-                    )}
-                    %
-                  </div> */}
+                {/* Additional content like attendance rate */}
               </div>
             </TabsContent>
           </Tabs>
