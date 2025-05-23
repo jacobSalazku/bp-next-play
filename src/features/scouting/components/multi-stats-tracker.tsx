@@ -12,6 +12,7 @@ import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
 import { statRows } from "../utils/const";
+import { sanitizeStatline } from "../utils/sanitize";
 import type { StatlineData } from "../zod/player-stats";
 import { defaultStatline } from "../zod/types";
 import { PlayerStatsRow } from "./player-stat-row";
@@ -28,10 +29,18 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   const localStorageKey = `boxscore-${activityId}`;
 
-  const initialPlayers = players.map((p) => ({
-    ...p,
-    statlines: p.statlines,
-  }));
+  const initialPlayers = players.map((p) => {
+    const statlineForActivity = p.statlines?.find(
+      (s) => s.activityId === activityId,
+    );
+
+    return {
+      ...p,
+      statlines: statlineForActivity
+        ? [statlineForActivity]
+        : [{ ...defaultStatline, activityId }],
+    };
+  });
 
   const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
     defaultValues: { players: initialPlayers, activityId },
@@ -105,8 +114,8 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   const onSubmit = async (data: PlayersData) => {
     const updatedPlayers = data.players.map((player, i) => {
-      const prev = players[i]?.statlines?.[0] ?? defaultStatline;
-      const curr = player.statlines?.[0] ?? defaultStatline;
+      const prev = sanitizeStatline(players[i]?.statlines?.[0] ?? {});
+      const curr = sanitizeStatline(player.statlines?.[0] ?? {});
 
       const diff: StatlineData = {
         id: "",
@@ -130,7 +139,7 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
       return {
         id: player.id,
         activityId,
-        statlines: [diff],
+        statlines: [curr],
       };
     });
 
