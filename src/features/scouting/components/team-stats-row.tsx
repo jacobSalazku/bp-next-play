@@ -1,13 +1,13 @@
 import { TableCell } from "@/components/foundation/table/table-cell";
-import { calculateTeamStats } from "../utils/update-stat";
+import { analyzeTeamStats } from "../utils/update-stat";
 import type { StatlineData } from "../zod/player-stats";
 
-type TeamStatsRowProps = {
+export const TeamStatsRow = ({
+  totalTeamStats,
+}: {
   totalTeamStats: StatlineData;
-};
-
-export const TeamStatsRow = ({ totalTeamStats }: TeamStatsRowProps) => {
-  const teamStats = calculateTeamStats(totalTeamStats);
+}) => {
+  const teamStats = analyzeTeamStats(totalTeamStats);
   return (
     <>
       <TableCell className="p-3 text-left font-medium dark:text-white">

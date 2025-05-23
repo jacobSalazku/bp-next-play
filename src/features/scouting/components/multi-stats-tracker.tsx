@@ -7,10 +7,12 @@ import { TableFooter } from "@/components/foundation/table/table-footer";
 import { TableHead } from "@/components/foundation/table/table-head";
 import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
+import { useDebouncedSave } from "@/hooks/use-debounce";
 import type { TeamMembers } from "@/types";
 import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
+import { calculateRawTeamStats, getInitalPlayers } from "../utils";
 import { statRows } from "../utils/const";
 import { sanitizeStatline } from "../utils/sanitize";
 import type { StatlineData } from "../zod/player-stats";
@@ -27,20 +29,7 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const createStatline = useCreateNewStatline();
 
-  const localStorageKey = `boxscore-${activityId}`;
-
-  const initialPlayers = players.map((p) => {
-    const statlineForActivity = p.statlines?.find(
-      (s) => s.activityId === activityId,
-    );
-
-    return {
-      ...p,
-      statlines: statlineForActivity
-        ? [statlineForActivity]
-        : [{ ...defaultStatline, activityId }],
-    };
-  });
+  const initialPlayers = getInitalPlayers(players, activityId);
 
   const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
     defaultValues: { players: initialPlayers, activityId },
@@ -48,58 +37,7 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
   const stats = useWatch<PlayersData>({ control });
 
-  // Load from localStorage
-  // useEffect(() => {
-  //   const stored = localStorage.getItem(localStorageKey);
-  //   if (stored) {
-  //     try {
-  //       const parsed = JSON.parse(stored) as PlayersData;
-  //       if (parsed?.players) {
-  //         reset(parsed);
-  //       }
-  //     } catch (err) {
-  //       console.error("Failed to parse localStorage data", err);
-  //     }
-  //   } else {
-  //     reset({
-  //       players: initialPlayers,
-  //       activityId,
-  //     });
-  //   }
-  // }, [localStorageKey, reset]);
-
-  // Save to localStorage on stat change
-  // useEffect(() => {
-  //   if (stats.players && stats.players.length > 0) {
-  //     localStorage.setItem(localStorageKey, JSON.stringify(stats));
-  //   }
-  // }, [stats, localStorageKey]);
-
-  // // Clean up on unload
-  // useEffect(() => {
-  //   const handleBeforeUnload = () => {
-  //     localStorage.removeItem(localStorageKey);
-  //   };
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [localStorageKey]);
-
-  const totalTeamStats = stats.players?.reduce(
-    (acc, player) => {
-      const s = player.statlines?.[0] ?? {};
-      for (const key of Object.keys(
-        defaultStatline,
-      ) as (keyof StatlineData)[]) {
-        if (key !== "id") {
-          acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
-        }
-      }
-      return acc;
-    },
-    { ...defaultStatline } as StatlineData,
-  );
+  const totalTeamStats = calculateRawTeamStats(stats.players as TeamMembers);
 
   const handleChange = (
     playerIndex: number,
@@ -113,28 +51,8 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
   };
 
   const onSubmit = async (data: PlayersData) => {
-    const updatedPlayers = data.players.map((player, i) => {
-      const prev = sanitizeStatline(players[i]?.statlines?.[0] ?? {});
+    const updatedPlayers = data.players.map((player) => {
       const curr = sanitizeStatline(player.statlines?.[0] ?? {});
-
-      const diff: StatlineData = {
-        id: "",
-        fieldGoalsMade: (curr.fieldGoalsMade ?? 0) - (prev.fieldGoalsMade ?? 0),
-        fieldGoalsMissed:
-          (curr.fieldGoalsMissed ?? 0) - (prev.fieldGoalsMissed ?? 0),
-        threePointersMade:
-          (curr.threePointersMade ?? 0) - (prev.threePointersMade ?? 0),
-        threePointersMissed:
-          (curr.threePointersMissed ?? 0) - (prev.threePointersMissed ?? 0),
-        freeThrows: (curr.freeThrows ?? 0) - (prev.freeThrows ?? 0),
-        missedFreeThrows:
-          (curr.missedFreeThrows ?? 0) - (prev.missedFreeThrows ?? 0),
-        assists: (curr.assists ?? 0) - (prev.assists ?? 0),
-        steals: (curr.steals ?? 0) - (prev.steals ?? 0),
-        turnovers: (curr.turnovers ?? 0) - (prev.turnovers ?? 0),
-        rebounds: (curr.rebounds ?? 0) - (prev.rebounds ?? 0),
-        blocks: (curr.blocks ?? 0) - (prev.blocks ?? 0),
-      };
 
       return {
         id: player.id,
@@ -145,10 +63,10 @@ const PlayerBoxScore: FC<PlayersData> = ({ players, activityId }) => {
 
     await createStatline.mutateAsync({ players: updatedPlayers });
 
-    // // Clear localStorage and reset form
-    // localStorage.removeItem(localStorageKey);
     reset(data);
   };
+
+  useDebouncedSave(stats as PlayersData, onSubmit, 5000);
 
   if (!stats) return null;
 
