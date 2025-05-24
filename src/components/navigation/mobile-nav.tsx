@@ -2,6 +2,7 @@ import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import { X } from "lucide-react";
 import type { NavItemType } from ".";
+import { Button } from "../foundation/button/button";
 import { NavItem } from "./nav-item";
 
 type MobileNavProps = {
@@ -19,13 +20,17 @@ export function MobileNav({ items, onClose }: MobileNavProps) {
       )}
     >
       <div className="absolute top-0 left-0 flex h-full w-[250px] flex-col bg-gray-950 shadow-lg transition-transform duration-300 ease-in-out">
-        <div className="flex items-center justify-between border-b border-neutral-600 px-4 py-6">
+        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-6">
           <h2 className="font-righteous text-2xl font-semibold transition-opacity delay-300 duration-300">
             NextPlay
           </h2>
-          <button onClick={onClose} className="rounded p-1 hover:bg-gray-800">
+          <Button
+            variant="close"
+            onClick={onClose}
+            className="rounded p-2 text-white hover:bg-gray-800"
+          >
             <X className="h-5 w-5" />
-          </button>
+          </Button>
         </div>
         <nav className="flex-1 overflow-y-auto">
           <ul className="space-y-1 pt-4">

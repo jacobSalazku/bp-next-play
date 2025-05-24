@@ -9,7 +9,7 @@ async function PlayerPage({ params }: { params: Promise<{ teamId: string }> }) {
   const members = await getTeamMembers(team.id);
 
   return (
-    <main className="flex min-h-screen flex-col items-center text-white">
+    <main className="scrollbar-none flex min-h-screen flex-col items-center overflow-auto text-white">
       {!members || members.length === 0 ? (
         <>
           <div className="flex h-screen max-h-[1024px] w-full max-w-7xl flex-row items-center justify-center border">
