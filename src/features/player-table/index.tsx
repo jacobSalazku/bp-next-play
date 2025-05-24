@@ -8,7 +8,6 @@ import {
   CardHeader,
   CardTitle,
 } from "@/components/foundation/card";
-
 import { Table } from "@/components/foundation/table/table";
 import { TableBody } from "@/components/foundation/table/table-body";
 import { TableCell } from "@/components/foundation/table/table-cell";
@@ -19,6 +18,7 @@ import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import type { TeamInformation, TeamMember } from "@/types";
 import { useState, type FC } from "react";
+
 import PlayerDetailPanel from "./components/player-detail-panel";
 import { getFullPosition } from "./utils";
 
