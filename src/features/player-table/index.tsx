@@ -34,11 +34,7 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
   const handlePlayerClick = (player: TeamMember) => {
     setSelectedPlayer(player);
     setPlayerSideBar(true);
-    setNavOpen(false); // Optional: collapse side nav on click
-  };
-
-  const closeSidebar = () => {
-    setPlayerSideBar(false);
+    setNavOpen(false);
   };
 
   return (
@@ -73,20 +69,20 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                   <TableHead className="hidden text-right lg:table-cell"></TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody className="border-r border-gray-800">
+              <TableBody className="border-gray-800">
                 {members ? (
                   members.map((player) => (
                     <TableRow
                       key={player.id}
                       className={cn(
-                        "cursor-pointer border-gray-800 hover:bg-orange-200/5",
+                        "cursor-pointer border-gray-800 py-2 hover:bg-orange-200/5",
                         // selectedPlayer?.id === player.id && sidebarOpen
                         //   ? 'bg-muted'
                         //   : '',
                       )}
                       // onClick={() => handlePlayerClick(player)}
                     >
-                      <TableCell className="font-medium">
+                      <TableCell className="py-8 font-medium">
                         {player.number ? `#${player.number}` : null}
                       </TableCell>
                       <TableCell>
