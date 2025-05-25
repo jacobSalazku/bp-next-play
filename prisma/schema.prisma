@@ -167,7 +167,6 @@ model ActivityAttendance {
   teamMemberId     String       
   attendanceStatus String
   reason           String?
-
   createdAt      DateTime @default(now())
   updatedAt      DateTime @updatedAt
 

@@ -51,61 +51,65 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
   boxScoreSearchParams.set("activityId", activity.id);
 
   return (
-    <>
-      <div className="group flex flex-col rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center">
+    <div className="group flex flex-col gap-4 rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
+      <div className="flex flex-row items-start gap-4 sm:gap-6">
         <div
           className={cn(
             bgColor,
             textColor,
-            "mr-4 flex h-16 w-16 items-center justify-center rounded-xl",
+            "flex h-10 w-10 shrink-0 items-center justify-center rounded-xl lg:h-14 lg:w-14",
           )}
         >
-          {<Icon className="h-8 w-9" />}
+          <Icon className="h-5 w-5 lg:h-7 lg:w-7" />
         </div>
-        <div className="mt-3 flex-1 sm:mt-0">
-          <div className="flex flex-col gap-2 sm:flex-row sm:items-center">
-            <h3 className="font-semibold text-white">{activity.title}</h3>
-          </div>
+
+        {/* Content */}
+        <div className="flex-1">
+          <h3 className="text-base font-semibold text-white">
+            {activity.title}
+          </h3>
           <div className="mt-1 flex items-center text-sm text-gray-400">
             <Clock className="mr-1 h-4 w-4" />
             {activity.time} ({activity.duration} hr
             {activity.duration !== 1 ? "s" : ""})
           </div>
         </div>
-        <div>
-          {activity.type === "Game" && role && (
-            <Link
-              href={{
-                pathname: `/${teamSlug}/box-score`,
-                query: { activityId: activity.id },
-              }}
-              size="sm"
-              variant="default"
-              className="py-2"
-            >
-              Create Box Score
-            </Link>
-          )}
-          {!role && (
-            <Button
-              onClick={handleAttendance}
-              size="sm"
-              variant="default"
-              className="py-2"
-            >
-              Attendance
-            </Button>
-          )}
-          <Button
-            onClick={handleViewDetails}
-            variant="outline"
-            size="sm"
-            className="mt-3 sm:mt-0 sm:ml-2"
-          >
-            View Details
-          </Button>
-        </div>
       </div>
-    </>
+
+      {/* Actions */}
+      <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
+        {activity.type === "Game" && role && (
+          <Link
+            href={{
+              pathname: `/${teamSlug}/box-score`,
+              query: { activityId: activity.id },
+            }}
+            size="sm"
+            variant="default"
+            className="w-full sm:w-auto"
+          >
+            Create Box Score
+          </Link>
+        )}
+        {!role && (
+          <Button
+            onClick={handleAttendance}
+            size="sm"
+            variant="default"
+            className="w-full sm:w-auto"
+          >
+            Attendance
+          </Button>
+        )}
+        <Button
+          onClick={handleViewDetails}
+          variant="outline"
+          size="sm"
+          className="w-full sm:w-auto"
+        >
+          View Details
+        </Button>
+      </div>
+    </div>
   );
 };

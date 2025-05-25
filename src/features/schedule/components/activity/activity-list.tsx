@@ -49,10 +49,10 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in mt-4 rounded-xl border border-orange-200/20 p-6 shadow-sm duration-300">
+    <div className="animate-fade-in mt-3 h-full max-h-[62vh] overflow-hidden rounded-xl border border-orange-200/20 p-4 shadow-sm duration-300 sm:h-auto sm:max-h-full sm:p-6">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
-          <CalendarClock className="mr-2 h-5 w-5 text-gray-400" />
+          <CalendarClock className="mr-2 h-5 text-sm text-gray-400" />
           Activities for {format(selectedDate, "MMMM d, yyyy")}
         </h2>
         <ActivityFilter
@@ -61,7 +61,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
         />
       </div>
       {filteredActivities.length > 0 ? (
-        <div className="scrollbar-none mb-6 max-h-96 space-y-2 overflow-y-auto pr-2">
+        <div className="scrollbar-none mb-6 flex max-h-8/12 flex-col gap-1 overflow-y-auto pr-2 sm:max-h-80">
           {filteredActivities.map((activity) => (
             <ActivityCard
               key={activity.id}
@@ -71,7 +71,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
           ))}
         </div>
       ) : (
-        <div className="mb-6 rounded-xl border border-dashed border-gray-700 bg-gray-900 py-12 text-center">
+        <div className="mt-4 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
           <p className="text-gray-400">No activities scheduled for this day</p>
           {role && (

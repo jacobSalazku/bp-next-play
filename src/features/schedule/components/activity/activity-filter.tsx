@@ -15,14 +15,14 @@ export function ActivityFilter({
   onFilterChange,
 }: ActivityFilterProps) {
   return (
-    <div className="flex overflow-hidden rounded-lg border border-gray-700">
+    <div className="flex w-full overflow-hidden rounded-lg border border-gray-700 sm:w-auto">
       {["all", "game", "practice"].map((type) => (
         <Button
           key={type}
           variant={currentFilter === type ? "outline" : "default"}
           size="sm"
           onClick={() => onFilterChange(type as ActivityType)}
-          className="rounded-none border-orange-300/20 first:rounded-l-lg last:rounded-r-lg hover:bg-gray-900 hover:text-orange-300"
+          className="w-full rounded-none border-orange-300/20 first:rounded-l-lg last:rounded-r-lg hover:bg-gray-900 hover:text-orange-300"
         >
           {type === "game" && <Trophy className="mr-1 h-4 w-4" />}
           {type === "practice" && <Users className="mr-1 h-4 w-4" />}
