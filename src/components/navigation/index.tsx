@@ -3,7 +3,15 @@
 import { useTeam } from "@/context/team-context";
 import { useNavRoute } from "@/hooks/use-nav-route";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { Calendar, Home, Menu, User, X, type LucideIcon } from "lucide-react";
+import {
+  Calendar,
+  ChartArea,
+  Home,
+  Menu,
+  User,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { type FC } from "react";
 import { Button } from "../foundation/button/button";
 import { DesktopNavigation } from "./desktop-navigation";
@@ -42,6 +50,12 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
       label: "Schedule",
       href: `/${teamSlug}/schedule`,
       icon: Calendar,
+      active: false,
+    },
+    {
+      label: "Statistics",
+      href: `/${teamSlug}/statistics`,
+      icon: ChartArea,
       active: false,
     },
   ];

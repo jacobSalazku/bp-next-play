@@ -93,7 +93,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="relative flex w-full flex-col p-4">{children}</main>
+      <main className="relative flex w-full flex-col">{children}</main>
     </>
   );
 };
