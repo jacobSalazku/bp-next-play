@@ -1,5 +1,13 @@
 import { statlineSchema } from "@/features/scouting/zod/player-stats";
-import { submitStatlines } from "@/server/service/statline-service";
+import {
+  getPlayerStatSchema,
+  getPointsPerGameStatSchema,
+} from "@/features/statistics/zod";
+import {
+  getSinglePlayerStatline,
+  getStatlineAverage,
+  submitStatlines,
+} from "@/server/service/statline-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
@@ -41,5 +49,20 @@ export const statsRouter = createTRPCRouter({
         include: {},
       });
       return statlines;
+    }),
+
+  getSingleStat: protectedProcedure
+    .input(getPlayerStatSchema)
+    .query(async ({ ctx, input }) => {
+      const statline = await getSinglePlayerStatline(ctx, input);
+
+      return statline;
+    }),
+  getStatlineAverage: protectedProcedure
+    .input(getPointsPerGameStatSchema)
+    .query(async ({ ctx, input }) => {
+      const stats = await getStatlineAverage(ctx, input);
+
+      return stats;
     }),
 });
