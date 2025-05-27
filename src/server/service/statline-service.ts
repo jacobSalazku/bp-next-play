@@ -1,9 +1,12 @@
 import type { playersDataSchema } from "@/features/scouting/zod/player-stats";
+
 import type {
   GetPlayerStatInput,
   GetPointsPerGameStatInput,
+  StatlineAverageResult,
 } from "@/features/statistics/zod";
 import { TRPCError } from "@trpc/server";
+import { differenceInDays } from "date-fns";
 import { type z } from "zod";
 import type { Context } from "../api/trpc";
 
@@ -134,7 +137,7 @@ export async function getSinglePlayerStatline(
 export async function getStatlineAverage(
   ctx: Context,
   input: GetPointsPerGameStatInput,
-) {
+): Promise<StatlineAverageResult> {
   const stats = await ctx.db.statline.aggregate({
     where: {
       teamMemberId: input.teamMemberId,
@@ -143,7 +146,6 @@ export async function getStatlineAverage(
           gte: new Date(input.startDate),
           lte: new Date(input.endDate),
         },
-        type: "Game", // filter to only game activities
       },
     },
     _sum: {
@@ -184,10 +186,16 @@ export async function getStatlineAverage(
     // Add more stats here if needed
   };
 
+  const start = new Date(input.startDate);
+  const end = new Date(input.endDate);
+
+  const daysDiff = differenceInDays(end, start);
+  const period = daysDiff <= 7 ? "week" : daysDiff <= 31 ? "month" : "custom";
+
+  console.log("Statlines for", input.teamMemberId, stats._count, stats);
   return {
     totalPoints,
     averagePointsPerGame,
-    stats,
     averages,
   };
 }

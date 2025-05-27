@@ -32,3 +32,21 @@ export type GetPlayerStatInput = z.infer<typeof getPlayerStatSchema>;
 export type GetPointsPerGameStatInput = z.infer<
   typeof getPointsPerGameStatSchema
 >;
+
+type StatAverages = {
+  averagePointsPerGame: number;
+  averageFieldGoalsMade: number;
+  averageThreePointersMade: number;
+  averageFreeThrowsMade: number;
+  averageAssists: number;
+  averageRebounds: number;
+  averageSteals: number;
+  averageBlocks: number;
+  averageTurnovers: number;
+};
+
+export type StatlineAverageResult = {
+  totalPoints: number;
+  averagePointsPerGame: number;
+  averages: StatAverages;
+};

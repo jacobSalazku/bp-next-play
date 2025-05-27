@@ -1,21 +1,16 @@
 "use client";
 
-import type { SinlgePlayerStatline, TeamMembers } from "@/types";
 import ReactEcharts from "echarts-for-react";
-import type { ActivityStat } from "./types";
+import type { StatlineAverageResult } from "./zod";
 
 type ChartsBlockProps = {
-  players: TeamMembers;
-  singleStatline: SinlgePlayerStatline;
-  statsPerActivity: ActivityStat[];
+  // players: TeamMembers;
+  // singleStatline: SinlgePlayerStatline;
+  // activityStats: StatlineAverageResult[];
+  statsPerActivity: StatlineAverageResult[];
 };
 
 const ChartsBlock: React.FC<ChartsBlockProps> = ({ statsPerActivity }) => {
-  console.log(
-    "Stats per activity",
-    statsPerActivity.reduce((sum, entry) => sum + (entry.value ?? 0), 0) /
-      statsPerActivity.length,
-  );
   const chartOption = {
     title: { text: `Assists per Activity` },
     xAxis: {
