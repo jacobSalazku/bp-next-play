@@ -27,3 +27,7 @@ export type PlayerInformation = RouterOutput["member"]["getTeamMember"];
 export type UserTeamMember = RouterOutput["user"]["getUser"]["teamMember"];
 
 export type SinlgePlayerStatline = RouterOutput["stats"]["getSingleStat"];
+
+export type AverageStatline = RouterOutput["stats"]["getStatlineAverage"];
+
+export type Statlines = RouterOutput["stats"]["getStatlineAverage"];

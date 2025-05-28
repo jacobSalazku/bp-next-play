@@ -1,11 +1,8 @@
 import { statlineSchema } from "@/features/scouting/zod/player-stats";
-import {
-  getPlayerStatSchema,
-  getPointsPerGameStatSchema,
-} from "@/features/statistics/zod";
+import { getPlayerStatSchema } from "@/features/statistics/zod";
 import {
   getSinglePlayerStatline,
-  getStatlineAverage,
+  getTeamStatlineAverages,
   submitStatlines,
 } from "@/server/service/statline-service";
 import { z } from "zod";
@@ -59,9 +56,16 @@ export const statsRouter = createTRPCRouter({
       return statline;
     }),
   getStatlineAverage: protectedProcedure
-    .input(getPointsPerGameStatSchema)
+    .input(
+      z.object({
+        teamId: z.string(),
+        startDate: z.string(),
+        endDate: z.string(),
+      }),
+    )
     .query(async ({ ctx, input }) => {
-      const stats = await getStatlineAverage(ctx, input);
+      // const stats = await getStatlineAverage(ctx, input);
+      const stats = await getTeamStatlineAverages(ctx, input);
 
       return stats;
     }),

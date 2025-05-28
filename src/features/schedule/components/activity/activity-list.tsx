@@ -61,7 +61,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
         />
       </div>
       {filteredActivities.length > 0 ? (
-        <div className="scrollbar-none mb-6 flex max-h-8/12 flex-col gap-1 overflow-y-auto pr-2 sm:max-h-80">
+        <div className="scrollbar-none mb-6 flex max-h-8/12 flex-col gap-1 overflow-y-auto pr-2 sm:max-h-96 md:max-h-full">
           {filteredActivities.map((activity) => (
             <ActivityCard
               key={activity.id}
@@ -71,7 +71,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
           ))}
         </div>
       ) : (
-        <div className="mt-4 flex w-full flex-col gap-3 sm:flex-row sm:justify-center">
+        <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-gray-800 p-6 sm:max-h-80">
           <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
           <p className="text-gray-400">No activities scheduled for this day</p>
           {role && (

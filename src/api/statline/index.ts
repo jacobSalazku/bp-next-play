@@ -22,15 +22,9 @@ export const getSinglePlayerStatline = cache(
 );
 
 export const getStatlineAverage = cache(
-  async (
-    teamMemberId: string,
-    activityId: string,
-    startDate: Date,
-    endDate: Date,
-  ) => {
+  async (teamId: string, startDate: Date, endDate: Date) => {
     const statline = await api.stats.getStatlineAverage({
-      teamMemberId: teamMemberId,
-      activityId: activityId,
+      teamId: teamId,
       startDate: new Date(startDate).toISOString(),
       endDate: new Date(endDate).toISOString(),
     });

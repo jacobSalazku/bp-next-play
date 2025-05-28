@@ -1,7 +1,6 @@
-import { getSinglePlayerStatline, getStatlineAverage } from "@/api/statline";
+import { getStatlineAverage } from "@/api/statline";
 import { getActiveTeamMember } from "@/api/user";
 import ChartsBlock from "@/features/statistics";
-import { fetchActivityStats } from "@/features/statistics/utils/get-weekly-stats";
 import type { SearchParams } from "nuqs/server";
 
 type PageProps = {
@@ -17,47 +16,70 @@ async function StatisticsPage({ params }: PageProps) {
     ...member,
   }));
 
-  const teamMemberId = "cmb0raaqa0006yzleqeah05uf";
   const activityId = "cmazvv71q000cyzzui2tyicsc";
 
-  const singleStatline = await getSinglePlayerStatline(
-    teamMemberId,
-    activityId,
-    "fieldGoalsMade",
-    new Date("2025-05-01"),
-    new Date("2025-06-01"),
-  );
+  // const singleStatline = await getSinglePlayerStatline(
+  //   players[0]?.id ?? "",
+  //   activityId,
+  //   "fieldGoalsMade",
+  //   new Date("2025-05-01"),
+  //   new Date("2025-06-01"),
+  // );
 
-  if (!singleStatline || !Array.isArray(singleStatline)) {
-    console.warn("No statline found or statline is not an array.");
-    return null;
-  }
+  // if (!singleStatline || !Array.isArray(singleStatline)) {
+  //   console.warn("No statline found or statline is not an array.");
+  //   return null;
+  // }
 
-  const rawStatsPerActivity = await fetchActivityStats(
-    teamMemberId,
-    activityId,
-    "fieldGoalsMade",
-    new Date("2025-05-01"),
-    new Date("2025-06-01"),
-  );
-  const stats = await getStatlineAverage(
-    teamMemberId,
-    activityId,
-    new Date("2025-05-01"),
-    new Date("2025-06-01"),
+  // const rawStatsPerActivity = await fetchActivityStats(
+  //   players[0]?.id ?? "",
+  //   activityId,
+  //   "fieldGoalsMade",
+  //   new Date("2025-05-01"),
+  //   new Date("2025-06-01"),
+  // );
+
+  // const stats = await getStatlineAverage(
+  //   players[0]?.id ?? "",
+  //   activityId,
+  //   new Date("2025-05-01"),
+  //   new Date("2025-06-01"),
+  // );
+
+  const statsList = await Promise.all(
+    players.map(async (player) => {
+      console.log(player.id, activityId);
+      const stats = await getStatlineAverage(
+        player.id,
+        activityId,
+        new Date("2025-05-01"),
+        new Date("2025-06-01"),
+      );
+      return {
+        ...player,
+        stats,
+      };
+    }),
   );
 
   console.log(
     "Points per game:",
-    Math.round(stats.averages.averageAssists).toFixed(1),
+    statsList.map((player) => ({
+      name: player.name,
+      pointsPerGame: player.stats?.totalPoints,
+      assistsPerGame: player.stats?.averages.averageAssists,
+      reboundsPerGame: player.stats?.averages.averageRebounds,
+      blocksPerGame: player.stats?.averages.averageBlocks,
+      stealsPerGame: player.stats?.averages.averageSteals,
+      fieldGoalsMadePerGame: player.stats?.averages.averageFieldGoalsMade,
+      threePointersMadePerGame: player.stats?.averages.averageThreePointersMade,
+      freeThrowsMadePerGame: player.stats?.averages.averageFreeThrowsMade,
+      turnoversPerGame: player.stats?.averages.averageTurnovers,
+    })),
   );
 
-  return (
-    <ChartsBlock
-      players={players}
-      singleStatline={singleStatline}
-      statsPerActivity={rawStatsPerActivity}
-    />
-  );
+  // Transform statsList to match ActivityStat[] structure
+
+  return <ChartsBlock statsPerActivity={statsList} />;
 }
 export default StatisticsPage;
