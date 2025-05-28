@@ -1,18 +1,21 @@
 import { z } from "zod";
 
+const statField = () =>
+  z.preprocess((val) => Number(val ?? 0), z.number().int().nonnegative());
+
 export const statlineSchema = z.object({
   id: z.string(),
-  fieldGoalsMade: z.number().int().nonnegative().default(0).optional(),
-  fieldGoalsMissed: z.number().int().nonnegative().default(0).optional(),
-  threePointersMade: z.number().int().nonnegative().default(0).optional(),
-  threePointersMissed: z.number().int().nonnegative().default(0).optional(),
-  freeThrows: z.number().int().nonnegative().default(0).optional(),
-  missedFreeThrows: z.number().int().nonnegative().default(0).optional(),
-  assists: z.number().int().nonnegative().default(0).optional(),
-  steals: z.number().int().nonnegative().default(0).optional(),
-  turnovers: z.number().int().nonnegative().default(0).optional(),
-  rebounds: z.number().int().nonnegative().default(0).optional(),
-  blocks: z.number().int().nonnegative().default(0).optional(),
+  fieldGoalsMade: statField(),
+  fieldGoalsMissed: statField(),
+  threePointersMade: statField(),
+  threePointersMissed: statField(),
+  freeThrows: statField(),
+  missedFreeThrows: statField(),
+  assists: statField(),
+  steals: statField(),
+  turnovers: statField(),
+  rebounds: statField(),
+  blocks: statField(),
 });
 
 export type StatlineData = z.infer<typeof statlineSchema>;

@@ -61,7 +61,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
         </span>
         <span
           className={cn(
-            isToday ? "text-blue-400" : "text-gray-300",
+            isToday ? "text-orange-300" : "text-gray-300",
             "mb-2 text-sm font-light md:text-lg",
           )}
         >

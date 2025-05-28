@@ -129,6 +129,7 @@ export const activityRouter = createTRPCRouter({
             select: {
               teamMemberId: true,
               attendanceStatus: true,
+              reason: true,
             },
           },
         },

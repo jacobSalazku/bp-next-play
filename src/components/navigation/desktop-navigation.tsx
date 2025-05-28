@@ -39,7 +39,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
           isOpen ? "w-64" : "w-16",
         )}
       >
-        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-6 dark:border-gray-700">
+        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-6">
           <h2
             className={cn(
               "font-righteous text-2xl transition-opacity delay-1000 duration-300",
@@ -93,7 +93,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="relative flex w-full flex-col p-4">{children}</main>
+      <main className="relative flex w-full flex-col">{children}</main>
     </>
   );
 };

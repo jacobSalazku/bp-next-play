@@ -1,0 +1,40 @@
+import type { TeamMembers } from "@/types";
+import type { StatlineData } from "../zod/player-stats";
+import { defaultStatline } from "../zod/types";
+
+export const getInitalPlayers = (players: TeamMembers, activityId: string) => {
+  return players.map((p) => {
+    const statlineForActivity = p.statlines?.find(
+      (s) => s.activityId === activityId,
+    );
+    return {
+      ...p,
+      statlines: statlineForActivity
+        ? [statlineForActivity]
+        : [{ ...defaultStatline, activityId }],
+    };
+  });
+};
+
+export const calculateRawTeamStats = (players: TeamMembers) => {
+  return players.reduce(
+    (acc: StatlineData, player) => {
+      // For each player, get their first statline or a default empty statline
+      const s: StatlineData = player.statlines?.[0] ?? { ...defaultStatline };
+
+      // Loop over all keys in defaultStatline (which define stat fields)
+      for (const key of Object.keys(
+        defaultStatline,
+      ) as (keyof StatlineData)[]) {
+        if (key !== "id") {
+          // Add the player's stat value to the accumulator for each field except 'id'
+          acc[key] = (acc[key] ?? 0) + (s[key] ?? 0);
+        }
+      }
+
+      // Return accumulated stats for next iteration
+      return acc;
+    },
+    { ...defaultStatline } as StatlineData,
+  );
+};

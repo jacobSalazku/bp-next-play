@@ -136,7 +136,7 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
                     <RadioGroupItem
                       value={status.value}
                       id={status.value}
-                      className="peer mr-3 h-4 w-4 rounded-full border border-gray-500 bg-gray-200 ring-0 focus:ring-0 data-[state=checked]:bg-gray-300"
+                      className="peer mr-3 h-4 w-4 rounded-full border border-gray-500 bg-gray-300 ring-0 focus:ring-0 data-[state=checked]:bg-gray-900"
                     />
                     <span className="text-sm font-medium">{status.label}</span>
                   </label>

@@ -15,9 +15,11 @@ type CreatePracticeInput = z.infer<typeof practiceSchema> & {
   teamId: string;
   type: "Practice";
 };
+
 type EditGameInput = CreateGameInput & {
   id: string;
 };
+
 export async function createGame(ctx: Context, input: CreateGameInput) {
   if (!ctx.session?.user.id) {
     throw new Error("User is not Logged In");

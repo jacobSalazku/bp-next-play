@@ -4,13 +4,19 @@ import { Button } from "@/components/foundation/button/button";
 import { TabsContent } from "@/components/foundation/table/table-content";
 import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
+import {
+  playerAttendanceStatus,
+  playerAttendanceStatusColor,
+} from "@/features/attendance/utils/attendance-status";
 import { useIsMobile } from "@/hooks/use-is-mobile";
 import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import type { TeamMember } from "@/types";
+import { format } from "date-fns";
 import { Calendar, User, X } from "lucide-react";
 import Image from "next/image";
 import { getFullPosition } from "../utils";
+import PlayerDetailItem from "./player-detail-item";
 
 const PlayerDetailPanel = ({
   selectedPlayer,
@@ -29,164 +35,148 @@ const PlayerDetailPanel = ({
           : isMobile
             ? "-translate-x-full"
             : "-translate-x-full",
-        "absolute inset-y-0 z-30 transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
+        "absolute inset-y-0 z-30 h-full transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
       )}
     >
-      {selectedPlayer && (
-        <div className="flex h-full flex-col text-white">
-          <div className="sticky top-0 z-10 flex items-center justify-between border-b border-orange-200/20 px-4 py-6">
-            <h2 className="font-righteous text-xl font-bold">Player Details</h2>
-            <Button
-              variant="ghost"
-              size="icon"
-              onClick={() => setPlayerSideBar(!playerSideBar)}
-            >
-              <X className="h-5 w-5" />
-              <span className="sr-only">Close</span>
-            </Button>
-          </div>
-          <div className="flex flex-col overflow-auto border-b border-orange-200/20 py-8">
-            <div className="flex flex-col items-center p-4">
-              {selectedPlayer.user.image ? (
-                <Image
-                  width={150}
-                  height={150}
-                  src={selectedPlayer.user.image ?? "/placeholder.svg"}
-                  alt={selectedPlayer.user.name ?? "Player image"}
-                  className="h-32 w-32 rounded-full object-cover"
-                />
-              ) : (
-                <User
-                  strokeWidth={1}
-                  className="h-32 w-32 rounded-full bg-gray-400"
-                />
-              )}
-            </div>
-            <h3 className="text-center text-2xl font-bold">
-              #{selectedPlayer.number} {selectedPlayer.user.name}
-            </h3>
-            <p className="text-center text-orange-300/80">
-              {getFullPosition(selectedPlayer.position)}
-            </p>
-          </div>
-          <Tabs defaultValue="info" className="w-full p-4">
-            <TabsList className="grid w-full grid-cols-2 border border-orange-200/20 bg-gray-800">
-              <TabsTrigger value="info">Personal Info</TabsTrigger>
-              <TabsTrigger value="attendance">Attendance</TabsTrigger>
-            </TabsList>
+      {selectedPlayer &&
+        typeof selectedPlayer === "object" &&
+        "user" in selectedPlayer && (
+          <>
+            <div>
+              {/* Header */}
+              <div className="sticky top-0 z-10 hidden items-center justify-between border-b border-orange-200/20 bg-gray-950 px-4 py-6 md:flex">
+                <h2 className="font-righteous text-xl font-bold">
+                  Player Details
+                </h2>
+                <Button
+                  variant="close"
+                  size="icon"
+                  onClick={() => setPlayerSideBar(false)}
+                >
+                  <X className="h-5 w-5" />
+                  <span className="sr-only">Close</span>
+                </Button>
+              </div>
 
-            <TabsContent value="info" className="space-y-4 pt-4">
-              <div className="grid grid-cols-1 gap-4">
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Full Name
-                  </h4>
-                  <p>{selectedPlayer.user.name}</p>
-                </div>
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Email
-                  </h4>
-                  <p>{selectedPlayer.user.email}</p>
-                </div>
-                {selectedPlayer.user.dateOfBirth && (
-                  <div>
-                    <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                      Date of Birth
-                    </h4>
-                    <p>
-                      {new Date(
-                        selectedPlayer.user.dateOfBirth,
-                      ).toLocaleDateString()}
-                    </p>
+              {/* Profile Info */}
+              <div className="flex flex-col items-center border-b border-orange-200/20 px-6 py-8">
+                {selectedPlayer.user.image ? (
+                  <Image
+                    width={128}
+                    height={128}
+                    src={selectedPlayer.user.image}
+                    alt={selectedPlayer.user.name ?? "Player image"}
+                    className="h-32 w-32 rounded-full object-cover"
+                  />
+                ) : (
+                  <div className="flex h-32 w-32 items-center justify-center rounded-full bg-gray-700">
+                    <User className="h-16 w-16 text-gray-300" strokeWidth={1} />
                   </div>
                 )}
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Jersey Number
-                  </h4>
-                  <p>#{selectedPlayer.number}</p>
-                </div>
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Position
-                  </h4>
-                  <div className="flex items-center gap-2">
-                    <p>{selectedPlayer.position}</p>-
-                    <p>{getFullPosition(selectedPlayer.position)}</p>
-                  </div>
-                </div>
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Height
-                  </h4>
-                  <p>{selectedPlayer.user.height}</p>
-                </div>
-                <div>
-                  <h4 className="text-muted-foreground mb-1 text-sm font-medium">
-                    Weight
-                  </h4>
-                  <p>{selectedPlayer.user.weight}</p>
-                </div>
+                <h3 className="mt-4 text-center text-2xl font-bold">
+                  #{selectedPlayer.number} {selectedPlayer.user.name}
+                </h3>
+                <p className="text-sm text-orange-300/80">
+                  {getFullPosition(selectedPlayer.position)}
+                </p>
               </div>
-            </TabsContent>
-            <TabsContent value="attendance" className="pt-4">
-              <div className="space-y-4">
-                <div className="flex items-center gap-2">
-                  <Calendar className="text-muted-foreground h-4 w-4" />
+            </div>
+            {/* Tabs */}
+            <Tabs
+              defaultValue="info"
+              className="flex flex-col overflow-y-auto px-4 pt-4"
+            >
+              <TabsList className="grid w-full grid-cols-2 border border-orange-200/20 bg-gray-800">
+                <TabsTrigger value="info">Personal Info</TabsTrigger>
+                <TabsTrigger value="attendance">Attendance</TabsTrigger>
+              </TabsList>
+
+              {/* Personal Info */}
+              <TabsContent value="info" className="space-y-5 pt-5">
+                <PlayerDetailItem
+                  label="Full Name"
+                  value={selectedPlayer.user.name ?? "-"}
+                />
+                <PlayerDetailItem
+                  label="Email"
+                  value={selectedPlayer.user.email ?? "-"}
+                />
+                {selectedPlayer.user.dateOfBirth && (
+                  <PlayerDetailItem
+                    label="Date of Birth"
+                    value={new Date(
+                      selectedPlayer.user.dateOfBirth,
+                    ).toLocaleDateString()}
+                  />
+                )}
+                <PlayerDetailItem
+                  label="Jersey Number"
+                  value={`#${selectedPlayer.number}`}
+                />
+                <PlayerDetailItem
+                  label="Position"
+                  value={`${selectedPlayer.position} - ${getFullPosition(selectedPlayer.position)}`}
+                />
+                <PlayerDetailItem
+                  label="Height"
+                  value={selectedPlayer.user.height}
+                />
+                <PlayerDetailItem
+                  label="Weight"
+                  value={selectedPlayer.user.weight}
+                />
+              </TabsContent>
+
+              {/* Attendance Info */}
+              <TabsContent value="attendance" className="space-y-4 pt-5">
+                <div className="text-muted-foreground flex items-center gap-2">
+                  <Calendar className="h-4 w-4" />
                   <h4 className="text-sm font-medium">Recent Attendance</h4>
                 </div>
-                <div className="overflow-x-auto">
-                  {/* <Table>
-                      <TableHeader>
-                        <TableRow>
-                          <TableHead>Date</TableHead>
-                          <TableHead>Status</TableHead>
-                        </TableRow>
-                      </TableHeader>
-                      <TableBody>
-                        {selectedPlayer.attendance.map((record, index) => (
-                          <TableRow key={index}>
-                            <TableCell>
-                              {new Date(record.date).toLocaleDateString()}
-                            </TableCell>
-                            <TableCell>
-                              <Badge
-                                variant={
-                                  record.status === "present"
-                                    ? "success"
-                                    : "destructive"
-                                }
-                              >
-                                {record.status === "present"
-                                  ? "Present"
-                                  : "Absent"}
-                              </Badge>
-                            </TableCell>
-                          </TableRow>
-                        ))}
-                      </TableBody>
-                    </Table> */}
-                </div>
+                <div className="overflow-x-auto text-sm text-gray-200">
+                  {selectedPlayer.attendances.length > 0 ? (
+                    selectedPlayer.attendances.map((attendance, index) => (
+                      <div
+                        key={index}
+                        className="flex items-center justify-between py-2"
+                      >
+                        <div className="inline-flex gap-2">
+                          <span className="font-semibold">
+                            {attendance.activity.time}
+                          </span>
 
-                {/* <div className="text-muted-foreground text-sm">
-                    Attendance Rate:{" "}
-                    {Math.round(
-                      (selectedPlayer.attendance.filter(
-                        (a) => a.status === "present",
-                      ).length /
-                        selectedPlayer.attendance.length) *
-                        100,
-                    )}
-                    %
-                  </div> */}
-              </div>
-            </TabsContent>
-          </Tabs>
-        </div>
-      )}
+                          <span className="font-semibold">
+                            {format(attendance.activity.date, "MMM dd")}
+                          </span>
+                        </div>
+                        <span
+                          className={cn(
+                            playerAttendanceStatusColor(
+                              attendance.attendanceStatus,
+                            ),
+                            "rounded-3xl px-4 py-1",
+                          )}
+                        >
+                          {playerAttendanceStatus(attendance.attendanceStatus)}
+                        </span>
+                        {attendance.reason && (
+                          <span className="text-gray-400">
+                            ({attendance.reason})
+                          </span>
+                        )}
+                      </div>
+                    ))
+                  ) : (
+                    <p className="text-muted-foreground italic">
+                      No data available yet.
+                    </p>
+                  )}
+                </div>
+              </TabsContent>
+            </Tabs>
+          </>
+        )}
     </div>
   );
 };
-
 export default PlayerDetailPanel;

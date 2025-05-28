@@ -14,6 +14,7 @@ export async function getUserbyId(ctx: Context) {
       message: "User is not logged in",
     });
   }
+
   const user = await ctx.db.user.findFirst({
     where: { id: ctx.session.user.id },
     select: {
@@ -79,6 +80,20 @@ export async function getAllMembers(ctx: Context, teamId: string) {
           status: true,
           number: true,
           position: true,
+          attendances: {
+            select: {
+              attendanceStatus: true,
+              reason: true,
+              activity: {
+                select: {
+                  id: true,
+                  title: true,
+                  time: true,
+                  date: true,
+                },
+              },
+            },
+          },
         },
       },
     },

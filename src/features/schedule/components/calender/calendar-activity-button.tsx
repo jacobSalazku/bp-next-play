@@ -1,9 +1,6 @@
-"use client";
-
 import { cn } from "@/lib/utils";
 import type { Activity } from "@/types";
 import { getTypeBgColor } from "@/utils/";
-
 import type { MouseEvent } from "react";
 
 type ActivityType = "Game" | "Practice" | "Multiple";

@@ -60,7 +60,7 @@ export function calculateStats(stats: StatlineData) {
   };
 }
 
-export function calculateTeamStats(totalTeamStats: StatlineData) {
+export function analyzeTeamStats(totalTeamStats: StatlineData) {
   // Field Goals
   const teamFieldGoalsMade =
     (totalTeamStats.fieldGoalsMade ?? 0) +

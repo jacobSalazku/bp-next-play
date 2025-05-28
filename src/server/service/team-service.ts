@@ -54,6 +54,7 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
           statlines: {
             select: {
               id: true,
+              activityId: true,
               fieldGoalsMade: true,
               fieldGoalsMissed: true,
               threePointersMade: true,

@@ -3,8 +3,17 @@
 import { useTeam } from "@/context/team-context";
 import { useNavRoute } from "@/hooks/use-nav-route";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { Calendar, Home, Menu, User, type LucideIcon } from "lucide-react";
+import {
+  Calendar,
+  ChartArea,
+  Home,
+  Menu,
+  User,
+  X,
+  type LucideIcon,
+} from "lucide-react";
 import { type FC } from "react";
+import { Button } from "../foundation/button/button";
 import { DesktopNavigation } from "./desktop-navigation";
 import { MobileNav } from "./mobile-nav";
 
@@ -20,6 +29,7 @@ type NavigationProps = {
 
 const Navigation: FC<NavigationProps> = ({ children }) => {
   const { teamSlug } = useTeam();
+
   const { navOpen, setNavOpen, setMobileNavOpen, mobileNavOpen } =
     useNavigationStore();
 
@@ -42,20 +52,35 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
       icon: Calendar,
       active: false,
     },
+    {
+      label: "Statistics",
+      href: `/${teamSlug}/statistics`,
+      icon: ChartArea,
+      active: false,
+    },
   ];
+
   const title = useNavRoute();
+  const { playerSideBar, setPlayerSideBar } = useNavigationStore();
 
   return (
     <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
-      <header className="flex items-center justify-between border-b border-gray-800 p-4 md:hidden">
-        <div className="flex items-center gap-2">
-          <button
-            onClick={() => setMobileNavOpen(true)}
-            className="rounded p-2 hover:bg-gray-800"
-          >
-            <Menu className="h-5 w-5" />
-          </button>
-          <h1 className="text-xl font-bold">{title}</h1>
+      <header className="flex items-center justify-between border-b border-orange-200/20 p-4 md:hidden">
+        <div className="flex w-full items-center justify-between gap-2">
+          <div className="inline-flex items-center gap-2">
+            <button
+              onClick={() => setMobileNavOpen(true)}
+              className="rounded p-2 hover:bg-gray-800"
+            >
+              <Menu className="py h-5 w-5" />
+            </button>
+            <h1 className="font-righteous text-xl font-bold">{title}</h1>
+          </div>
+          {playerSideBar && (
+            <Button variant="close" onClick={() => setPlayerSideBar(false)}>
+              <X className="h-5 w-5" />
+            </Button>
+          )}
         </div>
       </header>
       {mobileNavOpen && (
