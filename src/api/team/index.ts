@@ -51,3 +51,12 @@ export const getPendingRequests = cache(async () => {
 
   return { requests, isCoach };
 });
+
+export const getTeamMembers = cache(async (teamId: string) => {
+  const members = await api.member.getActiveTeamMembers({ teamId });
+
+  if (!members) {
+    throw new Error("No team members found.");
+  }
+  return { members };
+});
