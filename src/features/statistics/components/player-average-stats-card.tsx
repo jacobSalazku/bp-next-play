@@ -1,29 +1,87 @@
-import type { Statlines } from "@/types";
-
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/foundation/card";
+import { useStatisticsStore } from "@/store/use-stats-store";
+import type { ColumnDef } from "@tanstack/react-table";
 import type { PlayerStatRow } from "../types";
-import { columns } from "../utils/column-def";
 import { PlayerAverageDataTable } from "./players-data-table";
 
-const PlayerAveragesStatsCard = ({ statsList }: { statsList: Statlines }) => {
-  const data: PlayerStatRow[] = statsList.map((player) => ({
-    name: player.name ?? "",
-    gamesAttended: Number(player.gamesAttended) ?? 0,
-    fieldGoalPercentage: Number(player.averages.fieldGoalPercentage) ?? 0,
-    threePointPercentage: Number(player.averages.threePointPercentage) ?? 0,
-    freeThrowPercentage: Number(player.averages.freeThrowPercentage) ?? 0,
-    averagePoints: Number(player.averages.averagePointsPerGame) ?? 0,
-    averageAssists: Number(player.averages.averageAssists) ?? 0,
-    averageRebounds: Number(player.averages.averageRebounds) ?? 0,
-    averageBlocks: Number(player.averages.averageBlocks) ?? 0,
-    averageSteals: Number(player.averages.averageSteals) ?? 0,
-    averageTurnovers: Number(player.averages.averageTurnovers) ?? 0,
-  }));
+const PlayerAveragesStatsCard = ({
+  statsList,
+}: {
+  statsList: PlayerStatRow[];
+}) => {
+  const { setSelectedPlayerStatistics } = useStatisticsStore();
+  const columns: ColumnDef<PlayerStatRow>[] = [
+    {
+      accessorKey: "name",
+      header: "Player",
+      cell: ({ row }) => {
+        const player = row.original;
+
+        return (
+          <span
+            onClick={() => setSelectedPlayerStatistics(player)}
+            className="cursor-pointer font-semibold text-orange-300 hover:underline"
+          >
+            {player.name}
+          </span>
+        );
+      },
+    },
+    {
+      accessorKey: "gamesAttended",
+      header: "GP",
+    },
+    {
+      accessorKey: "averagePoints",
+      header: "Points",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+    {
+      accessorKey: "fieldGoalPercentage",
+      header: "FG%",
+      cell: ({ getValue }) => `${getValue<number>()}%`,
+    },
+    {
+      accessorKey: "threePointPercentage",
+      header: "3PT%",
+      cell: ({ getValue }) => `${getValue<number>()}%`,
+    },
+    {
+      accessorKey: "freeThrowPercentage",
+      header: "FT%",
+      cell: ({ getValue }) => `${getValue<number>()}%`,
+    },
+    {
+      accessorKey: "averageAssists",
+      header: "AST",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+    {
+      accessorKey: "averageRebounds",
+      header: "RB",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+    {
+      accessorKey: "averageBlocks",
+      header: "BLK",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+    {
+      accessorKey: "averageSteals",
+      header: "STL",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+    {
+      accessorKey: "averageTurnovers",
+      header: "TO",
+      cell: ({ getValue }) => getValue<number>(),
+    },
+  ];
 
   return (
     <Card className="w-full border-gray-800 bg-gray-900/50 p-2 text-2xl backdrop-blur-sm">
@@ -34,7 +92,7 @@ const PlayerAveragesStatsCard = ({ statsList }: { statsList: Statlines }) => {
         </CardDescription>
       </CardHeader>
       <div className="px-6">
-        <PlayerAverageDataTable columns={columns} data={data} />
+        <PlayerAverageDataTable columns={columns} data={statsList} />
       </div>
     </Card>
   );
