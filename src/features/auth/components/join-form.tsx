@@ -40,12 +40,7 @@ const JoinTeamForm = () => {
     });
   };
   return (
-    <form
-      onSubmit={handleSubmit(onSubmit, (errors) => {
-        console.log("Validation errors:", errors);
-      })}
-      className="space-y-4"
-    >
+    <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
       <Input
         id="teamCode"
         aria-label="Enter team code:"

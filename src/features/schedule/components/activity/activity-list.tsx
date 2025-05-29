@@ -135,7 +135,6 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
             </Button>
             <Button
               onClick={() => {
-                console.log("Create Practice button clicked");
                 setOpenPracticeModal(true);
               }}
               type="button"

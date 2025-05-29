@@ -1,6 +1,5 @@
 import type { playersDataSchema } from "@/features/scouting/zod/player-stats";
 
-import type { StatlineAverageResult } from "@/features/statistics/types";
 import type {
   GetPlayerStatInput,
   GetPointsPerGameStatInput,
@@ -8,6 +7,7 @@ import type {
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import type { Context } from "../api/trpc";
+import { calculatePercentage, safeSum } from "../api/utils/calculate-stats";
 
 type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
 
@@ -136,7 +136,7 @@ export async function getSinglePlayerStatline(
 export async function getStatlineAverage(
   ctx: Context,
   input: GetPointsPerGameStatInput,
-): Promise<StatlineAverageResult> {
+) {
   const activities = await ctx.db.activity.findMany({
     where: {
       date: {
@@ -264,9 +264,9 @@ export async function getTeamStatlineAverages(
       averagePointsPerGame: 0,
       averages: {
         averagePointsPerGame: 0,
-        averageFieldGoalsMade: 0,
-        averageThreePointersMade: 0,
-        averageFreeThrowsMade: 0,
+        fieldGoalPercentage: 0,
+        threePointPercentage: 0,
+        freeThrowPercentage: 0,
         averageAssists: 0,
         averageRebounds: 0,
         averageSteals: 0,
@@ -288,8 +288,11 @@ export async function getTeamStatlineAverages(
         },
         _sum: {
           fieldGoalsMade: true,
+          fieldGoalsMissed: true,
           threePointersMade: true,
+          threePointersMissed: true,
           freeThrows: true,
+          missedFreeThrows: true,
           assists: true,
           rebounds: true,
           blocks: true,
@@ -309,13 +312,22 @@ export async function getTeamStatlineAverages(
         },
       });
 
-      const totalPoints =
-        ((stats._sum.fieldGoalsMade ?? 0) -
-          (stats._sum.threePointersMade ?? 0)) *
-          2 +
-        (stats._sum.threePointersMade ?? 0) * 3 +
-        (stats._sum.freeThrows ?? 0);
+      const madeFG = safeSum(stats._sum.fieldGoalsMade);
+      const missedFG = safeSum(stats._sum.fieldGoalsMissed);
 
+      const made3P = safeSum(stats._sum.threePointersMade);
+      const missed3P = safeSum(stats._sum.threePointersMissed);
+
+      const madeFT = safeSum(stats._sum.freeThrows);
+      const missedFT = safeSum(stats._sum.missedFreeThrows);
+
+      const fieldGoalPercentage = calculatePercentage(madeFG, missedFG);
+      const threePointPercentage = calculatePercentage(made3P, missed3P);
+      const freeThrowPercentage = calculatePercentage(madeFT, missedFT);
+
+      const twoPointMade = madeFG - made3P;
+
+      const totalPoints = twoPointMade * 2 + made3P * 3 + madeFT;
       const numberOfGames = gamesAttended ?? 1;
 
       return {
@@ -324,17 +336,21 @@ export async function getTeamStatlineAverages(
         totalPoints,
         gamesAttended,
         averages: {
-          averagePointsPerGame: totalPoints / numberOfGames,
-          averageFieldGoalsMade:
-            (stats._sum.fieldGoalsMade ?? 0) / numberOfGames,
-          averageThreePointersMade:
-            (stats._sum.threePointersMade ?? 0) / numberOfGames,
-          averageFreeThrowsMade: (stats._sum.freeThrows ?? 0) / numberOfGames,
-          averageAssists: (stats._sum.assists ?? 0) / numberOfGames,
-          averageRebounds: (stats._sum.rebounds ?? 0) / numberOfGames,
-          averageSteals: (stats._sum.steals ?? 0) / numberOfGames,
-          averageBlocks: (stats._sum.blocks ?? 0) / numberOfGames,
-          averageTurnovers: (stats._sum.turnovers ?? 0) / numberOfGames,
+          averagePointsPerGame: (totalPoints / numberOfGames).toFixed(1),
+          fieldGoalPercentage: fieldGoalPercentage.toFixed(1),
+          threePointPercentage: threePointPercentage.toFixed(1),
+          freeThrowPercentage: freeThrowPercentage.toFixed(1),
+          averageAssists: ((stats._sum.assists ?? 0) / numberOfGames).toFixed(
+            1,
+          ),
+          averageRebounds: ((stats._sum.rebounds ?? 0) / numberOfGames).toFixed(
+            1,
+          ),
+          averageBlocks: ((stats._sum.blocks ?? 0) / numberOfGames).toFixed(1),
+          averageSteals: ((stats._sum.steals ?? 0) / numberOfGames).toFixed(1),
+          averageTurnovers: (
+            (stats._sum.turnovers ?? 0) / numberOfGames
+          ).toFixed(1),
         },
       };
     }),

@@ -101,9 +101,7 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
         </div>
 
         <form
-          onSubmit={handleSubmit(onSubmit, (errors) => {
-            console.log("Validation errors:", errors);
-          })}
+          onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 p-4 sm:p-5"
         >
           <div className="space-y-1 text-center">

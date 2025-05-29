@@ -10,7 +10,7 @@ import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateGameActivity } from "../../hooks/use-create-game";
 import { useEditGameActivity } from "../../hooks/use-edit-activity";
@@ -83,10 +83,6 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
       router.push(`/${teamSlug}/schedule`);
     }
   };
-
-  useEffect(() => {
-    console.log("Modal state changed:", openGameModal);
-  }, [openGameModal]);
 
   if ((isViewMode || isEditMode) && !selectedActivity) return null;
   if (isCreateMode && !selectedDate) return null;
