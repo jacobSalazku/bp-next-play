@@ -1,13 +1,12 @@
 import type { playersDataSchema } from "@/features/scouting/zod/player-stats";
 
-import type {
-  GetPlayerStatInput,
-  GetPointsPerGameStatInput,
-} from "@/features/statistics/zod";
+import type { GetPlayerStatInput } from "@/features/statistics/zod";
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import type { Context } from "../api/trpc";
+import { getActivityIds } from "../api/utils/activity-id";
 import { calculatePercentage, safeSum } from "../api/utils/calculate-stats";
+import { countGamesAttended } from "../api/utils/get-games-attended";
 
 type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
 
@@ -133,92 +132,92 @@ export async function getSinglePlayerStatline(
   }));
 }
 
-export async function getStatlineAverage(
-  ctx: Context,
-  input: GetPointsPerGameStatInput,
-) {
-  const activities = await ctx.db.activity.findMany({
-    where: {
-      date: {
-        gte: new Date(input.startDate),
-        lte: new Date(input.endDate ?? Date.now()),
-      },
-    },
-    select: { id: true },
-  });
+// export async function getStatlineAverage(
+//   ctx: Context,
+//   input: GetPointsPerGameStatInput,
+// ) {
+//   const activities = await ctx.db.activity.findMany({
+//     where: {
+//       date: {
+//         gte: new Date(input.startDate),
+//         lte: new Date(input.endDate ?? Date.now()),
+//       },
+//     },
+//     select: { id: true },
+//   });
 
-  const activityIds = activities.map((a) => a.id);
+//   const activityIds = activities.map((a) => a.id);
 
-  if (activityIds.length === 0) {
-    return {
-      totalPoints: 0,
-      averagePointsPerGame: 0,
-      averages: {
-        averagePointsPerGame: 0,
-        averageFieldGoalsMade: 0,
-        averageThreePointersMade: 0,
-        averageFreeThrowsMade: 0,
-        averageAssists: 0,
-        averageRebounds: 0,
-        averageSteals: 0,
-        averageBlocks: 0,
-        averageTurnovers: 0,
-      },
-    };
-  }
+//   if (activityIds.length === 0) {
+//     return {
+//       totalPoints: 0,
+//       averagePointsPerGame: 0,
+//       averages: {
+//         averagePointsPerGame: 0,
+//         averageFieldGoalsMade: 0,
+//         averageThreePointersMade: 0,
+//         averageFreeThrowsMade: 0,
+//         averageAssists: 0,
+//         averageRebounds: 0,
+//         averageSteals: 0,
+//         averageBlocks: 0,
+//         averageTurnovers: 0,
+//       },
+//     };
+//   }
 
-  const stats = await ctx.db.statline.aggregate({
-    where: {
-      teamMemberId: input.teamMemberId,
-      activityId: {
-        in: activityIds,
-      },
-    },
-    _sum: {
-      fieldGoalsMade: true,
-      threePointersMade: true,
-      freeThrows: true,
-      assists: true,
-      rebounds: true,
-      blocks: true,
-      steals: true,
-      turnovers: true,
-    },
-    _count: {
-      id: true, // count the number of game activities
-    },
-  }); // Calculate total points based on sums
+//   const stats = await ctx.db.statline.aggregate({
+//     where: {
+//       teamMemberId: input.teamMemberId,
+//       activityId: {
+//         in: activityIds,
+//       },
+//     },
+//     _sum: {
+//       fieldGoalsMade: true,
+//       threePointersMade: true,
+//       freeThrows: true,
+//       assists: true,
+//       rebounds: true,
+//       blocks: true,
+//       steals: true,
+//       turnovers: true,
+//     },
+//     _count: {
+//       id: true, // count the number of game activities
+//     },
+//   }); // Calculate total points based on sums
 
-  const totalPoints =
-    ((stats._sum.fieldGoalsMade ?? 0) - (stats._sum.threePointersMade ?? 0)) *
-      2 +
-    (stats._sum.threePointersMade ?? 0) * 3 +
-    (stats._sum.freeThrows ?? 0);
+//   const totalPoints =
+//     ((stats._sum.fieldGoalsMade ?? 0) - (stats._sum.threePointersMade ?? 0)) *
+//       2 +
+//     (stats._sum.threePointersMade ?? 0) * 3 +
+//     (stats._sum.freeThrows ?? 0);
 
-  const numberOfGames = stats._count.id || 1; // Avoid divide by zero
+//   const numberOfGames = stats._count.id || 1; // Avoid divide by zero
 
-  const averagePointsPerGame = totalPoints / numberOfGames;
+//   const averagePointsPerGame = totalPoints / numberOfGames;
 
-  const averages = {
-    averagePointsPerGame: totalPoints / numberOfGames,
-    averageFieldGoalsMade: (stats._sum.fieldGoalsMade ?? 0) / numberOfGames,
-    averageThreePointersMade:
-      (stats._sum.threePointersMade ?? 0) / numberOfGames,
-    averageFreeThrowsMade: (stats._sum.freeThrows ?? 0) / numberOfGames,
-    averageAssists: (stats._sum.assists ?? 0) / numberOfGames,
-    averageRebounds: (stats._sum.rebounds ?? 0) / numberOfGames,
-    averageSteals: (stats._sum.steals ?? 0) / numberOfGames,
-    averageBlocks: (stats._sum.blocks ?? 0) / numberOfGames,
-    averageTurnovers: (stats._sum.turnovers ?? 0) / numberOfGames,
-    // Add more stats here if needed
-  };
+//   const averages = {
+//     averagePointsPerGame: totalPoints / numberOfGames,
+//     averageFieldGoalsMade: (stats._sum.fieldGoalsMade ?? 0) / numberOfGames,
+//     averageThreePointersMade:
+//       (stats._sum.threePointersMade ?? 0) / numberOfGames,
+//     averageFreeThrowsMade: (stats._sum.freeThrows ?? 0) / numberOfGames,
+//     averageAssists: (stats._sum.assists ?? 0) / numberOfGames,
+//     averageRebounds: (stats._sum.rebounds ?? 0) / numberOfGames,
+//     averageSteals: (stats._sum.steals ?? 0) / numberOfGames,
+//     averageBlocks: (stats._sum.blocks ?? 0) / numberOfGames,
+//     averageTurnovers: (stats._sum.turnovers ?? 0) / numberOfGames,
+//     // Add more stats here if needed
+//   };
 
-  return {
-    totalPoints,
-    averagePointsPerGame,
-    averages,
-  };
-}
+//   return {
+//     totalPoints,
+//     averagePointsPerGame,
+//     averages,
+//   };
+// }
 
 export async function getTeamStatlineAverages(
   ctx: Context,
@@ -249,10 +248,7 @@ export async function getTeamStatlineAverages(
     select: { id: true, type: true },
   });
 
-  const activityIds = activities.map((a) => a.id);
-  const gameActivityIds = activities
-    .filter((a) => a.type === "Game")
-    .map((a) => a.id);
+  const { activityIds, gameActivityIds } = getActivityIds(activities);
 
   if (activityIds.length === 0) {
     // No games found, return zero stats for all players
@@ -304,13 +300,11 @@ export async function getTeamStatlineAverages(
         },
       });
 
-      const gamesAttended = await ctx.db.activityAttendance.count({
-        where: {
-          teamMemberId: member.id,
-          activityId: { in: gameActivityIds },
-          attendanceStatus: "ATTENDING",
-        },
-      });
+      const gamesAttended = await countGamesAttended(
+        ctx,
+        member.id,
+        gameActivityIds,
+      );
 
       const madeFG = safeSum(stats._sum.fieldGoalsMade);
       const missedFG = safeSum(stats._sum.fieldGoalsMissed);
@@ -331,8 +325,8 @@ export async function getTeamStatlineAverages(
       const numberOfGames = gamesAttended ?? 1;
 
       return {
-        teamMemberId: member.id,
         name: member.user.name,
+        teamMemberId: member.id,
         totalPoints,
         gamesAttended,
         averages: {
@@ -357,4 +351,66 @@ export async function getTeamStatlineAverages(
   );
 
   return results;
+}
+
+export async function getStatsPerGame(ctx: Context, teamMemberId: string) {
+  const now = new Date();
+  const oneMonthAgo = new Date();
+  oneMonthAgo.setMonth(now.getMonth() - 1);
+
+  // Fetch statlines for the player within the date range
+  const statlines = await ctx.db.statline.findMany({
+    where: {
+      teamMemberId,
+      activity: {
+        date: {
+          gte: oneMonthAgo,
+          lte: now,
+        },
+      },
+    },
+    select: {
+      fieldGoalsMade: true,
+      threePointersMade: true,
+      freeThrows: true,
+      assists: true,
+      rebounds: true,
+      steals: true,
+      activity: {
+        select: { date: true, title: true },
+      },
+    },
+    orderBy: {
+      activity: {
+        date: "desc", // Most recent games first
+      },
+    },
+  });
+
+  if (!statlines || statlines.length === 0) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: `No statlines found for player with ID: ${teamMemberId}`,
+    });
+  }
+
+  const statsPerGameStats = statlines.map((entry) => {
+    const activity = entry.activity;
+    const points =
+      ((entry.fieldGoalsMade ?? 0) - (entry.threePointersMade ?? 0)) * 2 +
+      (entry.threePointersMade ?? 0) * 3 +
+      (entry.freeThrows ?? 0);
+
+    return {
+      gameTitle: activity?.title ?? "Untitled Game",
+      date: activity?.date ?? null,
+      points,
+      assists: entry.assists ?? 0,
+      rebounds: entry.rebounds ?? 0,
+      steals: entry.steals ?? 0,
+    };
+  });
+
+  // Return the weekly breakdown
+  return statsPerGameStats;
 }
