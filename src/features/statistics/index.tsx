@@ -1,25 +1,20 @@
 "use client";
 
 import type { Statlines } from "@/types";
-import { PlayerAveragesTable } from "./components/player-stats-table";
+import { PlayerAveragesStatsCard } from "./components/player-average-stats-card";
+import { PerformanceComparisonChart } from "./components/player-performance-comparison-chart";
 
 type ChartsBlockProps = {
   statsList: Statlines;
 };
 
-const ChartsBlock: React.FC<ChartsBlockProps> = ({ statsList }) => {
+const StatisticsBlock: React.FC<ChartsBlockProps> = ({ statsList }) => {
   return (
-    <div className="w-full gap-2 space-y-4 rounded-lg p-4 md:flex md:space-y-0 md:space-x-4">
-      {/* <ReactEcharts
-        option={chartOption}
-        notMerge={true}
-        lazyUpdate={true}
-        theme={"theme_name"}
-        className="w-2/3 rounded-lg border p-2 text-white"
-      /> */}
-      <PlayerAveragesTable statsList={statsList} />
+    <div className="w-full flex-col justify-center gap-8 space-y-4 rounded-lg px-8 py-4 md:flex md:space-y-0 md:space-x-4">
+      <PerformanceComparisonChart statsList={statsList} />
+      <PlayerAveragesStatsCard statsList={statsList} />
     </div>
   );
 };
 
-export default ChartsBlock;
+export default StatisticsBlock;
