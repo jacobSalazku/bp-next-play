@@ -82,8 +82,8 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/30 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-lg border border-orange-200/20 bg-black text-white shadow-lg sm:max-w-lg">
-        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-3 sm:px-5 sm:py-4">
+      <div className="w-full max-w-md rounded-lg border border-orange-200/30 bg-black text-white shadow-lg sm:max-w-lg">
+        <div className="flex items-center justify-between border-b border-orange-200/30 px-4 py-3 sm:px-5 sm:py-4">
           <h2 className="font-righteous text-lg tracking-wide sm:text-xl">
             Attendance
           </h2>

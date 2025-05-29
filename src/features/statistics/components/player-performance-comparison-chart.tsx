@@ -32,7 +32,7 @@ export const PerformanceComparisonChart = ({
   }));
 
   return (
-    <Card className="border-gray-800 bg-gray-900/50 backdrop-blur-sm">
+    <Card className="w-full border-gray-800 bg-gray-900/50 backdrop-blur-sm">
       <CardHeader>
         <CardTitle className="text-2xl text-white">
           Player Performance Comparison
@@ -41,48 +41,47 @@ export const PerformanceComparisonChart = ({
           Top Player Statistics
         </CardDescription>
       </CardHeader>
-      <div>
-        <ResponsiveContainer width="100%" height={300}>
-          <BarChart data={chartData}>
-            <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
-            <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} />
-            <YAxis stroke="#9CA3AF" fontSize={12} />
-            <Tooltip
-              contentStyle={{
-                backgroundColor: "#1F2937",
-                border: "1px solid #374151",
-                borderRadius: "8px",
-                color: "#F3F4F6",
-              }}
-            />
-            <Legend className="text-sm" />
-            <Bar
-              dataKey="points"
-              fill="#FB923C"
-              name="Points"
-              radius={[2, 2, 0, 0]}
-            />
-            <Bar
-              dataKey="assists"
-              fill="#FDBA74"
-              name="Assists"
-              radius={[2, 2, 0, 0]}
-            />
-            <Bar
-              dataKey="rebounds"
-              fill="#FED7AA"
-              name="Rebounds"
-              radius={[2, 2, 0, 0]}
-            />
-            <Bar
-              dataKey="blocks"
-              fill="#FFEDD5"
-              name="Blocks"
-              radius={[2, 2, 0, 0]}
-            />
-          </BarChart>
-        </ResponsiveContainer>
-      </div>
+
+      <ResponsiveContainer className="w-full" width="100%" height={300}>
+        <BarChart data={chartData}>
+          <CartesianGrid strokeDasharray="3 3" stroke="#374151" />
+          <XAxis dataKey="name" stroke="#9CA3AF" fontSize={12} />
+          <YAxis stroke="#9CA3AF" fontSize={12} />
+          <Tooltip
+            contentStyle={{
+              backgroundColor: "#1F2937",
+              border: "1px solid #374151",
+              borderRadius: "8px",
+              color: "#F3F4F6",
+            }}
+          />
+          <Legend className="text-sm" />
+          <Bar
+            dataKey="points"
+            fill="#FB923C"
+            name="Points"
+            radius={[2, 2, 0, 0]}
+          />
+          <Bar
+            dataKey="assists"
+            fill="#FDBA74"
+            name="Assists"
+            radius={[2, 2, 0, 0]}
+          />
+          <Bar
+            dataKey="rebounds"
+            fill="#FED7AA"
+            name="Rebounds"
+            radius={[2, 2, 0, 0]}
+          />
+          <Bar
+            dataKey="blocks"
+            fill="#FFEDD5"
+            name="Blocks"
+            radius={[2, 2, 0, 0]}
+          />
+        </BarChart>
+      </ResponsiveContainer>
     </Card>
   );
 };

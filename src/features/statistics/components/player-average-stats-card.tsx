@@ -84,14 +84,14 @@ const PlayerAveragesStatsCard = ({
   ];
 
   return (
-    <Card className="w-full border-gray-800 bg-gray-900/50 p-2 text-2xl backdrop-blur-sm">
-      <CardHeader>
+    <Card className="w-full border-gray-800 bg-gray-950 p-2 text-2xl backdrop-blur-sm">
+      <CardHeader className="w-full">
         <CardTitle className="text-white">Player Statistics</CardTitle>
         <CardDescription className="text-gray-400">
           Click on a player name to view detailed performance analysis
         </CardDescription>
       </CardHeader>
-      <div className="px-6">
+      <div className="px-6 md:pb-6">
         <PlayerAverageDataTable columns={columns} data={statsList} />
       </div>
     </Card>
