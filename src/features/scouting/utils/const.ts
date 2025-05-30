@@ -27,3 +27,11 @@ export const statKeys: (keyof StatlineData)[] = [
   "rebounds",
   "blocks",
 ];
+
+export const otherStats = [
+  { key: "assists", label: "AST" },
+  { key: "rebounds", label: "REB" },
+  { key: "blocks", label: "BLK" },
+  { key: "steals", label: "STL" },
+  { key: "turnovers", label: "TO" },
+];
