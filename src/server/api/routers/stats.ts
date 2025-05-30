@@ -1,7 +1,5 @@
 import { statlineSchema } from "@/features/scouting/zod/player-stats";
-import { getPlayerStatSchema } from "@/features/statistics/zod";
 import {
-  getSinglePlayerStatline,
   getStatsPerGame,
   getTeamStatlineAverages,
   submitStatlines,
@@ -24,14 +22,6 @@ export const statsRouter = createTRPCRouter({
     )
     .mutation(async ({ ctx, input }) => {
       return await submitStatlines(ctx, input);
-    }),
-
-  getSingleStat: protectedProcedure
-    .input(getPlayerStatSchema)
-    .query(async ({ ctx, input }) => {
-      const statline = await getSinglePlayerStatline(ctx, input);
-
-      return statline;
     }),
 
   getStatlineAverage: protectedProcedure

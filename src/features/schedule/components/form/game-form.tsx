@@ -64,7 +64,6 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
-    console.log("Submit:");
 
     const gameData = {
       ...data,
