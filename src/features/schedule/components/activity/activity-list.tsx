@@ -49,7 +49,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in mt-3 h-full max-h-[62vh] overflow-hidden rounded-xl border border-orange-200/20 p-4 shadow-sm duration-300 sm:h-auto sm:max-h-full sm:p-6">
+    <div className="animate-fade-in mt-3 h-full max-h-[62vh] overflow-hidden rounded-xl border border-orange-200/30 p-4 shadow-sm duration-300 sm:h-auto sm:max-h-full sm:p-6">
       <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
         <h2 className="flex items-center text-xl font-semibold text-white">
           <CalendarClock className="mr-2 h-5 text-sm text-gray-400" />
@@ -135,7 +135,6 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
             </Button>
             <Button
               onClick={() => {
-                console.log("Create Practice button clicked");
                 setOpenPracticeModal(true);
               }}
               type="button"

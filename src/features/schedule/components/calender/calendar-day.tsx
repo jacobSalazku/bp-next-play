@@ -52,7 +52,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
         "group flex h-32 w-full cursor-pointer flex-col items-end justify-start rounded-sm p-1.5 transition-all duration-200 focus:ring-2 focus:ring-white focus:outline-none md:h-40",
         isSelected
           ? "border border-white shadow-lg ring ring-white"
-          : "border border-orange-200/20 hover:bg-orange-200/10",
+          : "border border-orange-200/30 hover:bg-orange-200/10",
       )}
     >
       <div className="inline-flex w-full flex-row items-center justify-between px-1">

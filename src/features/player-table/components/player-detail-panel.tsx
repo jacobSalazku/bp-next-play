@@ -35,7 +35,7 @@ const PlayerDetailPanel = ({
           : isMobile
             ? "-translate-x-full"
             : "-translate-x-full",
-        "absolute inset-y-0 z-30 h-full transform border-r border-orange-200/20 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
+        "absolute inset-y-0 z-30 h-full transform border-r border-orange-200/30 bg-gray-950 opacity-100 shadow-xl transition-all duration-100 ease-in-out",
       )}
     >
       {selectedPlayer &&
@@ -44,7 +44,7 @@ const PlayerDetailPanel = ({
           <>
             <div>
               {/* Header */}
-              <div className="sticky top-0 z-10 hidden items-center justify-between border-b border-orange-200/20 bg-gray-950 px-4 py-6 md:flex">
+              <div className="sticky top-0 z-10 hidden items-center justify-between border-b border-orange-200/30 bg-gray-950 px-4 py-6 md:flex">
                 <h2 className="font-righteous text-xl font-bold">
                   Player Details
                 </h2>
@@ -59,7 +59,7 @@ const PlayerDetailPanel = ({
               </div>
 
               {/* Profile Info */}
-              <div className="flex flex-col items-center border-b border-orange-200/20 px-6 py-8">
+              <div className="flex flex-col items-center border-b border-orange-200/30 px-6 py-8">
                 {selectedPlayer.user.image ? (
                   <Image
                     width={128}
@@ -86,7 +86,7 @@ const PlayerDetailPanel = ({
               defaultValue="info"
               className="flex flex-col overflow-y-auto px-4 pt-4"
             >
-              <TabsList className="grid w-full grid-cols-2 border border-orange-200/20 bg-gray-800">
+              <TabsList className="grid w-full grid-cols-2 border border-orange-200/30 bg-gray-800">
                 <TabsTrigger value="info">Personal Info</TabsTrigger>
                 <TabsTrigger value="attendance">Attendance</TabsTrigger>
               </TabsList>

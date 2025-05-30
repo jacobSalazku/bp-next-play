@@ -25,3 +25,18 @@ export type ActivityStat = {
   date: string | null;
   title: string | null;
 };
+
+export type PlayerStatRow = {
+  name: string;
+  teamMemberId: string;
+  gamesAttended: number;
+  averagePoints: number;
+  fieldGoalPercentage: number;
+  threePointPercentage: number;
+  freeThrowPercentage: number;
+  averageAssists: number;
+  averageRebounds: number;
+  averageBlocks: number;
+  averageSteals: number;
+  averageTurnovers: number;
+};

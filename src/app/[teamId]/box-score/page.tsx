@@ -1,5 +1,5 @@
 import { getActiveTeamMember } from "@/api/user";
-import { PlayerBoxScore } from "@/features/scouting/components/multi-stats-tracker";
+import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
 import type { SearchParams } from "nuqs/server";
 
@@ -30,11 +30,11 @@ async function PlayerPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <main className="max flex min-h-screen flex-col items-center justify-center text-white">
-      <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row items-center justify-center">
-        <PlayerBoxScore activityId={activityId} players={players} />
+    <div className="flex min-h-screen w-full flex-col items-center justify-start text-white">
+      <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row justify-center py-4">
+        <MultiStatlineTracker activityId={activityId} players={players} />
       </div>
-    </main>
+    </div>
   );
 }
 export default PlayerPage;

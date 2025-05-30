@@ -1,5 +1,12 @@
 {
-  "cSpell.words": ["about", "attendances", "cuid", "upserting"],
+  "cSpell.words": [
+    "about",
+    "attendances",
+    "cuid",
+    "upserting",
+    "statline",
+    "statlines"
+  ],
   "cSpell.language": "en,fr",
   "cSpell.dictionaries": ["en", "fr"]
 }

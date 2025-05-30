@@ -32,7 +32,7 @@ export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
     setCurrentDate((prevDate) => addDays(prevDate, isMobile ? 3 : 5));
 
   return (
-    <div className="w-full rounded-xl border border-orange-200/20 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
+    <div className="w-full rounded-xl border border-orange-200/30 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold tracking-tight text-gray-100">
           {format(visibleDays[0] ?? new Date(), "MMM d")} -{" "}

@@ -82,8 +82,8 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
   };
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/30 p-4 backdrop-blur-sm">
-      <div className="w-full max-w-md rounded-lg border border-orange-200/20 bg-black text-white shadow-lg sm:max-w-lg">
-        <div className="flex items-center justify-between border-b border-orange-200/20 px-4 py-3 sm:px-5 sm:py-4">
+      <div className="w-full max-w-md rounded-lg border border-orange-200/30 bg-black text-white shadow-lg sm:max-w-lg">
+        <div className="flex items-center justify-between border-b border-orange-200/30 px-4 py-3 sm:px-5 sm:py-4">
           <h2 className="font-righteous text-lg tracking-wide sm:text-xl">
             Attendance
           </h2>
@@ -101,9 +101,7 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
         </div>
 
         <form
-          onSubmit={handleSubmit(onSubmit, (errors) => {
-            console.log("Validation errors:", errors);
-          })}
+          onSubmit={handleSubmit(onSubmit)}
           className="space-y-6 p-4 sm:p-5"
         >
           <div className="space-y-1 text-center">

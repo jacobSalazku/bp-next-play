@@ -28,7 +28,6 @@ const UserUpdateForm = () => {
   const updateUser = useUpdateUser();
 
   const onSubmit = async (data: UpdateUserData) => {
-    console.log("data", data);
     const date = new Date(data.dateOfBirth);
 
     const userData = {
@@ -38,7 +37,7 @@ const UserUpdateForm = () => {
       weight: Number(data.weight - 100),
       hasOnBoarded: true,
     };
-    console.log("userData", userData);
+
     await updateUser.mutateAsync(userData);
     redirect("/create");
   };
