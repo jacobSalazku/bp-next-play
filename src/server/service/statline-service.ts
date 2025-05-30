@@ -353,10 +353,14 @@ export async function getTeamStatlineAverages(
   return results;
 }
 
-export async function getStatsPerGame(ctx: Context, teamMemberId: string) {
-  const now = new Date();
-  const oneMonthAgo = new Date();
-  oneMonthAgo.setMonth(now.getMonth() - 1);
+export async function getStatsPerGame(
+  ctx: Context,
+  teamMemberId: string,
+  year: number,
+  month: number,
+) {
+  const startDate = new Date(year, month - 1, 1);
+  const endDate = new Date(year, month, 0, 23, 59, 59, 999);
 
   // Fetch statlines for the player within the date range
   const statlines = await ctx.db.statline.findMany({
@@ -364,8 +368,8 @@ export async function getStatsPerGame(ctx: Context, teamMemberId: string) {
       teamMemberId,
       activity: {
         date: {
-          gte: oneMonthAgo,
-          lte: now,
+          gte: startDate,
+          lte: endDate,
         },
       },
     },
@@ -388,10 +392,16 @@ export async function getStatsPerGame(ctx: Context, teamMemberId: string) {
   });
 
   if (!statlines || statlines.length === 0) {
-    throw new TRPCError({
-      code: "NOT_FOUND",
-      message: `No statlines found for player with ID: ${teamMemberId}`,
-    });
+    return [
+      {
+        gameTitle: "",
+        points: 0,
+        assists: 0,
+        rebounds: 0,
+        blocks: 0,
+        steals: 0,
+      },
+    ];
   }
 
   const statsPerGameStats = statlines.map((entry) => {
@@ -411,6 +421,5 @@ export async function getStatsPerGame(ctx: Context, teamMemberId: string) {
     };
   });
 
-  // Return the weekly breakdown
   return statsPerGameStats;
 }

@@ -28,6 +28,7 @@ export type ActivityStat = {
 
 export type PlayerStatRow = {
   name: string;
+  teamMemberId: string;
   gamesAttended: number;
   averagePoints: number;
   fieldGoalPercentage: number;

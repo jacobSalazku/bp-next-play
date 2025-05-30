@@ -1,12 +1,14 @@
+import { Link } from "@/components/foundation/button/link";
 import {
   Card,
   CardDescription,
   CardHeader,
   CardTitle,
 } from "@/components/foundation/card";
-import { useStatisticsStore } from "@/store/use-stats-store";
 import type { ColumnDef } from "@tanstack/react-table";
-import type { PlayerStatRow } from "../types";
+
+import { useTeam } from "@/context/team-context";
+import type { PlayerStatRow } from "../utils/types";
 import { PlayerAverageDataTable } from "./players-data-table";
 
 const PlayerAveragesStatsCard = ({
@@ -14,21 +16,30 @@ const PlayerAveragesStatsCard = ({
 }: {
   statsList: PlayerStatRow[];
 }) => {
-  const { setSelectedPlayerStatistics } = useStatisticsStore();
+  const { teamSlug } = useTeam();
+
   const columns: ColumnDef<PlayerStatRow>[] = [
     {
       accessorKey: "name",
       header: "Player",
       cell: ({ row }) => {
         const player = row.original;
+        const href = {
+          pathname: `${teamSlug}/statistics/player`,
+          query: { id: player.teamMemberId },
+        };
+        console.log("href", href);
 
         return (
-          <span
-            onClick={() => setSelectedPlayerStatistics(player)}
-            className="cursor-pointer font-semibold text-orange-300 hover:underline"
+          <Link
+            href={{
+              pathname: `/${teamSlug}/statistics/player`,
+              query: { id: player.teamMemberId },
+            }}
+            className="cursor-pointer rounded-3xl font-semibold hover:text-orange-300"
           >
             {player.name}
-          </span>
+          </Link>
         );
       },
     },
@@ -84,14 +95,14 @@ const PlayerAveragesStatsCard = ({
   ];
 
   return (
-    <Card className="w-full border-gray-800 bg-gray-950 p-2 text-2xl backdrop-blur-sm">
-      <CardHeader className="w-full">
+    <Card className="w-full border-gray-800 bg-gray-950 p-2 text-2xl backdrop-blur-sm sm:p-6">
+      <CardHeader className="w-full p-2">
         <CardTitle className="text-white">Player Statistics</CardTitle>
         <CardDescription className="text-gray-400">
           Click on a player name to view detailed performance analysis
         </CardDescription>
       </CardHeader>
-      <div className="px-6 md:pb-6">
+      <div className="px-2">
         <PlayerAverageDataTable columns={columns} data={statsList} />
       </div>
     </Card>

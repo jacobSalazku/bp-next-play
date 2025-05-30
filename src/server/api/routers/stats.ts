@@ -2,6 +2,7 @@ import { statlineSchema } from "@/features/scouting/zod/player-stats";
 import { getPlayerStatSchema } from "@/features/statistics/zod";
 import {
   getSinglePlayerStatline,
+  getStatsPerGame,
   getTeamStatlineAverages,
   submitStatlines,
 } from "@/server/service/statline-service";
@@ -21,31 +22,8 @@ export const statsRouter = createTRPCRouter({
         ),
       }),
     )
-
     .mutation(async ({ ctx, input }) => {
       return await submitStatlines(ctx, input);
-    }),
-
-  getStats: protectedProcedure
-    .input(
-      z.object({
-        teamId: z.string(),
-        activityId: z.string(),
-      }),
-    )
-    .query(async ({ ctx, input }) => {
-      const { teamId, activityId } = input;
-
-      const statlines = await ctx.db.statline.findMany({
-        where: {
-          activityId: activityId,
-          teamMember: {
-            teamId: teamId,
-          },
-        },
-        include: {},
-      });
-      return statlines;
     }),
 
   getSingleStat: protectedProcedure
@@ -55,6 +33,7 @@ export const statsRouter = createTRPCRouter({
 
       return statline;
     }),
+
   getStatlineAverage: protectedProcedure
     .input(
       z.object({
@@ -64,9 +43,27 @@ export const statsRouter = createTRPCRouter({
       }),
     )
     .query(async ({ ctx, input }) => {
-      // const stats = await getStatlineAverage(ctx, input);
       const stats = await getTeamStatlineAverages(ctx, input);
 
       return stats;
+    }),
+
+  getStatsPerGame: protectedProcedure
+    .input(
+      z.object({
+        teamMemberId: z.string(),
+        year: z.number(),
+        month: z.number(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const statPerGame = await getStatsPerGame(
+        ctx,
+        input.teamMemberId,
+        input.year,
+        input.month,
+      );
+
+      return statPerGame;
     }),
 });

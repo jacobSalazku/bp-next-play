@@ -18,10 +18,10 @@ import {
 import { ArrowUpDown, MoveDown, MoveUp } from "lucide-react";
 import { useState } from "react";
 
-interface DataTableProps<TData, TValue> {
+type DataTableProps<TData, TValue> = {
   columns: ColumnDef<TData, TValue>[];
   data: TData[];
-}
+};
 
 export function PlayerAverageDataTable<TData, TValue>({
   columns,
@@ -41,8 +41,8 @@ export function PlayerAverageDataTable<TData, TValue>({
   });
 
   return (
-    <div className="flex w-full flex-col justify-center overflow-x-auto rounded-lg border border-gray-800 text-white">
-      <Table>
+    <div className="flex w-full flex-col justify-center rounded-lg border border-gray-800 text-white">
+      <Table className="scrollbar-none overflow-hidden">
         <TableHeader>
           {table.getHeaderGroups().map((headerGroup) => (
             <TableRow
