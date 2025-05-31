@@ -114,24 +114,24 @@ model TeamMember {
 
 // Activity table
 model Activity {
-  id           String      @id @default(cuid())
-  title        String
-  time         String
-  gameplan     String?
-  type         String
-  duration     Float?
-  practiceType String?
-  notes        String?
-  date         DateTime
-  createdAt    DateTime
-  updatedAt    DateTime
-  teamId       String
+  id                String              @id @default(cuid())
+  title             String
+  time              String
+  gameplan          String?
+  type              String
+  duration          Float?
+  practiceType      String?
+  notes             String?
+  date              DateTime
+  createdAt         DateTime
+  updatedAt         DateTime
+  teamId            String
 
-  attendees    ActivityAttendance[]
-  statlines    Statline[]
+  attendees         ActivityAttendance[]
+  statlines         Statline[]
   
-  // Relationships
-  team         Team          @relation(fields: [teamId], references: [id])
+  opponentStatline  OpponentStatline?
+  team              Team                  @relation(fields: [teamId], references: [id])
  
 }
 
@@ -177,4 +177,18 @@ model ActivityAttendance {
 @@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
   @@index([activityId])
   @@index([teamMemberId])
+}
+
+model OpponentStatline {
+  id                String    @id @default(cuid())
+  name              String
+  activityId        String    @unique
+  fieldGoalMade     Int
+  threePointersMade Int
+  freeThrowsMade    Int
+  createdAt         DateTime  @default(now())
+  updatedAt         DateTime  @updatedAt
+
+  activity         Activity   @relation(fields: [activityId], references: [id])
+  @@unique([activityId], map: "opponent_activity_unique")
 }
