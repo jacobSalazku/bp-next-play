@@ -11,7 +11,7 @@ type StatCardProps = {
   title: string;
   value: string | number;
   subtitle?: string;
-  icon: LucideIcon;
+  icon?: LucideIcon;
   iconColor?: string;
 };
 
@@ -28,7 +28,7 @@ export function StatisticsCard({
         <CardTitle className="text-sm font-medium text-gray-300">
           {title}
         </CardTitle>
-        <Icon className={cn(iconColor, "h-5 w-5")} />
+        {Icon && <Icon className={cn(iconColor, "h-5 w-5")} />}
       </CardHeader>
       <CardContent>
         <div className="text-3xl font-bold text-white">{value}</div>

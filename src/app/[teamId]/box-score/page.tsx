@@ -1,3 +1,4 @@
+import { getActivity } from "@/api/activity";
 import { getActiveTeamMember } from "@/api/user";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
@@ -11,6 +12,8 @@ type PageProps = {
 async function PlayerPage({ params, searchParams }: PageProps) {
   const { teamId } = await params;
   const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
+
+  const activity = await getActivity(activityId);
   const members = await getActiveTeamMember(teamId);
 
   const players = members.map((member) => ({
@@ -32,7 +35,7 @@ async function PlayerPage({ params, searchParams }: PageProps) {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-start text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row justify-center py-4">
-        <MultiStatlineTracker activityId={activityId} players={players} />
+        <MultiStatlineTracker activity={activity} players={players} />
       </div>
     </div>
   );
