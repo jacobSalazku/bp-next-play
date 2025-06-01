@@ -1,6 +1,6 @@
 import type { TeamMembers } from "@/types";
-import type { StatlineData } from "../zod/player-stats";
-import { defaultStatline } from "../zod/types";
+import type { OpponentStatsline, StatlineData } from "../zod/player-stats";
+import { defaultOpponentStatline, defaultStatline } from "../zod/types";
 
 export const getInitalPlayers = (players: TeamMembers, activityId: string) => {
   return players.map((p) => {
@@ -14,6 +14,16 @@ export const getInitalPlayers = (players: TeamMembers, activityId: string) => {
         : [{ ...defaultStatline, activityId }],
     };
   });
+};
+
+export const getInitialOpponentStatline = (
+  opponentStatline: OpponentStatsline,
+  activityId: string,
+): OpponentStatsline => {
+  if (opponentStatline && opponentStatline.activityId === activityId) {
+    return opponentStatline;
+  }
+  return { ...defaultOpponentStatline, activityId };
 };
 
 export const calculateRawTeamStats = (players: TeamMembers) => {

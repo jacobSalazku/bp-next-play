@@ -1,5 +1,5 @@
 import type { TeamMember } from "@/types";
-import type { StatlineData } from "./player-stats";
+import type { OpponentStatsline, StatlineData } from "./player-stats";
 
 export type PlayerWithStats = TeamMember & {
   statlines: StatlineData[];
@@ -16,6 +16,15 @@ export const defaultStatline: StatlineData = {
   assists: 0,
   steals: 0,
   turnovers: 0,
-  rebounds: 0,
+  offensiveRebounds: 0,
+  defensiveRebounds: 0,
   blocks: 0,
+};
+
+export const defaultOpponentStatline: OpponentStatsline = {
+  name: "",
+  fieldGoalsMade: 0,
+  threePointersMade: 0,
+  freeThrowsMade: 0,
+  activityId: "",
 };

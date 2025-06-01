@@ -13,11 +13,7 @@ async function PlayerStatisticsDetailPage({ params, searchParams }: PageProps) {
   const { teamId } = await params;
   const { id } = await boxScoreSearchParamsCache.parse(searchParams);
 
-  const statsList = await getStatlineAverage(
-    teamId,
-    new Date("2025-05-01"),
-    new Date("2025-06-01"),
-  );
+  const statsList = await getStatlineAverage(teamId);
   const player = statsList.find((stat) => stat.teamMemberId === id);
 
   if (!player) {
@@ -33,7 +29,8 @@ async function PlayerStatisticsDetailPage({ params, searchParams }: PageProps) {
     fieldGoalPercentage: Number(player.averages.fieldGoalPercentage),
     threePointPercentage: Number(player.averages.threePointPercentage),
     freeThrowPercentage: Number(player.averages.freeThrowPercentage),
-    averageRebounds: Number(player.averages.averageRebounds),
+    averageOffensiveRebounds: Number(player.averages.averageOffensiveRebound),
+    averageDefensiveRebounds: Number(player.averages.averageDefensiveRebound),
     averageAssists: Number(player.averages.averageAssists),
     averageSteals: Number(player.averages.averageSteals),
     averageBlocks: Number(player.averages.averageBlocks),

@@ -103,7 +103,6 @@ model TeamMember {
   status       String
   number       String?
   position     String?
-
   statlines    Statline[]
   attendances  ActivityAttendance[]
 
@@ -126,13 +125,11 @@ model Activity {
   createdAt         DateTime
   updatedAt         DateTime
   teamId            String
-
   attendees         ActivityAttendance[]
   statlines         Statline[]
-  
   opponentStatline  OpponentStatline?
+
   team              Team                  @relation(fields: [teamId], references: [id])
- 
 }
 
 // Statline table
@@ -148,17 +145,18 @@ model Statline {
   assists             Int
   steals              Int
   turnovers           Int
-  rebounds            Int
+  offensiveRebounds   Int          @default(0)
+  defensiveRebounds   Int          @default(0) 
   blocks              Int
   createdAt           DateTime
   updatedAt           DateTime
   activityId          String
   
   // Relationships
-  teamMember          TeamMember @relation(fields: [teamMemberId], references: [id])
-  activity            Activity   @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id])
+  activity            Activity     @relation(fields: [activityId], references: [id])
 
-  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") // ✅ Add this line
+  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") 
 }
 
 model ActivityAttendance {
@@ -167,12 +165,12 @@ model ActivityAttendance {
   teamMemberId     String       
   attendanceStatus String
   reason           String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
   // Relationships
-  activity     Activity      @relation(fields: [activityId], references: [id])
-  teamMember   TeamMember    @relation(fields: [teamMemberId], references: [id])
+  activity         Activity      @relation(fields: [activityId], references: [id])
+  teamMember       TeamMember    @relation(fields: [teamMemberId], references: [id])
 
 @@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
   @@index([activityId])
@@ -183,9 +181,9 @@ model OpponentStatline {
   id                String    @id @default(cuid())
   name              String
   activityId        String    @unique
-  fieldGoalMade     Int
-  threePointersMade Int
-  freeThrowsMade    Int
+  fieldGoalsMade    Int       @default(0)
+  threePointersMade Int       @default(0)
+  freeThrowsMade    Int       @default(0)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 

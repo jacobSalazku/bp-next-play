@@ -14,11 +14,18 @@ export const statlineSchema = z.object({
   assists: statField(),
   steals: statField(),
   turnovers: statField(),
-  rebounds: statField(),
+  offensiveRebounds: statField(),
+  defensiveRebounds: statField(),
   blocks: statField(),
 });
 
-export type StatlineData = z.infer<typeof statlineSchema>;
+export const opponentStatlineSchema = z.object({
+  name: z.string(),
+  fieldGoalsMade: statField(),
+  threePointersMade: statField(),
+  freeThrowsMade: statField(),
+  activityId: z.string(),
+});
 
 export const playerWithStats = z.object({
   id: z.string(),
@@ -26,6 +33,17 @@ export const playerWithStats = z.object({
   statlines: z.array(statlineSchema),
 });
 
+export const createStatlineInputSchema = z.object({
+  players: z.array(playerWithStats), // or your `TeamMembers` zod schema
+  opponentStatline: opponentStatlineSchema,
+});
+
 export const playersDataSchema = z.object({
   players: z.array(playerWithStats),
 });
+
+export type CreateStatlineInput = z.infer<typeof createStatlineInputSchema>;
+
+export type StatlineData = z.infer<typeof statlineSchema>;
+
+export type OpponentStatsline = z.infer<typeof opponentStatlineSchema>;

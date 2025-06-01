@@ -1,4 +1,4 @@
-import { getStatlineAverage } from "@/api/statline";
+import { getStatlineAverage, getTeamStats } from "@/api/statline";
 import { getTeam } from "@/api/team";
 import StatisticsBlock from "@/features/statistics";
 
@@ -10,12 +10,13 @@ async function StatisticsPage({ params }: PageProps) {
   const { teamId } = await params;
   const { team } = await getTeam(teamId);
 
-  const statsList = await getStatlineAverage(
-    teamId,
-    new Date("2025-05-01"),
-    new Date("2025-06-01"),
-  );
+  const statsList = await getStatlineAverage(teamId);
+  const stats = await getTeamStats();
 
-  return <StatisticsBlock statsList={statsList} team={team} />;
+  return (
+    <div className="overflow-y-auto">
+      <StatisticsBlock teamStatlist={stats} statsList={statsList} team={team} />
+    </div>
+  );
 }
 export default StatisticsPage;

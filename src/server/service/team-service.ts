@@ -64,7 +64,8 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
               assists: true,
               steals: true,
               turnovers: true,
-              rebounds: true,
+              offensiveRebounds: true,
+              defensiveRebounds: true,
               blocks: true,
             },
           },
@@ -81,7 +82,7 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
   }
 
   const members = team.members.map((member) => ({
-    id: member.user.id,
+    id: member.userId,
     name: member.user.name,
     image: member.user.image,
     role: member.role,

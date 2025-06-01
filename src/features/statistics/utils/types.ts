@@ -35,7 +35,8 @@ export type PlayerStatRow = {
   threePointPercentage: number;
   freeThrowPercentage: number;
   averageAssists: number;
-  averageRebounds: number;
+  averageOffensiveRebounds: number;
+  averageDefensiveRebounds: number;
   averageBlocks: number;
   averageSteals: number;
   averageTurnovers: number;

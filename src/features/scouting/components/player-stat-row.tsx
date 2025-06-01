@@ -57,7 +57,8 @@ export const PlayerStatsRow = ({
           {freeThrows.made}/{freeThrows.attempted}
         </TableCell>
         <TableCell className="p-3 text-center align-middle dark:text-gray-300">
-          {statsForPlayer?.rebounds ?? 0}
+          {statsForPlayer?.defensiveRebounds +
+            statsForPlayer?.offensiveRebounds}
         </TableCell>
         <TableCell className="p-3 text-center align-middle dark:text-gray-300">
           {statsForPlayer?.assists ?? 0}

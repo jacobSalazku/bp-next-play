@@ -1,4 +1,7 @@
-import type { playersDataSchema } from "@/features/scouting/zod/player-stats";
+import type {
+  opponentStatlineSchema,
+  playersDataSchema,
+} from "@/features/scouting/zod/player-stats";
 
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
@@ -12,6 +15,7 @@ type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
 export async function submitStatlines(
   ctx: Context,
   input: InputSubmitStatlines,
+  opponentStatlineInput: z.infer<typeof opponentStatlineSchema> | null = null,
 ) {
   const { players } = input;
 
@@ -39,7 +43,8 @@ export async function submitStatlines(
         freeThrows: statline.freeThrows ?? 0,
         missedFreeThrows: statline.missedFreeThrows ?? 0,
         assists: statline.assists ?? 0,
-        rebounds: statline.rebounds ?? 0,
+        offensiveRebounds: statline.offensiveRebounds ?? 0,
+        defensiveRebounds: statline.defensiveRebounds ?? 0,
         steals: statline.steals ?? 0,
         blocks: statline.blocks ?? 0,
         turnovers: statline.turnovers ?? 0,
@@ -47,38 +52,75 @@ export async function submitStatlines(
     }),
   ).then((results) => results.flat());
 
+  let savedOpponentStatline: z.infer<typeof opponentStatlineSchema> | null =
+    null;
   try {
-    await Promise.all(
-      statlinesToUpsert.map(async (statline) => {
-        const existing = await ctx.db.statline.findFirst({
-          where: {
-            teamMemberId: statline.teamMemberId,
-            activityId: statline.activityId,
+    // $transaction to ensure both are upserter or none if an error occurs when one of them fails
+    await ctx.db.$transaction(async (tx) => {
+      //  Upsert opponent statline if provided
+      if (opponentStatlineInput) {
+        savedOpponentStatline = await tx.opponentStatline.upsert({
+          where: { activityId: opponentStatlineInput.activityId },
+          update: {
+            ...opponentStatlineInput,
+            updatedAt: new Date(),
+          },
+          create: {
+            ...opponentStatlineInput,
+            createdAt: new Date(),
+            updatedAt: new Date(),
           },
         });
+      }
 
-        if (existing) {
-          await ctx.db.statline.update({
-            where: { id: existing.id },
-            data: {
-              ...statline,
-              createdAt: undefined,
-              updatedAt: new Date(),
-            },
-          });
-        } else {
-          await ctx.db.statline.create({
-            data: {
-              ...statline,
-              createdAt: new Date(),
-              updatedAt: new Date(),
-            },
-          });
-        }
-      }),
-    );
+      // 1. Get all existing statlines for this activity and team members in one query
+      const teamMemberIds = statlinesToUpsert.map((s) => s.teamMemberId);
+      const existingStatlines = await tx.statline.findMany({
+        where: {
+          activityId: statlinesToUpsert[0]?.activityId,
+          teamMemberId: { in: teamMemberIds },
+        },
+      });
+      const existingMap = new Map(
+        existingStatlines.map((s) => [s.teamMemberId, s]),
+      );
 
-    return { success: true, count: statlinesToUpsert.length };
+      // 3. Create an array of update and create operations (but do NOT await inside loop)
+      const operations = statlinesToUpsert.map(
+        (statline) => {
+          const existing = existingMap.get(statline.teamMemberId);
+
+          if (existing) {
+            return tx.statline.update({
+              where: { id: existing.id },
+              data: {
+                ...statline,
+                createdAt: existing.createdAt,
+                updatedAt: new Date(),
+              },
+            });
+          } else {
+            return tx.statline.create({
+              data: {
+                ...statline,
+                createdAt: new Date(),
+                updatedAt: new Date(),
+              },
+            });
+          }
+        },
+        // { timeout: 10000 },
+      );
+
+      // 4. Await all DB writes **in parallel** inside the transaction
+      await Promise.all(operations);
+
+      return {
+        success: true,
+        count: statlinesToUpsert.length,
+        opponentStatline: savedOpponentStatline,
+      };
+    });
   } catch (error) {
     console.error("Error upserting statlines:", error);
     throw new TRPCError({
@@ -88,17 +130,10 @@ export async function submitStatlines(
   }
 }
 
-export async function getTeamStatlineAverages(
-  ctx: Context,
-  input: {
-    startDate: string;
-    endDate: string;
-    teamId: string;
-  },
-) {
+export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
   // 1. Get all team members
   const teamMembers = await ctx.db.teamMember.findMany({
-    where: { teamId: input.teamId, role: "PLAYER", status: "ACTIVE" },
+    where: { teamId: teamId, role: "PLAYER", status: "ACTIVE" },
     select: { id: true, user: { select: { id: true, name: true } } },
   });
 
@@ -108,12 +143,6 @@ export async function getTeamStatlineAverages(
 
   // 2. Get activities in date range
   const activities = await ctx.db.activity.findMany({
-    where: {
-      date: {
-        gte: input.startDate ? new Date(input.startDate) : undefined,
-        lte: input.endDate ? new Date(input.endDate) : undefined,
-      },
-    },
     select: { id: true, type: true },
   });
 
@@ -133,7 +162,8 @@ export async function getTeamStatlineAverages(
         threePointPercentage: 0,
         freeThrowPercentage: 0,
         averageAssists: 0,
-        averageRebounds: 0,
+        averageOffensiveRebound: 0,
+        averageDefensiveRebound: 0,
         averageSteals: 0,
         averageBlocks: 0,
         averageTurnovers: 0,
@@ -159,7 +189,8 @@ export async function getTeamStatlineAverages(
           freeThrows: true,
           missedFreeThrows: true,
           assists: true,
-          rebounds: true,
+          offensiveRebounds: true,
+          defensiveRebounds: true,
           blocks: true,
           steals: true,
           turnovers: true,
@@ -206,9 +237,12 @@ export async function getTeamStatlineAverages(
           averageAssists: ((stats._sum.assists ?? 0) / numberOfGames).toFixed(
             1,
           ),
-          averageRebounds: ((stats._sum.rebounds ?? 0) / numberOfGames).toFixed(
-            1,
-          ),
+          averageOffensiveRebound: (
+            (stats._sum.offensiveRebounds ?? 0) / numberOfGames
+          ).toFixed(1),
+          averageDefensiveRebound: (
+            (stats._sum.defensiveRebounds ?? 0) / numberOfGames
+          ).toFixed(1),
           averageBlocks: ((stats._sum.blocks ?? 0) / numberOfGames).toFixed(1),
           averageSteals: ((stats._sum.steals ?? 0) / numberOfGames).toFixed(1),
           averageTurnovers: (
@@ -247,7 +281,8 @@ export async function getStatsPerGame(
       threePointersMade: true,
       freeThrows: true,
       assists: true,
-      rebounds: true,
+      offensiveRebounds: true,
+      defensiveRebounds: true,
       steals: true,
       activity: {
         select: { date: true, title: true },
@@ -255,7 +290,7 @@ export async function getStatsPerGame(
     },
     orderBy: {
       activity: {
-        date: "desc", // Most recent games first
+        date: "desc",
       },
     },
   });
@@ -266,7 +301,8 @@ export async function getStatsPerGame(
         gameTitle: "",
         points: 0,
         assists: 0,
-        rebounds: 0,
+        offensiveRebounds: 0,
+        defensiveRebounds: 0,
         blocks: 0,
         steals: 0,
       },
@@ -285,10 +321,106 @@ export async function getStatsPerGame(
       date: activity?.date ?? null,
       points,
       assists: entry.assists ?? 0,
-      rebounds: entry.rebounds ?? 0,
+      rebounds: (entry.offensiveRebounds ?? 0) + (entry.defensiveRebounds ?? 0),
       steals: entry.steals ?? 0,
     };
   });
 
   return statsPerGameStats;
+}
+
+export async function getTeamStats(ctx: Context) {
+  const totals = await ctx.db.statline.aggregate({
+    _sum: {
+      fieldGoalsMade: true,
+      fieldGoalsMissed: true,
+      threePointersMade: true,
+      threePointersMissed: true,
+      freeThrows: true,
+      missedFreeThrows: true,
+      assists: true,
+      offensiveRebounds: true,
+      defensiveRebounds: true,
+      steals: true,
+      blocks: true,
+      turnovers: true,
+    },
+  });
+
+  // Step 2: Count unique games
+  const activityCount = await ctx.db.statline.findMany({
+    select: {
+      activity: {
+        select: { date: true },
+      },
+    },
+  });
+
+  const uniqueGameDates = new Set(
+    activityCount.map(
+      (entry) => entry.activity?.date?.toISOString().split("T")[0],
+    ),
+  );
+
+  const gamesPlayed = uniqueGameDates.size;
+
+  const totalFG = safeSum(totals._sum.fieldGoalsMade);
+  const totalMissedFG = safeSum(totals._sum.fieldGoalsMissed);
+  const totalFGAttempts = totalFG + totalMissedFG;
+
+  const total3P = safeSum(totals._sum.threePointersMade);
+  const totalMissed3P = safeSum(totals._sum.threePointersMissed);
+
+  const totalFT = safeSum(totals._sum.freeThrows);
+  const totalMissedFT = safeSum(totals._sum.missedFreeThrows);
+  const totalFTAttempts = totalFT + totalMissedFG;
+
+  const totalOffensiveRebounds = totals._sum.offensiveRebounds ?? 0;
+  const totalDefensiveRebounds = totals._sum.defensiveRebounds ?? 0;
+  const totalRebounds = totalOffensiveRebounds + totalDefensiveRebounds;
+
+  const totalFieldGoalPercentage = calculatePercentage(totalFG, totalMissedFG);
+  const totalThreePointPercentage = calculatePercentage(total3P, totalMissed3P);
+  const totalFreeThrowPercentage = calculatePercentage(totalFT, totalMissedFT);
+
+  const possesions =
+    totalFGAttempts -
+    safeSum(totals._sum.offensiveRebounds ?? 0) +
+    safeSum((totals._sum.turnovers ?? 0) + 0.4 * totalFTAttempts);
+
+  const totalPoints = (totalFG - total3P) * 2 + total3P * 3 + totalFT;
+
+  const offensiveRating = 100 * (totalPoints / possesions);
+
+  return {
+    totalGames: gamesPlayed,
+    totalFieldGoalsMade: totalFG,
+    totalFieldGoalsMissed: totalMissedFG,
+    totalThreePointersMade: total3P,
+    totalThreePointersMissed: totalMissed3P,
+    totalFreeThrows: totalFT,
+    totalMissedFreeThrows: totalMissedFT,
+    totalAssists: safeSum(totals._sum.assists),
+    totalRebounds: totalRebounds,
+    totalSteals: safeSum(totals._sum.steals),
+    totalBlocks: safeSum(totals._sum.blocks),
+    totalTurnovers: safeSum(totals._sum.turnovers),
+    totalPoints,
+    averages: {
+      averagePointsPerGame: (totalPoints / gamesPlayed).toFixed(1),
+      fieldGoalPercentage: totalFieldGoalPercentage.toFixed(1),
+      threePointPercentage: totalThreePointPercentage.toFixed(1),
+      freeThrowPercentage: totalFreeThrowPercentage.toFixed(1),
+      averageAssists: (safeSum(totals._sum.assists) / gamesPlayed).toFixed(1),
+      averageRebounds: (totalRebounds / gamesPlayed).toFixed(1),
+      averageSteals: (safeSum(totals._sum.steals) / gamesPlayed).toFixed(1),
+      averageBlocks: (safeSum(totals._sum.blocks) / gamesPlayed).toFixed(1),
+      averageTurnovers: (safeSum(totals._sum.turnovers) / gamesPlayed).toFixed(
+        1,
+      ),
+      rating: {
+        offensiveRating: offensiveRating.toFixed(1),
+      },
+    },
+  };
 }
