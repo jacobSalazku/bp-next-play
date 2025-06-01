@@ -9,7 +9,7 @@ import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
 import { useDebouncedSave } from "@/hooks/use-debounce";
 import type { ActivityInformation, TeamMembers } from "@/types";
-import { useEffect, useState, type FC } from "react";
+import { useState, type FC } from "react";
 import { useForm, useWatch } from "react-hook-form";
 import { useCreateNewStatline } from "../hooks/use-create-statline";
 import {
@@ -22,7 +22,6 @@ import { sanitizeStatline } from "../utils/sanitize";
 import type { OpponentStatsline, StatlineData } from "../zod/player-stats";
 import { defaultOpponentStatline, defaultStatline } from "../zod/types";
 import { MobileMultiStatlineTracker } from "./mobile/mobile-multi-statline-tracker";
-import Skeleton from "./mobile/skeleton";
 import { PlayerStatsRow } from "./player-stat-row";
 import { TeamStatsRow } from "./team-stats-row";
 
@@ -40,11 +39,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
   const [showOpponentStats, setShowOpponentStats] = useState(false);
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const createStatline = useCreateNewStatline();
-  const [mounted, setMounted] = useState(false);
-
-  useEffect(() => {
-    setMounted(true);
-  }, [mounted]);
 
   const initialPlayers = getInitalPlayers(players, activity.id);
   const initialOpponentStatline = getInitialOpponentStatline(
@@ -115,9 +109,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
 
   if (!stats) return null;
 
-  if (!mounted) {
-    return <Skeleton />;
-  }
   return (
     <>
       <MobileMultiStatlineTracker
@@ -144,67 +135,68 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
           Player Box Score
         </h2>
         {/* Toggle Opponent Stats */}
-        <Button
-          variant="outline"
-          className="mb-4"
-          onClick={() => setShowOpponentStats((prev) => !prev)}
-        >
-          {showOpponentStats ? "Hide" : "Show"} Opponent Stats
-        </Button>
+        <div className="mb-5">
+          <Button
+            variant="outline"
+            className="mb-4"
+            onClick={() => setShowOpponentStats((prev) => !prev)}
+          >
+            {showOpponentStats ? "Hide" : "Show"} Opponent Stats
+          </Button>
 
-        {showOpponentStats && (
-          <div className="mt-6 rounded-xl bg-gray-900 p-4 shadow">
-            <h3 className="mb-4 text-xl font-bold text-white">
-              {activity.title} Stats
-            </h3>
+          {showOpponentStats && (
+            <div className="mt-6 rounded-xl bg-gray-900 p-4 shadow">
+              <h3 className="mb-4 text-xl font-bold text-white">
+                {activity.title} Stats
+              </h3>
 
-            <div className="grid grid-cols-3 gap-4 text-white">
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setValue(
-                    "opponentStatline.fieldGoalsMade",
-                    (stats.opponentStatline?.fieldGoalsMade ?? 0) + 1,
-                  )
-                }
-              >
-                2PT +
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setValue(
-                    "opponentStatline.threePointersMade",
-                    (stats.opponentStatline?.threePointersMade ?? 0) + 1,
-                  )
-                }
-              >
-                3PT +
-              </Button>
-              <Button
-                variant="outline"
-                onClick={() =>
-                  setValue(
-                    "opponentStatline.freeThrowsMade",
-                    (stats.opponentStatline?.freeThrowsMade ?? 0) + 1,
-                  )
-                }
-              >
-                FT +
-              </Button>
+              <div className="grid grid-cols-3 gap-4 text-white">
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setValue(
+                      "opponentStatline.fieldGoalsMade",
+                      (stats.opponentStatline?.fieldGoalsMade ?? 0) + 1,
+                    )
+                  }
+                >
+                  2PT +
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setValue(
+                      "opponentStatline.threePointersMade",
+                      (stats.opponentStatline?.threePointersMade ?? 0) + 1,
+                    )
+                  }
+                >
+                  3PT +
+                </Button>
+                <Button
+                  variant="outline"
+                  onClick={() =>
+                    setValue(
+                      "opponentStatline.freeThrowsMade",
+                      (stats.opponentStatline?.freeThrowsMade ?? 0) + 1,
+                    )
+                  }
+                >
+                  FT +
+                </Button>
+              </div>
+
+              <div className="mt-4 text-white">
+                <p>
+                  Total Opponent Points:{" "}
+                  {(stats.opponentStatline?.fieldGoalsMade ?? 0) * 2 +
+                    (stats.opponentStatline?.threePointersMade ?? 0) * 3 +
+                    (stats.opponentStatline?.freeThrowsMade ?? 0)}
+                </p>
+              </div>
             </div>
-
-            <div className="mt-4 text-white">
-              <p>
-                Total Opponent Points:{" "}
-                {(stats.opponentStatline?.fieldGoalsMade ?? 0) * 2 +
-                  (stats.opponentStatline?.threePointersMade ?? 0) * 3 +
-                  (stats.opponentStatline?.freeThrowsMade ?? 0)}
-              </p>
-            </div>
-          </div>
-        )}
-
+          )}
+        </div>
         <div className="rounded-2xl bg-gray-900 p-2 shadow-lg backdrop-blur-lg sm:p-4">
           <div className="overflow-x-auto rounded-xl border border-gray-950 shadow-sm">
             <Table className="min-w-[700px] text-sm">

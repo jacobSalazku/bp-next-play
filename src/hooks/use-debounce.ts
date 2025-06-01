@@ -1,4 +1,4 @@
-import type { PlayersData } from "@/features/scouting/components/multi-stats-tracker";
+import type { PlayersData } from "@/features/scouting/components/multi-statline-tracker";
 import { useEffect, useRef } from "react";
 
 type SaveFn = (data: PlayersData) => Promise<void>;

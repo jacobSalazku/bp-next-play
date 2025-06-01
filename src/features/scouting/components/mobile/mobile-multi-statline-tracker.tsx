@@ -94,7 +94,6 @@ export const MobileMultiStatlineTracker = ({
               }
               label="2PT Made"
               value={opponentStatline?.fieldGoalsMade ?? 0}
-              className="bg-green-800 py-4 hover:bg-green-700"
             />
             <StatButton
               statKey="threePointersMade"
@@ -106,7 +105,6 @@ export const MobileMultiStatlineTracker = ({
               }
               label="3PT Made"
               value={opponentStatline?.threePointersMade ?? 0}
-              className="bg-green-800 py-4 hover:bg-green-700"
             />
             <StatButton
               statKey="freeThrowsMade"
@@ -118,7 +116,6 @@ export const MobileMultiStatlineTracker = ({
               }
               label="FT Made"
               value={opponentStatline?.freeThrowsMade ?? 0}
-              className="bg-green-800 py-4 hover:bg-green-700"
             />
           </div>
 
@@ -144,7 +141,6 @@ export const MobileMultiStatlineTracker = ({
             }
             label="FG Made"
             value={fieldGoals.made}
-            className="bg-green-800 py-4 hover:bg-green-700"
           />
           <StatButton
             statKey="threePointersMade"
@@ -153,14 +149,12 @@ export const MobileMultiStatlineTracker = ({
             }
             label="3PT Made"
             value={threePointers.made}
-            className="bg-green-800 py-4 hover:bg-green-700"
           />
           <StatButton
             statKey="freeThrows"
             onIncrement={() => onIncrement(activePlayerIndex, "freeThrows", 1)}
             label="FT Made"
             value={freeThrows.made}
-            className="bg-green-800 py-4 hover:bg-green-700"
           />
         </div>
 
@@ -173,7 +167,6 @@ export const MobileMultiStatlineTracker = ({
             }
             label="FG Missed"
             value={fieldGoals.attempted - fieldGoals.made}
-            className="bg-red-700 py-4 hover:bg-red-600 active:bg-red-500"
           />
           <StatButton
             statKey="threePointersMissed"
@@ -182,7 +175,6 @@ export const MobileMultiStatlineTracker = ({
             }
             label="3PT Missed"
             value={threePointers.attempted - threePointers.made}
-            className="bg-red-700 py-4 hover:bg-red-600 active:bg-red-500"
           />
           <StatButton
             statKey="missedFreeThrows"
@@ -191,7 +183,6 @@ export const MobileMultiStatlineTracker = ({
             }
             label="FT Missed"
             value={freeThrows.attempted - freeThrows.made}
-            className="bg-red-700 py-4 hover:bg-red-600 active:bg-red-500"
           />
         </div>
 
