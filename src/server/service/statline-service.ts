@@ -2,13 +2,22 @@ import type {
   opponentStatlineSchema,
   playersDataSchema,
 } from "@/features/scouting/zod/player-stats";
-
 import { TRPCError } from "@trpc/server";
 import { type z } from "zod";
 import type { Context } from "../api/trpc";
 import { getActivityIds } from "../api/utils/activity-id";
-import { calculatePercentage, safeSum } from "../api/utils/calculate-stats";
+import {
+  calculateAssistToTurnoverRatio,
+  calculateEffectiveFieldGoalPercentage,
+  calculateNetRating,
+  calculateOffensiveRating,
+  calculatePercentage,
+  calculateTotalOpponentPoints,
+  calculateTrueShootingPercentage,
+  safeSum,
+} from "../api/utils/calculate-stats";
 import { countGamesAttended } from "../api/utils/get-games-attended";
+import { roundToDecimal } from "../api/utils/round-decimal";
 
 type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
 
@@ -130,132 +139,6 @@ export async function submitStatlines(
   }
 }
 
-export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
-  // 1. Get all team members
-  const teamMembers = await ctx.db.teamMember.findMany({
-    where: { teamId: teamId, role: "PLAYER", status: "ACTIVE" },
-    select: { id: true, user: { select: { id: true, name: true } } },
-  });
-
-  if (teamMembers.length === 0) {
-    return [];
-  }
-
-  // 2. Get activities in date range
-  const activities = await ctx.db.activity.findMany({
-    select: { id: true, type: true },
-  });
-
-  const { activityIds, gameActivityIds } = getActivityIds(activities);
-
-  if (activityIds.length === 0) {
-    // No games found, return zero stats for all players
-    return teamMembers.map((member) => ({
-      teamMemberId: member.id,
-      name: member.user.name,
-      totalPoints: 0,
-      gamesAttended: 0,
-      averagePointsPerGame: 0,
-      averages: {
-        averagePointsPerGame: 0,
-        fieldGoalPercentage: 0,
-        threePointPercentage: 0,
-        freeThrowPercentage: 0,
-        averageAssists: 0,
-        averageOffensiveRebound: 0,
-        averageDefensiveRebound: 0,
-        averageSteals: 0,
-        averageBlocks: 0,
-        averageTurnovers: 0,
-      },
-    }));
-  }
-
-  // 3. For each player, aggregate their stats
-  const results = await Promise.all(
-    teamMembers.map(async (member) => {
-      const stats = await ctx.db.statline.aggregate({
-        where: {
-          teamMemberId: member.id,
-          activityId: {
-            in: activityIds,
-          },
-        },
-        _sum: {
-          fieldGoalsMade: true,
-          fieldGoalsMissed: true,
-          threePointersMade: true,
-          threePointersMissed: true,
-          freeThrows: true,
-          missedFreeThrows: true,
-          assists: true,
-          offensiveRebounds: true,
-          defensiveRebounds: true,
-          blocks: true,
-          steals: true,
-          turnovers: true,
-        },
-        _count: {
-          id: true,
-        },
-      });
-
-      const gamesAttended = await countGamesAttended(
-        ctx,
-        member.id,
-        gameActivityIds,
-      );
-
-      const madeFG = safeSum(stats._sum.fieldGoalsMade);
-      const missedFG = safeSum(stats._sum.fieldGoalsMissed);
-
-      const made3P = safeSum(stats._sum.threePointersMade);
-      const missed3P = safeSum(stats._sum.threePointersMissed);
-
-      const madeFT = safeSum(stats._sum.freeThrows);
-      const missedFT = safeSum(stats._sum.missedFreeThrows);
-
-      const fieldGoalPercentage = calculatePercentage(madeFG, missedFG);
-      const threePointPercentage = calculatePercentage(made3P, missed3P);
-      const freeThrowPercentage = calculatePercentage(madeFT, missedFT);
-
-      const twoPointMade = madeFG - made3P;
-
-      const totalPoints = twoPointMade * 2 + made3P * 3 + madeFT;
-      const numberOfGames = gamesAttended ?? 1;
-
-      return {
-        name: member.user.name,
-        teamMemberId: member.id,
-        totalPoints,
-        gamesAttended,
-        averages: {
-          averagePointsPerGame: (totalPoints / numberOfGames).toFixed(1),
-          fieldGoalPercentage: fieldGoalPercentage.toFixed(1),
-          threePointPercentage: threePointPercentage.toFixed(1),
-          freeThrowPercentage: freeThrowPercentage.toFixed(1),
-          averageAssists: ((stats._sum.assists ?? 0) / numberOfGames).toFixed(
-            1,
-          ),
-          averageOffensiveRebound: (
-            (stats._sum.offensiveRebounds ?? 0) / numberOfGames
-          ).toFixed(1),
-          averageDefensiveRebound: (
-            (stats._sum.defensiveRebounds ?? 0) / numberOfGames
-          ).toFixed(1),
-          averageBlocks: ((stats._sum.blocks ?? 0) / numberOfGames).toFixed(1),
-          averageSteals: ((stats._sum.steals ?? 0) / numberOfGames).toFixed(1),
-          averageTurnovers: (
-            (stats._sum.turnovers ?? 0) / numberOfGames
-          ).toFixed(1),
-        },
-      };
-    }),
-  );
-
-  return results;
-}
-
 export async function getStatsPerGame(
   ctx: Context,
   teamMemberId: string,
@@ -329,6 +212,129 @@ export async function getStatsPerGame(
   return statsPerGameStats;
 }
 
+export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
+  const teamMembers = await ctx.db.teamMember.findMany({
+    where: { teamId: teamId, role: "PLAYER", status: "ACTIVE" },
+    select: { id: true, user: { select: { id: true, name: true } } },
+  });
+
+  if (teamMembers.length === 0) {
+    return [];
+  }
+
+  // Get activities in date range
+  const activities = await ctx.db.activity.findMany({
+    select: { id: true, type: true },
+  });
+
+  const { activityIds, gameActivityIds } = getActivityIds(activities);
+
+  if (activityIds.length === 0) {
+    // No games found, return zero stats for all players
+    return teamMembers.map((member) => ({
+      teamMemberId: member.id,
+      name: member.user.name,
+      totalPoints: 0,
+      gamesAttended: 0,
+      averagePointsPerGame: 0,
+      averages: {
+        pointsPerGame: 0,
+        fieldGoalPercentage: 0,
+        threePointPercentage: 0,
+        freeThrowPercentage: 0,
+        assists: 0,
+        offensiveRebound: 0,
+        defensiveRebound: 0,
+        steals: 0,
+        blocks: 0,
+        turnovers: 0,
+      },
+    }));
+  }
+
+  // For each player, aggregate their stats
+  const results = await Promise.all(
+    teamMembers.map(async (member) => {
+      const stats = await ctx.db.statline.aggregate({
+        where: {
+          teamMemberId: member.id,
+          activityId: {
+            in: activityIds,
+          },
+        },
+        _sum: {
+          fieldGoalsMade: true,
+          fieldGoalsMissed: true,
+          threePointersMade: true,
+          threePointersMissed: true,
+          freeThrows: true,
+          missedFreeThrows: true,
+          assists: true,
+          offensiveRebounds: true,
+          defensiveRebounds: true,
+          blocks: true,
+          steals: true,
+          turnovers: true,
+        },
+        _count: {
+          id: true,
+        },
+      });
+
+      const gamesAttended = await countGamesAttended(
+        ctx,
+        member.id,
+        gameActivityIds,
+      );
+
+      const madeFG = safeSum(stats._sum.fieldGoalsMade);
+      const missedFG = safeSum(stats._sum.fieldGoalsMissed);
+
+      const made3P = safeSum(stats._sum.threePointersMade);
+      const missed3P = safeSum(stats._sum.threePointersMissed);
+
+      const madeFT = safeSum(stats._sum.freeThrows);
+      const missedFT = safeSum(stats._sum.missedFreeThrows);
+
+      const fieldGoalPercentage = calculatePercentage(madeFG, missedFG);
+      const threePointPercentage = calculatePercentage(made3P, missed3P);
+      const freeThrowPercentage = calculatePercentage(madeFT, missedFT);
+
+      const twoPointMade = madeFG - made3P;
+
+      const totalPoints = twoPointMade * 2 + made3P * 3 + madeFT;
+      const numberOfGames = gamesAttended ?? 1;
+
+      return {
+        name: member.user.name,
+        teamMemberId: member.id,
+        totalPoints: roundToDecimal(totalPoints),
+        gamesAttended,
+        averages: {
+          pointsPerGame: roundToDecimal(totalPoints / numberOfGames),
+          fieldGoalPercentage: roundToDecimal(fieldGoalPercentage),
+          threePointPercentage: roundToDecimal(threePointPercentage),
+          freeThrowPercentage: roundToDecimal(freeThrowPercentage),
+          assists: roundToDecimal((stats._sum.assists ?? 0) / numberOfGames),
+          offensiveRebound: roundToDecimal(
+            (stats._sum.offensiveRebounds ?? 0) / numberOfGames,
+          ),
+          defensiveRebound: roundToDecimal(
+            (stats._sum.defensiveRebounds ?? 0) / numberOfGames,
+          ),
+          blocks: roundToDecimal((stats._sum.blocks ?? 0) / numberOfGames),
+          steals: roundToDecimal((stats._sum.steals ?? 0) / numberOfGames),
+          turnovers: roundToDecimal(
+            (stats._sum.turnovers ?? 0) / numberOfGames,
+          ),
+        },
+      };
+    }),
+  );
+
+  return results;
+}
+
 export async function getTeamStats(ctx: Context) {
   const totals = await ctx.db.statline.aggregate({
     _sum: {
@@ -347,7 +353,7 @@ export async function getTeamStats(ctx: Context) {
     },
   });
 
-  // Step 2: Count unique games
+  // Count unique games
   const activityCount = await ctx.db.statline.findMany({
     select: {
       activity: {
@@ -356,71 +362,128 @@ export async function getTeamStats(ctx: Context) {
     },
   });
 
-  const uniqueGameDates = new Set(
-    activityCount.map(
-      (entry) => entry.activity?.date?.toISOString().split("T")[0],
-    ),
-  );
-
-  const gamesPlayed = uniqueGameDates.size;
-
-  const totalFG = safeSum(totals._sum.fieldGoalsMade);
-  const totalMissedFG = safeSum(totals._sum.fieldGoalsMissed);
-  const totalFGAttempts = totalFG + totalMissedFG;
-
-  const total3P = safeSum(totals._sum.threePointersMade);
-  const totalMissed3P = safeSum(totals._sum.threePointersMissed);
-
-  const totalFT = safeSum(totals._sum.freeThrows);
-  const totalMissedFT = safeSum(totals._sum.missedFreeThrows);
-  const totalFTAttempts = totalFT + totalMissedFG;
-
-  const totalOffensiveRebounds = totals._sum.offensiveRebounds ?? 0;
-  const totalDefensiveRebounds = totals._sum.defensiveRebounds ?? 0;
-  const totalRebounds = totalOffensiveRebounds + totalDefensiveRebounds;
-
-  const totalFieldGoalPercentage = calculatePercentage(totalFG, totalMissedFG);
-  const totalThreePointPercentage = calculatePercentage(total3P, totalMissed3P);
-  const totalFreeThrowPercentage = calculatePercentage(totalFT, totalMissedFT);
-
-  const possesions =
-    totalFGAttempts -
-    safeSum(totals._sum.offensiveRebounds ?? 0) +
-    safeSum((totals._sum.turnovers ?? 0) + 0.4 * totalFTAttempts);
-
-  const totalPoints = (totalFG - total3P) * 2 + total3P * 3 + totalFT;
-
-  const offensiveRating = 100 * (totalPoints / possesions);
-
-  return {
-    totalGames: gamesPlayed,
-    totalFieldGoalsMade: totalFG,
-    totalFieldGoalsMissed: totalMissedFG,
-    totalThreePointersMade: total3P,
-    totalThreePointersMissed: totalMissed3P,
-    totalFreeThrows: totalFT,
-    totalMissedFreeThrows: totalMissedFT,
-    totalAssists: safeSum(totals._sum.assists),
-    totalRebounds: totalRebounds,
-    totalSteals: safeSum(totals._sum.steals),
-    totalBlocks: safeSum(totals._sum.blocks),
-    totalTurnovers: safeSum(totals._sum.turnovers),
-    totalPoints,
-    averages: {
-      averagePointsPerGame: (totalPoints / gamesPlayed).toFixed(1),
-      fieldGoalPercentage: totalFieldGoalPercentage.toFixed(1),
-      threePointPercentage: totalThreePointPercentage.toFixed(1),
-      freeThrowPercentage: totalFreeThrowPercentage.toFixed(1),
-      averageAssists: (safeSum(totals._sum.assists) / gamesPlayed).toFixed(1),
-      averageRebounds: (totalRebounds / gamesPlayed).toFixed(1),
-      averageSteals: (safeSum(totals._sum.steals) / gamesPlayed).toFixed(1),
-      averageBlocks: (safeSum(totals._sum.blocks) / gamesPlayed).toFixed(1),
-      averageTurnovers: (safeSum(totals._sum.turnovers) / gamesPlayed).toFixed(
-        1,
-      ),
-      rating: {
-        offensiveRating: offensiveRating.toFixed(1),
-      },
+  const opponentStatline = await ctx.db.opponentStatline.aggregate({
+    _sum: {
+      fieldGoalsMade: true,
+      threePointersMade: true,
+      freeThrowsMade: true,
     },
-  };
+  });
+
+  if (activityCount && activityCount.length > 0) {
+    const uniqueGameDates = new Set(
+      activityCount.map(
+        (entry) => entry.activity?.date?.toISOString().split("T")[0],
+      ),
+    );
+
+    const totalOpponnentPoints = calculateTotalOpponentPoints(
+      opponentStatline._sum.fieldGoalsMade,
+      opponentStatline._sum.threePointersMade,
+      opponentStatline._sum.freeThrowsMade,
+    );
+
+    const gamesPlayed = uniqueGameDates.size;
+
+    const totalFG = safeSum(totals._sum.fieldGoalsMade);
+    const totalMissedFG = safeSum(totals._sum.fieldGoalsMissed);
+    const totalFGAttempts = totalFG + totalMissedFG;
+
+    const total3P = safeSum(totals._sum.threePointersMade);
+    const totalMissed3P = safeSum(totals._sum.threePointersMissed);
+
+    const totalFT = safeSum(totals._sum.freeThrows);
+    const totalMissedFT = safeSum(totals._sum.missedFreeThrows);
+    const totalFTAttempts = totalFT + totalMissedFG;
+
+    const totalOffensiveRebounds = totals._sum.offensiveRebounds ?? 0;
+    const totalDefensiveRebounds = totals._sum.defensiveRebounds ?? 0;
+    const totalRebounds = totalOffensiveRebounds + totalDefensiveRebounds;
+
+    const totalFieldGoalPercentage = calculatePercentage(
+      totalFG,
+      totalMissedFG,
+    );
+    const totalThreePointPercentage = calculatePercentage(
+      total3P,
+      totalMissed3P,
+    );
+    const totalFreeThrowPercentage = calculatePercentage(
+      totalFT,
+      totalMissedFT,
+    );
+
+    const totalPoints = (totalFG - total3P) * 2 + total3P * 3 + totalFT;
+
+    const netRating = calculateNetRating({
+      pointsScored: totalPoints,
+      pointsAllowed: totalOpponnentPoints,
+      fieldGoalAttempts: totalFGAttempts,
+      offensiveRebounds: totalOffensiveRebounds,
+      turnovers: safeSum(totals._sum.turnovers),
+      freeThrowAttempts: totalFTAttempts,
+    });
+
+    const offensiveRating = calculateOffensiveRating({
+      points: totalPoints,
+      fieldGoalAttempts: totalFGAttempts,
+      freeThrowAttempts: totalFTAttempts,
+      turnovers: safeSum(totals._sum.turnovers),
+      offensiveRebounds: safeSum(totals._sum.offensiveRebounds ?? 0),
+    });
+
+    const trueShootingPercentage = calculateTrueShootingPercentage({
+      points: totalPoints,
+      fieldGoalsAttempted: totalFGAttempts,
+      freeThrowsAttempted: totalFTAttempts,
+    });
+
+    const assistToTurnoverRation = calculateAssistToTurnoverRatio({
+      assists: safeSum(totals._sum.assists),
+      turonvers: safeSum(totals._sum.turnovers),
+    });
+
+    const effectiveFieldGoalPercentage = calculateEffectiveFieldGoalPercentage({
+      fieldGoalsMade: totalFG,
+      threePointersMade: total3P,
+      fieldGoalsAttempted: totalFGAttempts,
+    });
+
+    return {
+      totalGames: roundToDecimal(gamesPlayed),
+      totalFieldGoalsMade: roundToDecimal(totalFG),
+      totalFieldGoalsMissed: roundToDecimal(totalMissedFG),
+      totalThreePointersMade: roundToDecimal(total3P),
+      totalThreePointersMissed: roundToDecimal(totalMissed3P),
+      totalFreeThrows: roundToDecimal(totalFT),
+      totalMissedFreeThrows: roundToDecimal(totalMissedFT),
+      totalAssists: roundToDecimal(safeSum(totals._sum.assists)),
+      totalRebounds: roundToDecimal(totalRebounds),
+      totalSteals: roundToDecimal(safeSum(totals._sum.steals)),
+      totalBlocks: roundToDecimal(safeSum(totals._sum.blocks)),
+      totalTurnovers: roundToDecimal(safeSum(totals._sum.turnovers)),
+      totalPoints,
+      totalOpponentPoints: roundToDecimal(totalOpponnentPoints),
+      averages: {
+        pointsPerGame: roundToDecimal(totalPoints / gamesPlayed),
+        fieldGoalPercentage: roundToDecimal(totalFieldGoalPercentage),
+        threePointPercentage: roundToDecimal(totalThreePointPercentage),
+        freeThrowPercentage: roundToDecimal(totalFreeThrowPercentage),
+        assists: roundToDecimal(safeSum(totals._sum.assists) / gamesPlayed),
+        rebounds: roundToDecimal(totalRebounds / gamesPlayed),
+        steals: roundToDecimal(safeSum(totals._sum.steals) / gamesPlayed),
+        blocks: roundToDecimal(safeSum(totals._sum.blocks) / gamesPlayed),
+        turnovers: roundToDecimal(safeSum(totals._sum.turnovers) / gamesPlayed),
+      },
+      advanced: {
+        offensiveRating: roundToDecimal(offensiveRating),
+        trueShootingPercentage: roundToDecimal(trueShootingPercentage),
+        assistToTurnoverRatio: roundToDecimal(assistToTurnoverRation),
+        netRating: roundToDecimal(netRating),
+        effectiveFieldGoalPercentage: roundToDecimal(
+          effectiveFieldGoalPercentage,
+        ),
+      },
+    };
+  }
 }
