@@ -24,17 +24,17 @@ async function PlayerStatisticsDetailPage({ params, searchParams }: PageProps) {
   const mappedPlayer: PlayerStatRow = {
     teamMemberId: player.teamMemberId,
     name: player.name ?? "",
-    gamesAttended: Number(player.gamesAttended),
-    averagePoints: Number(player.averages.averagePointsPerGame),
-    fieldGoalPercentage: Number(player.averages.fieldGoalPercentage),
-    threePointPercentage: Number(player.averages.threePointPercentage),
-    freeThrowPercentage: Number(player.averages.freeThrowPercentage),
-    averageOffensiveRebounds: Number(player.averages.averageOffensiveRebound),
-    averageDefensiveRebounds: Number(player.averages.averageDefensiveRebound),
-    averageAssists: Number(player.averages.averageAssists),
-    averageSteals: Number(player.averages.averageSteals),
-    averageBlocks: Number(player.averages.averageBlocks),
-    averageTurnovers: Number(player.averages.averageTurnovers),
+    gamesAttended: player.gamesAttended,
+    points: player.averages.pointsPerGame,
+    fieldGoalPercentage: player.averages.fieldGoalPercentage,
+    threePointPercentage: player.averages.threePointPercentage,
+    freeThrowPercentage: player.averages.freeThrowPercentage,
+    offensiveRebounds: player.averages.offensiveRebound,
+    defensiveRebounds: player.averages.defensiveRebound,
+    assists: player.averages.assists,
+    steals: player.averages.steals,
+    blocks: player.averages.blocks,
+    turnovers: player.averages.turnovers,
   };
 
   return <PlayerDetailStatistics player={mappedPlayer} />;

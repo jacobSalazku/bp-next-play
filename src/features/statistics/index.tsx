@@ -4,10 +4,12 @@ import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
 import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import type { Statlines, TeamInformation, TeamStats } from "@/types";
+import { cn } from "@/utils/tw-merge";
+import { BarChart3, TrendingUp } from "lucide-react";
 import { useState } from "react";
 import { PlayerAveragesStatsCard } from "./components/player-average-stats-card";
 import { PerformanceComparisonChart } from "./components/player-performance-comparison-chart";
-import { StatisticsCard } from "./components/stats-card";
+import TeamStatsOverView from "./components/team/team-stats-overview";
 import type { PlayerStatRow } from "./utils/types";
 
 type ChartsBlockProps = {
@@ -25,19 +27,17 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
   const data: PlayerStatRow[] = statsList.map((player) => ({
     name: player.name ?? "",
     teamMemberId: player.teamMemberId,
-    gamesAttended: Number(player.gamesAttended) ?? 0,
-    fieldGoalPercentage: Number(player.averages.fieldGoalPercentage) ?? 0,
-    threePointPercentage: Number(player.averages.threePointPercentage) ?? 0,
-    freeThrowPercentage: Number(player.averages.freeThrowPercentage) ?? 0,
-    averagePoints: Number(player.averages.averagePointsPerGame) ?? 0,
-    averageAssists: Number(player.averages.averageAssists) ?? 0,
-    averageDefensiveRebounds:
-      Number(player.averages.averageDefensiveRebound) ?? 0,
-    averageOffensiveRebounds:
-      Number(player.averages.averageOffensiveRebound) ?? 0,
-    averageBlocks: Number(player.averages.averageBlocks) ?? 0,
-    averageSteals: Number(player.averages.averageSteals) ?? 0,
-    averageTurnovers: Number(player.averages.averageTurnovers) ?? 0,
+    gamesAttended: player.gamesAttended ?? 0,
+    fieldGoalPercentage: player.averages.fieldGoalPercentage ?? 0,
+    threePointPercentage: player.averages.threePointPercentage ?? 0,
+    freeThrowPercentage: player.averages.freeThrowPercentage ?? 0,
+    points: player.averages.assists ?? 0,
+    assists: player.averages.assists ?? 0,
+    defensiveRebounds: player.averages.defensiveRebound ?? 0,
+    offensiveRebounds: Number(player.averages.offensiveRebound) ?? 0,
+    blocks: player.averages.blocks ?? 0,
+    steals: player.averages.steals ?? 0,
+    turnovers: player.averages.turnovers ?? 0,
   }));
 
   const date = new Date();
@@ -57,42 +57,49 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
       <Tabs
         value={activeTab}
         onValueChange={(value) => setActiveTab(value as "team" | "players")}
-        className="w-full"
+        className="flex w-full gap-12"
       >
-        <TabsList>
-          <TabsTrigger id="team-tab" value="team">
-            Team Stats
+        <TabsList className="flex w-full gap-4 pt-10 lg:pt-16">
+          <TabsTrigger
+            id="team-tab"
+            value="team"
+            className={cn(
+              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 text-left transition-colors duration-500 ease-in-out",
+              "data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-400",
+              "data-[state=active]:border-transparent",
+            )}
+          >
+            <TrendingUp className="hidden h-12 w-12 rounded-lg bg-gray-300/20 p-2 sm:block" />
+            <div className="flex flex-col transition-colors duration-300 ease-in-out">
+              <p className="text-base font-semibold">Team Stats</p>
+              <span className="text-sm text-gray-100/80">
+                Overall Performance
+              </span>
+            </div>
           </TabsTrigger>
-          <TabsTrigger id="players-tab" value="players">
-            Player Stats
+
+          <TabsTrigger
+            id="players-tab"
+            value="players"
+            className={cn(
+              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 text-left transition-colors duration-500 ease-in-out",
+              "data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-400",
+            )}
+          >
+            <BarChart3 className="hidden h-12 w-12 rounded-lg bg-gray-300/20 p-2 sm:block" />
+            <div className="flex flex-col transition-colors duration-300 ease-in-out">
+              <p className="text-base font-semibold">Player Stats</p>
+              <span className="text-sm text-gray-100/80">
+                Individual Breakdown
+              </span>
+            </div>
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="team">
-          <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
-            <StatisticsCard
-              title="Points Per Game"
-              value={teamStatlist.averages.averagePointsPerGame}
-              subtitle={`Total Points: ${teamStatlist.totalPoints}`}
-            />
-            <StatisticsCard
-              title="Field Goal Percentage"
-              value={`${teamStatlist.averages.fieldGoalPercentage}%`}
-            />
-            <StatisticsCard
-              title="3-Point %"
-              value={`${teamStatlist.averages.threePointPercentage} %`}
-              subtitle={`Total 3-Pointers: ${teamStatlist.totalThreePointersMade}`}
-            />
-
-            <StatisticsCard
-              title="Free Throw %"
-              value={`${teamStatlist.averages.freeThrowPercentage} %`}
-              subtitle={`Total Free Throws Made: ${teamStatlist.totalFreeThrows}`}
-            />
-          </div>
+        <TabsContent value="team" className="py-2">
+          <TeamStatsOverView teamStatlist={teamStatlist} />
         </TabsContent>
-        <TabsContent value="players" className="space-y-4">
+        <TabsContent value="players" className="space-y-4 py-4">
           <PerformanceComparisonChart statsList={statsList} />
           <PlayerAveragesStatsCard statsList={data} />
         </TabsContent>

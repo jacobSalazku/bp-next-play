@@ -43,7 +43,7 @@ const PlayerAveragesStatsCard = ({
       header: "GP",
     },
     {
-      accessorKey: "averagePoints",
+      accessorKey: "points",
       header: "Points",
       cell: ({ getValue }) => getValue<number>(),
     },
@@ -63,28 +63,27 @@ const PlayerAveragesStatsCard = ({
       cell: ({ getValue }) => `${getValue<number>()}%`,
     },
     {
-      accessorKey: "averageAssists",
+      accessorKey: "assists",
       header: "AST",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorFn: (row) =>
-        row.averageOffensiveRebounds ? row.averageOffensiveRebounds : 0,
+      accessorFn: (row) => (row.offensiveRebounds ? row.defensiveRebounds : 0),
       header: "RB",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageBlocks",
+      accessorKey: "blocks",
       header: "BLK",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageSteals",
+      accessorKey: "steals",
       header: "STL",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageTurnovers",
+      accessorKey: "turnovers",
       header: "TO",
       cell: ({ getValue }) => getValue<number>(),
     },

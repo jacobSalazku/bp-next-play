@@ -9,12 +9,19 @@ type PageProps = {
 async function StatisticsPage({ params }: PageProps) {
   const { teamId } = await params;
   const { team } = await getTeam(teamId);
-
   const statsList = await getStatlineAverage(teamId);
   const stats = await getTeamStats();
 
+  if (!team || !statsList || !stats) {
+    return (
+      <div className="flex h-screen w-full items-center justify-center">
+        <div className="text-white">No statistics found for this team.</div>
+      </div>
+    );
+  }
+
   return (
-    <div className="overflow-y-auto">
+    <div className="scrollbar-none overflow-y-auto">
       <StatisticsBlock teamStatlist={stats} statsList={statsList} team={team} />
     </div>
   );

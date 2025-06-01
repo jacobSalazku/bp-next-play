@@ -44,34 +44,33 @@ export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <StatisticsCard
               title="Season PPG"
-              value={player.averagePoints}
+              value={player.points}
               subtitle="Points per game"
               icon={Target}
             />
             <StatisticsCard
               title="Season APG"
-              value={player.averageAssists}
+              value={player.assists}
               subtitle="Assists per game"
               icon={Users}
             />
             <StatisticsCard
               title="Season RPG"
-              value={
-                player.averageDefensiveRebounds +
-                player.averageOffensiveRebounds
-              }
+              value={(
+                player.defensiveRebounds + player.offensiveRebounds
+              ).toFixed(1)}
               subtitle="Rebounds per game"
               icon={RotateCcw}
             />
             <StatisticsCard
               title="Season BPG"
-              value={player.averageBlocks}
+              value={player.blocks}
               subtitle="Blocks per game"
               icon={Shield}
             />
             <StatisticsCard
               title="Season SPG"
-              value={player.averageSteals}
+              value={player.steals}
               subtitle="Steals per game"
               icon={Shield}
             />
