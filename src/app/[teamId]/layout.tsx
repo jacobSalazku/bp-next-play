@@ -17,10 +17,12 @@ export default async function TeamLayout({
   return (
     <TRPCReactProvider>
       <HydrateClient>
-        <div className="w-full border-white">
-          <TeamProvider teamSlug={teamId}>
-            <Navigation>{children}</Navigation>
-          </TeamProvider>
+        <div className="flex w-screen justify-center overflow-hidden bg-gray-950">
+          <div className="w-full border-white">
+            <TeamProvider teamSlug={teamId}>
+              <Navigation>{children}</Navigation>
+            </TeamProvider>
+          </div>
         </div>
       </HydrateClient>
     </TRPCReactProvider>

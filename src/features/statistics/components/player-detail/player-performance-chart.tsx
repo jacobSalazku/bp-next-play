@@ -68,7 +68,6 @@ export const PlayerPerformanceChart: FC<PlayerPerformanceChartProps> = ({
     },
   ];
 
-  console.log("statPerGame", weeklyStatsQuery[0]);
   return (
     <Card className="border-gray-800 bg-gray-950 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-center gap-4 py-2">

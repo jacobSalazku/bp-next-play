@@ -19,7 +19,7 @@ export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
   const router = useRouter();
 
   return (
-    <div className="flex h-screen w-full flex-col bg-gray-950">
+    <div className="flex max-h-screen w-full flex-col bg-gray-950">
       <div className="scrollbar-none flex-1 overflow-y-auto">
         <div className="mx-auto mb-16 space-y-6 px-4 py-6 lg:mb-0">
           <Button
@@ -56,7 +56,10 @@ export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
             />
             <StatisticsCard
               title="Season RPG"
-              value={player.averageRebounds}
+              value={
+                player.averageDefensiveRebounds +
+                player.averageOffensiveRebounds
+              }
               subtitle="Rebounds per game"
               icon={RotateCcw}
             />

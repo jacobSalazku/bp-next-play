@@ -4,7 +4,18 @@ import { cn } from "@/lib/utils";
 import * as TabsPrimitive from "@radix-ui/react-tabs";
 import { forwardRef } from "react";
 
-const Tabs = TabsPrimitive.Root;
+function Tabs({
+  className,
+  ...props
+}: React.ComponentProps<typeof TabsPrimitive.Root>) {
+  return (
+    <TabsPrimitive.Root
+      data-slot="tabs"
+      className={cn("flex flex-col gap-2", className)}
+      {...props}
+    />
+  );
+}
 
 const TabsList = forwardRef<
   React.ElementRef<typeof TabsPrimitive.List>,
