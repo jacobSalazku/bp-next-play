@@ -142,6 +142,7 @@ export async function submitStatlines(
 export async function getStatsPerGame(
   ctx: Context,
   teamMemberId: string,
+  teamId: string,
   year: number,
   month: number,
 ) {
@@ -157,6 +158,7 @@ export async function getStatsPerGame(
           gte: startDate,
           lte: endDate,
         },
+        teamId: teamId,
       },
     },
     select: {
@@ -212,7 +214,7 @@ export async function getStatsPerGame(
   return statsPerGameStats;
 }
 
-export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
+export async function getStatlineAverages(ctx: Context, teamId: string) {
   const teamMembers = await ctx.db.teamMember.findMany({
     where: { teamId: teamId, role: "PLAYER", status: "ACTIVE" },
     select: { id: true, user: { select: { id: true, name: true } } },
@@ -224,6 +226,10 @@ export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
 
   // Get activities in date range
   const activities = await ctx.db.activity.findMany({
+    where: {
+      type: "Game",
+      teamId: teamId,
+    },
     select: { id: true, type: true },
   });
 
@@ -258,6 +264,10 @@ export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
       const stats = await ctx.db.statline.aggregate({
         where: {
           teamMemberId: member.id,
+          activity: {
+            teamId: teamId,
+            type: "Game",
+          },
           activityId: {
             in: activityIds,
           },
@@ -305,6 +315,14 @@ export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
       const totalPoints = twoPointMade * 2 + made3P * 3 + madeFT;
       const numberOfGames = gamesAttended ?? 1;
 
+      console.log(
+        "Total points",
+        roundToDecimal(
+          ((stats._sum.defensiveRebounds ?? 0) +
+            (stats._sum.offensiveRebounds ?? 0)) /
+            numberOfGames,
+        ),
+      );
       return {
         name: member.user.name,
         teamMemberId: member.id,
@@ -318,9 +336,11 @@ export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
           assists: roundToDecimal((stats._sum.assists ?? 0) / numberOfGames),
           offensiveRebound: roundToDecimal(
             (stats._sum.offensiveRebounds ?? 0) / numberOfGames,
+            1,
           ),
           defensiveRebound: roundToDecimal(
             (stats._sum.defensiveRebounds ?? 0) / numberOfGames,
+            0,
           ),
           blocks: roundToDecimal((stats._sum.blocks ?? 0) / numberOfGames),
           steals: roundToDecimal((stats._sum.steals ?? 0) / numberOfGames),
@@ -335,8 +355,14 @@ export async function getTeamStatlineAverages(ctx: Context, teamId: string) {
   return results;
 }
 
-export async function getTeamStats(ctx: Context) {
+export async function getTeamStats(ctx: Context, teamId: string) {
   const totals = await ctx.db.statline.aggregate({
+    where: {
+      activity: {
+        teamId: teamId,
+        type: "Game",
+      },
+    },
     _sum: {
       fieldGoalsMade: true,
       fieldGoalsMissed: true,
@@ -354,15 +380,19 @@ export async function getTeamStats(ctx: Context) {
   });
 
   // Count unique games
-  const activityCount = await ctx.db.statline.findMany({
-    select: {
-      activity: {
-        select: { date: true },
-      },
-    },
+  const gamesCount = await ctx.db.activity.findMany({
+    where: { type: "Game" },
+    select: { date: true },
   });
 
   const opponentStatline = await ctx.db.opponentStatline.aggregate({
+    where: {
+      activity: {
+        is: {
+          type: "Game",
+        },
+      },
+    },
     _sum: {
       fieldGoalsMade: true,
       threePointersMade: true,
@@ -370,11 +400,9 @@ export async function getTeamStats(ctx: Context) {
     },
   });
 
-  if (activityCount && activityCount.length > 0) {
+  if (gamesCount && gamesCount.length > 0) {
     const uniqueGameDates = new Set(
-      activityCount.map(
-        (entry) => entry.activity?.date?.toISOString().split("T")[0],
-      ),
+      gamesCount.map((entry) => entry.date.toISOString().split("T")[0]),
     );
 
     const totalOpponnentPoints = calculateTotalOpponentPoints(
@@ -394,7 +422,7 @@ export async function getTeamStats(ctx: Context) {
 
     const totalFT = safeSum(totals._sum.freeThrows);
     const totalMissedFT = safeSum(totals._sum.missedFreeThrows);
-    const totalFTAttempts = totalFT + totalMissedFG;
+    const totalFTAttempts = totalFT + totalMissedFT;
 
     const totalOffensiveRebounds = totals._sum.offensiveRebounds ?? 0;
     const totalDefensiveRebounds = totals._sum.defensiveRebounds ?? 0;
@@ -438,7 +466,7 @@ export async function getTeamStats(ctx: Context) {
       freeThrowsAttempted: totalFTAttempts,
     });
 
-    const assistToTurnoverRation = calculateAssistToTurnoverRatio({
+    const assistToTurnoverRatio = calculateAssistToTurnoverRatio({
       assists: safeSum(totals._sum.assists),
       turonvers: safeSum(totals._sum.turnovers),
     });
@@ -450,6 +478,7 @@ export async function getTeamStats(ctx: Context) {
     });
 
     return {
+      date: gamesCount[0]?.date,
       totalGames: roundToDecimal(gamesPlayed),
       totalFieldGoalsMade: roundToDecimal(totalFG),
       totalFieldGoalsMissed: roundToDecimal(totalMissedFG),
@@ -478,7 +507,7 @@ export async function getTeamStats(ctx: Context) {
       advanced: {
         offensiveRating: roundToDecimal(offensiveRating),
         trueShootingPercentage: roundToDecimal(trueShootingPercentage),
-        assistToTurnoverRatio: roundToDecimal(assistToTurnoverRation),
+        assistToTurnoverRatio: roundToDecimal(assistToTurnoverRatio),
         netRating: roundToDecimal(netRating),
         effectiveFieldGoalPercentage: roundToDecimal(
           effectiveFieldGoalPercentage,
@@ -486,4 +515,97 @@ export async function getTeamStats(ctx: Context) {
       },
     };
   }
+}
+
+export async function getWeeklyTeamStatlineAverages(
+  ctx: Context,
+  teamId: string,
+) {
+  const games = await ctx.db.activity.findMany({
+    where: { type: "Game", teamId: teamId },
+    select: { id: true, date: true },
+    orderBy: { date: "asc" },
+  });
+
+  // Group game IDs by week
+  const gamesByWeek: Record<string, string[]> = {};
+
+  for (const game of games) {
+    const date = new Date(game.date);
+    const startOfWeek = new Date(date);
+    startOfWeek.setUTCDate(date.getUTCDate() - date.getUTCDay()); // Sunday as start of week
+    const weekKey: string = startOfWeek.toISOString().split("T")[0] ?? "";
+
+    gamesByWeek[weekKey] ??= [];
+    gamesByWeek[weekKey].push(game.id);
+  }
+
+  const weeklyStats = [];
+
+  for (const [week, gameIds] of Object.entries(gamesByWeek)) {
+    const totals = await ctx.db.statline.aggregate({
+      where: { activityId: { in: gameIds } },
+      _sum: {
+        fieldGoalsMade: true,
+        fieldGoalsMissed: true,
+        threePointersMade: true,
+        threePointersMissed: true,
+        freeThrows: true,
+        missedFreeThrows: true,
+        assists: true,
+        offensiveRebounds: true,
+        defensiveRebounds: true,
+        steals: true,
+        blocks: true,
+        turnovers: true,
+      },
+    });
+
+    const totalFG = safeSum(totals._sum.fieldGoalsMade);
+    const totalMissedFG = safeSum(totals._sum.fieldGoalsMissed);
+    const totalFGAttempts = totalFG + totalMissedFG;
+
+    const total3P = safeSum(totals._sum.threePointersMade);
+    const totalMissed3P = safeSum(totals._sum.threePointersMissed);
+
+    const totalFT = safeSum(totals._sum.freeThrows);
+    const totalMissedFT = safeSum(totals._sum.missedFreeThrows);
+    const totalFTAttempts = totalFT + totalMissedFT;
+
+    const totalPoints = (totalFG - total3P) * 2 + total3P * 3 + totalFT;
+    const gamesPlayed = gameIds.length;
+    const totalRebounds =
+      safeSum(totals._sum.offensiveRebounds) +
+      safeSum(totals._sum.defensiveRebounds);
+
+    weeklyStats.push({
+      weekStart: week,
+      gamesPlayed,
+      totalPoints,
+      fieldGoalsMade: roundToDecimal(totalFG),
+      fieldGoalsMissed: roundToDecimal(totalMissedFG),
+      threePointersMade: roundToDecimal(total3P),
+      threePointersMissed: roundToDecimal(totalMissed3P),
+      freeThrows: roundToDecimal(totalFT),
+      missedFreeThrows: roundToDecimal(totalMissedFT),
+      assists: roundToDecimal(safeSum(totals._sum.assists)),
+      rebounds: roundToDecimal(
+        safeSum(totals._sum.offensiveRebounds) +
+          safeSum(totals._sum.defensiveRebounds),
+      ),
+      steals: roundToDecimal(safeSum(totals._sum.steals)),
+      blocks: roundToDecimal(safeSum(totals._sum.blocks)),
+      turnovers: roundToDecimal(safeSum(totals._sum.turnovers)),
+      averages: {
+        pointsPerGame: roundToDecimal(totalPoints / gamesPlayed),
+        assist: roundToDecimal(safeSum(totals._sum.assists) / gamesPlayed),
+        rebounds: roundToDecimal(totalRebounds / gamesPlayed),
+        blocks: roundToDecimal(safeSum(totals._sum.blocks) / gamesPlayed),
+        steals: roundToDecimal(safeSum(totals._sum.steals) / gamesPlayed),
+        turnovers: roundToDecimal(safeSum(totals._sum.turnovers) / gamesPlayed),
+      },
+    });
+  }
+
+  return weeklyStats;
 }

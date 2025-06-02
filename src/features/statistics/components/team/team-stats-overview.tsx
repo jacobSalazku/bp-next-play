@@ -1,3 +1,5 @@
+"use client";
+
 import type { TeamStats } from "@/types";
 import { StatisticsCard } from "../stats-card";
 

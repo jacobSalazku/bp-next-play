@@ -6,9 +6,10 @@ import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import type { Statlines, TeamInformation, TeamStats } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { BarChart3, TrendingUp } from "lucide-react";
-import { useState } from "react";
+import { useCallback, useMemo, useState } from "react";
 import { PlayerAveragesStatsCard } from "./components/player-average-stats-card";
 import { PerformanceComparisonChart } from "./components/player-performance-comparison-chart";
+import TeamPerfomanceChart from "./components/team/team-performance-chart";
 import TeamStatsOverView from "./components/team/team-stats-overview";
 import type { PlayerStatRow } from "./utils/types";
 
@@ -24,21 +25,31 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
   teamStatlist,
 }) => {
   const [activeTab, setActiveTab] = useState<"team" | "players">("team");
-  const data: PlayerStatRow[] = statsList.map((player) => ({
-    name: player.name ?? "",
-    teamMemberId: player.teamMemberId,
-    gamesAttended: player.gamesAttended ?? 0,
-    fieldGoalPercentage: player.averages.fieldGoalPercentage ?? 0,
-    threePointPercentage: player.averages.threePointPercentage ?? 0,
-    freeThrowPercentage: player.averages.freeThrowPercentage ?? 0,
-    points: player.averages.assists ?? 0,
-    assists: player.averages.assists ?? 0,
-    defensiveRebounds: player.averages.defensiveRebound ?? 0,
-    offensiveRebounds: Number(player.averages.offensiveRebound) ?? 0,
-    blocks: player.averages.blocks ?? 0,
-    steals: player.averages.steals ?? 0,
-    turnovers: player.averages.turnovers ?? 0,
-  }));
+
+  const handleTabChange = useCallback(
+    (value: string) => {
+      setActiveTab(value as "team" | "players");
+    },
+    [setActiveTab],
+  );
+
+  const data: PlayerStatRow[] = useMemo(() => {
+    return statsList.map((player) => ({
+      name: player.name ?? "",
+      teamMemberId: player.teamMemberId,
+      gamesAttended: player.gamesAttended ?? 0,
+      fieldGoalPercentage: player.averages.fieldGoalPercentage ?? 0,
+      threePointPercentage: player.averages.threePointPercentage ?? 0,
+      freeThrowPercentage: player.averages.freeThrowPercentage ?? 0,
+      points: player.averages.pointsPerGame ?? 0,
+      assists: player.averages.assists ?? 0,
+      defensiveRebounds: player.averages.defensiveRebound ?? 0,
+      offensiveRebounds: player.averages.offensiveRebound ?? 0,
+      blocks: player.averages.blocks ?? 0,
+      steals: player.averages.steals ?? 0,
+      turnovers: player.averages.turnovers ?? 0,
+    }));
+  }, [statsList]);
 
   const date = new Date();
   const season = date.getFullYear() - 1 + "-" + date.getFullYear();
@@ -56,7 +67,7 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
       </div>
       <Tabs
         value={activeTab}
-        onValueChange={(value) => setActiveTab(value as "team" | "players")}
+        onValueChange={handleTabChange}
         className="flex w-full gap-12"
       >
         <TabsList className="flex w-full gap-4 pt-10 lg:pt-16">
@@ -96,8 +107,9 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
           </TabsTrigger>
         </TabsList>
 
-        <TabsContent value="team" className="py-2">
+        <TabsContent value="team" className="space-y-4 py-4">
           <TeamStatsOverView teamStatlist={teamStatlist} />
+          <TeamPerfomanceChart title="Monthly Performance Trends" />
         </TabsContent>
         <TabsContent value="players" className="space-y-4 py-4">
           <PerformanceComparisonChart statsList={statsList} />

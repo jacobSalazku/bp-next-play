@@ -8,8 +8,16 @@ export const getStatlineAverage = cache(async (teamId: string) => {
   return statline;
 });
 
-export const getTeamStats = cache(async () => {
-  const stats = await api.stats.getTeamStats();
+export const getTeamStats = cache(async (teamId: string) => {
+  const stats = await api.stats.getTeamStats({ teamId: teamId });
 
   return stats;
+});
+
+export const getWeeklyTeamStatlineAverages = cache(async (teamId: string) => {
+  const weeklyStatline = await api.stats.getWeeklyTeamStatlineAverages({
+    teamId: teamId,
+  });
+
+  return weeklyStatline;
 });

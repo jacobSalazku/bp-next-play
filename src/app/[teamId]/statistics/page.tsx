@@ -10,7 +10,7 @@ async function StatisticsPage({ params }: PageProps) {
   const { teamId } = await params;
   const { team } = await getTeam(teamId);
   const statsList = await getStatlineAverage(teamId);
-  const stats = await getTeamStats();
+  const stats = await getTeamStats(teamId);
 
   if (!team || !statsList || !stats) {
     return (

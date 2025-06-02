@@ -68,7 +68,7 @@ const PlayerAveragesStatsCard = ({
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorFn: (row) => (row.offensiveRebounds ? row.defensiveRebounds : 0),
+      accessorFn: (row) => row.offensiveRebounds + row.defensiveRebounds,
       header: "RB",
       cell: ({ getValue }) => getValue<number>(),
     },
