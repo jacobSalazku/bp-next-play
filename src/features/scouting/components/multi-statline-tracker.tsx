@@ -7,6 +7,7 @@ import { TableFooter } from "@/components/foundation/table/table-footer";
 import { TableHead } from "@/components/foundation/table/table-head";
 import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
+import { useTeam } from "@/context/team-context";
 import { useDebouncedSave } from "@/hooks/use-debounce";
 import type { ActivityInformation, TeamMembers } from "@/types";
 import { useState, type FC } from "react";
@@ -26,6 +27,7 @@ import { PlayerStatsRow } from "./player-stat-row";
 import { TeamStatsRow } from "./team-stats-row";
 
 export type PlayersData = {
+  teamId: string;
   players: TeamMembers;
   activityId: string;
   opponentStatline: OpponentStatsline;
@@ -36,6 +38,7 @@ type TrackerProps = {
 };
 
 const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
+  const { teamSlug } = useTeam();
   const [showOpponentStats, setShowOpponentStats] = useState(false);
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const createStatline = useCreateNewStatline();
@@ -48,6 +51,7 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
 
   const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
     defaultValues: {
+      teamId: teamSlug,
       players: initialPlayers,
       activityId: activity.id,
       opponentStatline: initialOpponentStatline,
@@ -75,14 +79,17 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
   const onSubmit = async (data: PlayersData) => {
     const updatedPlayers = data.players.map((player) => {
       const curr = sanitizeStatline(player.statlines?.[0] ?? {});
+
       return {
         ...player,
+        teamId: teamSlug,
         activityId: activity.id,
         statlines: [curr],
       };
     });
-    console.log("Submitted stats:", activity.id);
+
     await createStatline.mutateAsync({
+      teamId: teamSlug,
       players: updatedPlayers,
       opponentStatline: {
         name: activity.title,

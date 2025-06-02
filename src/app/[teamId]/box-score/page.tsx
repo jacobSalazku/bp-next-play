@@ -1,8 +1,11 @@
 import { getActivity } from "@/api/activity";
+import { getRole } from "@/api/role";
 import { getActiveTeamMember } from "@/api/user";
 import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
+import { redirect } from "next/navigation";
+
 import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 
@@ -12,7 +15,10 @@ type PageProps = {
 };
 
 async function PlayerPage({ params, searchParams }: PageProps) {
+  const role = await getRole();
   const { teamId } = await params;
+  if (role !== "COACH") return redirect(`/${teamId}/schedule`);
+
   const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
 
   const activity = await getActivity(activityId);

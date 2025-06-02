@@ -34,7 +34,8 @@ export const playerWithStats = z.object({
 });
 
 export const createStatlineInputSchema = z.object({
-  players: z.array(playerWithStats), // or your `TeamMembers` zod schema
+  teamId: z.string(),
+  players: z.array(playerWithStats),
   opponentStatline: opponentStatlineSchema,
 });
 
