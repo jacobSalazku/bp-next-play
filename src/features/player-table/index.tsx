@@ -41,79 +41,83 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
     <>
       <Card
         className={cn(
-          playerSideBar && "blur-lg",
-          "w-full border-orange-200/30 bg-gray-950 text-white transition-all duration-200 ease-in-out",
+          playerSideBar && "blur-sm",
+          "w-full rounded-2xl border border-orange-300/10 bg-gradient-to-br from-gray-950 to-gray-900 text-white shadow-md transition-all duration-300",
         )}
       >
-        <CardHeader className="min-h-32 md:flex md:items-center md:justify-between">
-          <div className="flex w-full flex-col gap-8">
-            <CardTitle className="font-righteous text-3xl">{`${team.name} players`}</CardTitle>
-            <CardDescription className="text-md text-white">
-              Manage your basketball team players and view their details.
+        <CardHeader className="border-b border-orange-200/10 pb-6">
+          <div className="flex flex-col gap-4">
+            <CardTitle className="text-3xl font-semibold tracking-wide">
+              {team.name} Players
+            </CardTitle>
+            <CardDescription className="text-sm text-gray-400">
+              Manage your basketball team roster and access player details.
             </CardDescription>
           </div>
         </CardHeader>
+
         <CardContent>
           <div className="overflow-x-auto">
-            <Table className="px-4">
+            <Table>
               <TableHeader>
-                <TableRow className="font-semibold text-white">
-                  <TableHead className="w-[50px] text-white">No.</TableHead>
-                  <TableHead className="text-white">Player</TableHead>
-                  <TableHead className="text-white md:table-cell">
+                <TableRow className="border-b border-gray-800 text-sm tracking-wide text-white uppercase">
+                  <TableHead className="w-[60px]">No.</TableHead>
+                  <TableHead>Player</TableHead>
+                  <TableHead className="hidden md:table-cell">
                     Position
                   </TableHead>
-                  <TableHead className="hidden text-white lg:table-cell">
-                    Height
-                  </TableHead>
-                  <TableHead className="hidden text-right lg:table-cell"></TableHead>
+                  <TableHead className="hidden lg:table-cell">Height</TableHead>
+                  <TableHead className="text-right"></TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody className="border-gray-800">
-                {members ? (
+
+              <TableBody>
+                {members && members.length > 0 ? (
                   members.map((player) => (
                     <TableRow
                       key={player.id}
-                      className={cn(
-                        "cursor-pointer border-gray-800 py-2 hover:bg-orange-200/5",
-                        // selectedPlayer?.id === player.id && sidebarOpen
-                        //   ? 'bg-muted'
-                        //   : '',
-                      )}
-                      // onClick={() => handlePlayerClick(player)}
+                      onClick={() => handlePlayerClick(player)}
+                      className="group cursor-pointer border-b border-gray-800 transition-colors hover:bg-orange-200/5"
                     >
-                      <TableCell className="py-8 font-medium">
-                        {player.number ? `#${player.number}` : null}
+                      <TableCell className="py-4 font-semibold">
+                        {player.number ? `#${player.number}` : "--"}
                       </TableCell>
+
                       <TableCell>
-                        <div className="flex items-center gap-3">
+                        <div className="flex items-center gap-4">
+                          <div className="flex h-9 w-9 items-center justify-center rounded-full bg-orange-400/20 text-sm font-bold text-white uppercase">
+                            {player.user.name?.[0]}
+                          </div>
                           <div>
                             <div className="font-medium">
                               {player.user.name}
                             </div>
-                            <div className="hidden text-sm text-neutral-400 sm:block">
+                            <div className="text-xs text-neutral-400">
                               {player.user.email}
                             </div>
                           </div>
                         </div>
                       </TableCell>
-                      <TableCell className="lg:table-cell">
+
+                      <TableCell className="hidden md:table-cell">
                         {getFullPosition(player.position)}
                       </TableCell>
+
                       <TableCell className="hidden lg:table-cell">
                         {player.user.height}
                       </TableCell>
-                      <TableCell className="hidden text-right md:table-cell">
+
+                      <TableCell className="text-right">
                         <Button
                           variant="outline"
                           size="sm"
                           onClick={(e) => {
                             e.stopPropagation();
                             handlePlayerClick(player);
-                            setNavOpen(false);
                           }}
+                          className="transition group-hover:border-orange-300 group-hover:text-orange-300"
                         >
-                          View Details
+                          View
                         </Button>
                       </TableCell>
                     </TableRow>
@@ -122,9 +126,9 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                   <TableRow>
                     <TableCell
                       colSpan={5}
-                      className="text-muted-foreground py-8 text-center"
+                      className="text-muted-foreground py-6 text-center text-sm"
                     >
-                      No players found matching your search.
+                      No players found.
                     </TableCell>
                   </TableRow>
                 )}
@@ -133,8 +137,11 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
           </div>
         </CardContent>
       </Card>
+
       {playerSideBar && selectedPlayer && (
-        <PlayerDetailPanel selectedPlayer={selectedPlayer} />
+        <div className="mt-6">
+          <PlayerDetailPanel selectedPlayer={selectedPlayer} />
+        </div>
       )}
     </>
   );

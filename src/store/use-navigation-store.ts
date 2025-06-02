@@ -10,6 +10,8 @@ type NavigationState = {
   setNavOpen: (open: boolean) => void;
   selectedPlayer: TeamMember | null;
   setSelectedPlayer: (player: TeamMember | null) => void;
+  openLogOutModal: boolean;
+  setOpenLogOutModal: (open: boolean) => void;
 };
 
 export const useNavigationStore = create<NavigationState>((set) => ({
@@ -24,4 +26,7 @@ export const useNavigationStore = create<NavigationState>((set) => ({
 
   selectedPlayer: null,
   setSelectedPlayer: (player) => set({ selectedPlayer: player }),
+
+  openLogOutModal: false,
+  setOpenLogOutModal: (open) => set({ openLogOutModal: open }),
 }));
