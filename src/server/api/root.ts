@@ -2,7 +2,8 @@ import { activityRouter } from "./routers/activity";
 import { attendanceRouter } from "./routers/attendance";
 import { drawRouter } from "./routers/draw";
 import { memberRouter } from "./routers/member";
-import { statsRouter } from "./routers/stats";
+import { statsRouter } from "./routers/statline";
+
 import { teamRouter } from "./routers/team";
 import { userRouter } from "./routers/user";
 

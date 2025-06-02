@@ -113,5 +113,6 @@ export function calculateEffectiveFieldGoalPercentage({
 }): number {
   if (fieldGoalsAttempted === 0) return 0; // Avoid division by zero
   const eFG = (fieldGoalsMade + 0.5 * threePointersMade) / fieldGoalsAttempted;
+
   return eFG * 100; // Return as percentage
 }
