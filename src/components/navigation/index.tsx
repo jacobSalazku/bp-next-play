@@ -4,6 +4,7 @@ import { useTeam } from "@/context/team-context";
 import { useNavRoute } from "@/hooks/use-nav-route";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import {
+  BookOpen,
   Calendar,
   ChartArea,
   Home,
@@ -58,6 +59,12 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
       icon: ChartArea,
       active: false,
     },
+    {
+      label: "Playbook",
+      href: `/${teamSlug}/playbook-library`,
+      icon: BookOpen,
+      active: false,
+    },
   ];
 
   const title = useNavRoute();
@@ -84,7 +91,11 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
         </div>
       </header>
       {mobileNavOpen && (
-        <MobileNav items={navItems} onClose={() => setMobileNavOpen(false)} />
+        <MobileNav
+          items={navItems}
+          onClose={() => setMobileNavOpen(false)}
+          isOpen={navOpen}
+        />
       )}
       <div className="flex flex-1 overflow-hidden">
         <DesktopNavigation
