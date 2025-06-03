@@ -1,7 +1,6 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
-
 import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
 import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
