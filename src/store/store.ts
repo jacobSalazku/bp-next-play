@@ -8,9 +8,6 @@ type StoreState = {
   openPracticeAttendance: boolean;
   setOpenPracticeAttendance: (open: boolean) => void;
 
-  openLoginModal: boolean;
-  setOpenLoginModal: (open: boolean) => void;
-
   selectedDate: Date;
   setSelectedDate: (date: Date) => void;
 
@@ -36,9 +33,6 @@ const useStore = create<StoreState>((set) => ({
 
   openPracticeAttendance: false,
   setOpenPracticeAttendance: (open) => set({ openPracticeAttendance: open }),
-
-  openLoginModal: false,
-  setOpenLoginModal: (open) => set({ openLoginModal: open }),
 
   selectedDate: new Date(),
   setSelectedDate: (date) => set({ selectedDate: date }),

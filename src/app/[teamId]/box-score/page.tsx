@@ -5,7 +5,6 @@ import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
 import { redirect } from "next/navigation";
-
 import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
 
