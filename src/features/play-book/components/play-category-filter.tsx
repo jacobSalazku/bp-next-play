@@ -1,30 +1,19 @@
 import { Button } from "@/components/foundation/button/button";
 import { cn } from "@/lib/utils";
-import { type LucideIcon } from "lucide-react";
-
-type Category = {
-  id: string;
-  label: string;
-  icon: LucideIcon;
-  gradient: string;
-  border: string;
-  count: number;
-};
+import { categoriesFilter } from "../utils/constants";
 
 type PlayCategoryFilterProps = {
-  categories: Category[];
   activeCategory: string;
   setActiveCategory: (id: string) => void;
 };
 
 export const PlayCategoryFilter = ({
-  categories,
   activeCategory,
   setActiveCategory,
 }: PlayCategoryFilterProps) => {
   return (
     <div className="mb-12 grid w-full grid-cols-3 gap-3 md:grid-cols-4">
-      {categories.map((category) => {
+      {categoriesFilter.map((category) => {
         const Icon = category.icon;
         const isActive = activeCategory === category.id;
 

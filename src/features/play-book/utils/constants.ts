@@ -1,4 +1,4 @@
-import { Move, Pencil } from "lucide-react";
+import { Dribbble, Move, Pencil, Shield, Target } from "lucide-react";
 
 export const initialPlayerPosition = [
   {
@@ -52,4 +52,38 @@ export const colors = [
   "#8b5cf6", // purple
   "#000000", // black
   "#666666", // gray
+];
+
+export const categories = [
+  { id: "offense", label: "Offense", value: "OFFENSE" },
+  { id: "defense", label: "Defense", value: "DEFENSE" },
+  { id: "special", label: "Special", value: "SPECIAL" },
+];
+
+export const categoriesFilter = [
+  {
+    id: "offense",
+    label: "Offense",
+    icon: Dribbble,
+    gradient: "bg-gradient-to-bl from-orange-500 to-orange-950",
+    border: "border-orange-800/30",
+    count: 12,
+  },
+  {
+    id: "defense",
+    label: "Defense",
+    icon: Shield,
+    gradient: "bg-gradient-to-bl from-blue-500 to-blue-950",
+    border: "border-blue-800/30",
+    count: 8,
+  },
+
+  {
+    id: "special",
+    label: "Special",
+    icon: Target,
+    gradient: "bg-gradient-to-bl from-purple-500 to-purple-950",
+    border: "border-purple-800/30",
+    count: 3,
+  },
 ];

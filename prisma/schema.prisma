@@ -89,7 +89,7 @@ model Team {
   createdAt  DateTime
   members    TeamMember[]
   activities Activity[]
-  
+  plays      Play[]    
   // Relationships
   creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
 }
@@ -193,16 +193,17 @@ model OpponentStatline {
 }
 
 model Play {
-  id          String      @id @default(cuid())
+  id          String                @id @default(cuid())
+  teamId      String      
   name        String
-  category    String?
-  description String?
-  notes       String?
-  canvas      String?     // URL or JSON depending on how canvas is stored
-  createdAt   DateTime    @default(now())
+  category    String
+  description String
+  canvas      String     
+  createdAt   DateTime              @default(now())
 
   // Relations
-  gamePlans   GamePlan[]  @relation("GamePlanPlays")
+  team        Team                  @relation(fields: [teamId], references: [id])
+  gamePlans   GamePlan[]            @relation("GamePlanPlays")
   practices   PracticePreparation[] @relation("PracticePlays")
 }
 
