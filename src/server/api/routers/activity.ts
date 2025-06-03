@@ -4,6 +4,7 @@ import {
   createPractice,
   editGame,
   editPractice,
+  getActivity,
 } from "@/server/service/activity-service";
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
@@ -136,5 +137,12 @@ export const activityRouter = createTRPCRouter({
       });
 
       return activities;
+    }),
+  getActivity: protectedProcedure
+    .input(z.object({ activityId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const activity = await getActivity(ctx, input.activityId);
+
+      return activity;
     }),
 });

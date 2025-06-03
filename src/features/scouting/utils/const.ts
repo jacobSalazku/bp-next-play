@@ -7,7 +7,8 @@ export const statRows: { key: keyof StatlineData; label: string }[] = [
   { key: "threePointersMissed", label: "3P Missed" },
   { key: "freeThrows", label: "FTM" },
   { key: "missedFreeThrows", label: "FT Missed" },
-  { key: "rebounds", label: "REB" },
+  { key: "offensiveRebounds", label: "ORB" },
+  { key: "defensiveRebounds", label: "DRB" },
   { key: "assists", label: "AST" },
   { key: "steals", label: "STL" },
   { key: "blocks", label: "BLK" },
@@ -24,7 +25,8 @@ export const statKeys: (keyof StatlineData)[] = [
   "assists",
   "steals",
   "turnovers",
-  "rebounds",
+  "offensiveRebounds",
+  "defensiveRebounds",
   "blocks",
 ];
 

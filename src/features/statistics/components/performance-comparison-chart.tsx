@@ -27,7 +27,9 @@ export const PerformanceComparisonChart = ({
     name: player.name,
     points: Number(player.averages.averagePointsPerGame),
     assists: Number(player.averages.averageAssists),
-    rebounds: Number(player.averages.averageRebounds),
+    rebounds:
+      Number(player.averages.averageOffensiveRebound) +
+      Number(player.averages.averageDefensiveRebound),
     blocks: Number(player.averages.averageBlocks),
   }));
 

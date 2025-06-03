@@ -8,7 +8,7 @@ import {
   startOfMonth,
   startOfWeek,
 } from "date-fns";
-import type { Week } from "../types";
+import type { Week } from "./types";
 
 export const getWeeksOfMonth = (year: number, month: number): Week[] => {
   const monthStart = startOfMonth(new Date(year, month - 1));

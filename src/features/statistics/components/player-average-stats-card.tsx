@@ -24,11 +24,6 @@ const PlayerAveragesStatsCard = ({
       header: "Player",
       cell: ({ row }) => {
         const player = row.original;
-        const href = {
-          pathname: `${teamSlug}/statistics/player`,
-          query: { id: player.teamMemberId },
-        };
-        console.log("href", href);
 
         return (
           <Link
@@ -48,7 +43,7 @@ const PlayerAveragesStatsCard = ({
       header: "GP",
     },
     {
-      accessorKey: "averagePoints",
+      accessorKey: "points",
       header: "Points",
       cell: ({ getValue }) => getValue<number>(),
     },
@@ -68,27 +63,27 @@ const PlayerAveragesStatsCard = ({
       cell: ({ getValue }) => `${getValue<number>()}%`,
     },
     {
-      accessorKey: "averageAssists",
+      accessorKey: "assists",
       header: "AST",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageRebounds",
+      accessorFn: (row) => row.offensiveRebounds + row.defensiveRebounds,
       header: "RB",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageBlocks",
+      accessorKey: "blocks",
       header: "BLK",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageSteals",
+      accessorKey: "steals",
       header: "STL",
       cell: ({ getValue }) => getValue<number>(),
     },
     {
-      accessorKey: "averageTurnovers",
+      accessorKey: "turnovers",
       header: "TO",
       cell: ({ getValue }) => getValue<number>(),
     },

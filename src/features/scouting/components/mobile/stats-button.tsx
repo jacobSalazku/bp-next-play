@@ -1,13 +1,16 @@
 import { Button } from "@/components/foundation/button/button";
 import { cn } from "@/utils/tw-merge";
 import type { FC } from "react";
-import type { StatlineData } from "../../zod/player-stats";
+import type { OpponentStatsline, StatlineData } from "../../zod/player-stats";
+
+// Union of all possible stat keys
+type AllStatKeys = keyof StatlineData | keyof OpponentStatsline;
 
 type StatsButtonProps = {
-  statKey: keyof StatlineData;
+  statKey: AllStatKeys;
   label: string;
   value: number;
-  onIncrement: (key: keyof StatlineData) => void;
+  onIncrement: (key: AllStatKeys) => void;
   className?: string;
 };
 
@@ -21,7 +24,7 @@ const StatButton: FC<StatsButtonProps> = ({
   <Button
     type="button"
     variant="outline"
-    onClick={() => onIncrement(statKey)}
+    onClick={() => onIncrement?.(statKey)}
     className={cn(
       className,
       "flex flex-col items-center justify-center rounded-xl py-10",

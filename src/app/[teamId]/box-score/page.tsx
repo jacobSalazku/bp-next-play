@@ -1,7 +1,12 @@
+import { getActivity } from "@/api/activity";
+import { getRole } from "@/api/role";
 import { getActiveTeamMember } from "@/api/user";
+import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
+import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
+import { Suspense } from "react";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
@@ -9,8 +14,13 @@ type PageProps = {
 };
 
 async function PlayerPage({ params, searchParams }: PageProps) {
+  const role = await getRole();
   const { teamId } = await params;
+  if (role !== "COACH") return redirect(`/${teamId}/schedule`);
+
   const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
+
+  const activity = await getActivity(activityId);
   const members = await getActiveTeamMember(teamId);
 
   const players = members.map((member) => ({
@@ -32,7 +42,9 @@ async function PlayerPage({ params, searchParams }: PageProps) {
   return (
     <div className="flex min-h-screen w-full flex-col items-center justify-start text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row justify-center py-4">
-        <MultiStatlineTracker activityId={activityId} players={players} />
+        <Suspense fallback={<Skeleton />}>
+          <MultiStatlineTracker activity={activity} players={players} />
+        </Suspense>
       </div>
     </div>
   );

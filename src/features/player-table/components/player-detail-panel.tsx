@@ -1,8 +1,8 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
-import { TabsContent } from "@/components/foundation/table/table-content";
 import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
+import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import {
   playerAttendanceStatus,
@@ -43,7 +43,6 @@ const PlayerDetailPanel = ({
         "user" in selectedPlayer && (
           <>
             <div>
-              {/* Header */}
               <div className="sticky top-0 z-10 hidden items-center justify-between border-b border-orange-200/30 bg-gray-950 px-4 py-6 md:flex">
                 <h2 className="font-righteous text-xl font-bold">
                   Player Details
@@ -58,7 +57,6 @@ const PlayerDetailPanel = ({
                 </Button>
               </div>
 
-              {/* Profile Info */}
               <div className="flex flex-col items-center border-b border-orange-200/30 px-6 py-8">
                 {selectedPlayer.user.image ? (
                   <Image
@@ -81,7 +79,7 @@ const PlayerDetailPanel = ({
                 </p>
               </div>
             </div>
-            {/* Tabs */}
+
             <Tabs
               defaultValue="info"
               className="flex flex-col overflow-y-auto px-4 pt-4"
@@ -91,7 +89,6 @@ const PlayerDetailPanel = ({
                 <TabsTrigger value="attendance">Attendance</TabsTrigger>
               </TabsList>
 
-              {/* Personal Info */}
               <TabsContent value="info" className="space-y-5 pt-5">
                 <PlayerDetailItem
                   label="Full Name"
@@ -127,7 +124,6 @@ const PlayerDetailPanel = ({
                 />
               </TabsContent>
 
-              {/* Attendance Info */}
               <TabsContent value="attendance" className="space-y-4 pt-5">
                 <div className="text-muted-foreground flex items-center gap-2">
                   <Calendar className="h-4 w-4" />

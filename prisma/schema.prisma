@@ -73,11 +73,11 @@ model Session {
 }
 
 model VerificationToken {
-    identifier String
-    token      String   @unique
-    expires    DateTime
+  identifier String
+  token      String   @unique
+  expires    DateTime
 
-    @@unique([identifier, token])
+  @@unique([identifier, token])
 } 
 // Team table
 model Team {
@@ -89,7 +89,7 @@ model Team {
   createdAt  DateTime
   members    TeamMember[]
   activities Activity[]
-  
+  plays      Play[]    
   // Relationships
   creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
 }
@@ -103,7 +103,6 @@ model TeamMember {
   status       String
   number       String?
   position     String?
-
   statlines    Statline[]
   attendances  ActivityAttendance[]
 
@@ -114,25 +113,24 @@ model TeamMember {
 
 // Activity table
 model Activity {
-  id                String              @id @default(cuid())
-  title             String
-  time              String
-  gameplan          String?
-  type              String
-  duration          Float?
-  practiceType      String?
-  notes             String?
-  date              DateTime
-  createdAt         DateTime
-  updatedAt         DateTime
-  teamId            String
+  id                  String              @id @default(cuid())
+  title               String
+  time                String
+  type                String
+  duration            Float?
+  practiceType        String?
+  notes               String?
+  date                DateTime
+  createdAt           DateTime
+  updatedAt           DateTime
+  teamId              String
+  attendees           ActivityAttendance[]
+  statlines           Statline[]
+  opponentStatline    OpponentStatline?
+  gamePlan            GamePlan?
+  practicePreparation PracticePreparation?
 
-  attendees         ActivityAttendance[]
-  statlines         Statline[]
-  
-  opponentStatline  OpponentStatline?
-  team              Team                  @relation(fields: [teamId], references: [id])
- 
+  team                Team                  @relation(fields: [teamId], references: [id])
 }
 
 // Statline table
@@ -148,17 +146,18 @@ model Statline {
   assists             Int
   steals              Int
   turnovers           Int
-  rebounds            Int
+  offensiveRebounds   Int          @default(0)
+  defensiveRebounds   Int          @default(0) 
   blocks              Int
   createdAt           DateTime
   updatedAt           DateTime
   activityId          String
   
   // Relationships
-  teamMember          TeamMember @relation(fields: [teamMemberId], references: [id])
-  activity            Activity   @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id])
+  activity            Activity     @relation(fields: [activityId], references: [id])
 
-  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") // ✅ Add this line
+  @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") 
 }
 
 model ActivityAttendance {
@@ -167,14 +166,14 @@ model ActivityAttendance {
   teamMemberId     String       
   attendanceStatus String
   reason           String?
-  createdAt      DateTime @default(now())
-  updatedAt      DateTime @updatedAt
+  createdAt        DateTime     @default(now())
+  updatedAt        DateTime     @updatedAt
 
   // Relationships
-  activity     Activity      @relation(fields: [activityId], references: [id])
-  teamMember   TeamMember    @relation(fields: [teamMemberId], references: [id])
+  activity         Activity      @relation(fields: [activityId], references: [id])
+  teamMember       TeamMember    @relation(fields: [teamMemberId], references: [id])
 
-@@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
+  @@unique([activityId, teamMemberId]) // Ensure unique attendance per activity and team member
   @@index([activityId])
   @@index([teamMemberId])
 }
@@ -183,12 +182,55 @@ model OpponentStatline {
   id                String    @id @default(cuid())
   name              String
   activityId        String    @unique
-  fieldGoalMade     Int
-  threePointersMade Int
-  freeThrowsMade    Int
+  fieldGoalsMade    Int       @default(0)
+  threePointersMade Int       @default(0)
+  freeThrowsMade    Int       @default(0)
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
   activity         Activity   @relation(fields: [activityId], references: [id])
   @@unique([activityId], map: "opponent_activity_unique")
+}
+
+model Play {
+  id          String                @id @default(cuid())
+  teamId      String      
+  name        String
+  category    String
+  description String
+  canvas      String     
+  createdAt   DateTime              @default(now())
+
+  // Relations
+  team        Team                  @relation(fields: [teamId], references: [id])
+  gamePlans   GamePlan[]            @relation("GamePlanPlays")
+  practices   PracticePreparation[] @relation("PracticePlays")
+}
+
+
+model GamePlan {
+  id        String      @id @default(cuid())
+  activityId String?    @unique  // Optional link to an Activity
+  name      String
+  opponent  String?
+  notes     String?
+  createdAt DateTime    @default(now())
+
+  // Relations
+  activity   Activity?  @relation(fields: [activityId], references: [id])
+  plays      Play[]     @relation("GamePlanPlays")
+}
+
+model PracticePreparation {
+  id         String     @id @default(cuid())
+  activityId String?    @unique  // Optional link to an Activity
+  name       String
+  focus      String?
+  notes      String?
+  completed  Boolean    @default(false)
+  createdAt  DateTime   @default(now())
+
+  // Relations
+  activity   Activity?  @relation(fields: [activityId], references: [id])
+  plays      Play[]     @relation("PracticePlays")
 }

@@ -19,7 +19,7 @@ export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
   const router = useRouter();
 
   return (
-    <div className="flex h-screen w-full flex-col bg-gray-950">
+    <div className="flex max-h-screen w-full flex-col bg-gray-950">
       <div className="scrollbar-none flex-1 overflow-y-auto">
         <div className="mx-auto mb-16 space-y-6 px-4 py-6 lg:mb-0">
           <Button
@@ -44,31 +44,33 @@ export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
           <div className="grid grid-cols-1 gap-4 md:grid-cols-4">
             <StatisticsCard
               title="Season PPG"
-              value={player.averagePoints}
+              value={player.points}
               subtitle="Points per game"
               icon={Target}
             />
             <StatisticsCard
               title="Season APG"
-              value={player.averageAssists}
+              value={player.assists}
               subtitle="Assists per game"
               icon={Users}
             />
             <StatisticsCard
               title="Season RPG"
-              value={player.averageRebounds}
+              value={(
+                player.defensiveRebounds + player.offensiveRebounds
+              ).toFixed(1)}
               subtitle="Rebounds per game"
               icon={RotateCcw}
             />
             <StatisticsCard
               title="Season BPG"
-              value={player.averageBlocks}
+              value={player.blocks}
               subtitle="Blocks per game"
               icon={Shield}
             />
             <StatisticsCard
               title="Season SPG"
-              value={player.averageSteals}
+              value={player.steals}
               subtitle="Steals per game"
               icon={Shield}
             />

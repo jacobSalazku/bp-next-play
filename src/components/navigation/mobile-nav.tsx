@@ -1,6 +1,6 @@
 import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { X } from "lucide-react";
+import { LogOut, X } from "lucide-react";
 import type { NavItemType } from ".";
 import { Button } from "../foundation/button/button";
 import { NavItem } from "./nav-item";
@@ -8,10 +8,11 @@ import { NavItem } from "./nav-item";
 type MobileNavProps = {
   items: NavItemType[];
   onClose: () => void;
+  isOpen: boolean;
 };
 
-export function MobileNav({ items, onClose }: MobileNavProps) {
-  const { mobileNavOpen } = useNavigationStore();
+export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
+  const { mobileNavOpen, setOpenLogOutModal } = useNavigationStore();
   return (
     <div
       className={cn(
@@ -40,6 +41,21 @@ export function MobileNav({ items, onClose }: MobileNavProps) {
               </NavItem>
             ))}
           </ul>
+          <Button
+            className={cn(
+              "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
+              isOpen ? "justify-start" : "justify-center",
+            )}
+            onClick={() => setOpenLogOutModal(true)}
+          >
+            <LogOut
+              className={cn(
+                "mr-2 h-5 w-5 rotate-180",
+                !isOpen ? "mx-auto block" : "mr-1",
+              )}
+            />
+            {isOpen && <span>Lougout</span>}
+          </Button>
         </nav>
       </div>
     </div>

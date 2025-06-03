@@ -89,3 +89,41 @@ export async function editPractice(ctx: Context, input: EditPracticeInput) {
   });
   return { success: true, activity: updatedPractice };
 }
+
+export async function getActivity(ctx: Context, activityId: string) {
+  const activity = await ctx.db.activity.findUnique({
+    where: { id: activityId },
+    select: {
+      id: true,
+      title: true,
+      date: true,
+      time: true,
+      duration: true,
+      type: true,
+      practiceType: true,
+      createdAt: true,
+      updatedAt: true,
+      attendees: {
+        select: {
+          teamMemberId: true,
+          attendanceStatus: true,
+          reason: true,
+        },
+      },
+      opponentStatline: {
+        select: {
+          name: true,
+          fieldGoalsMade: true,
+          threePointersMade: true,
+          freeThrowsMade: true,
+          activityId: true,
+        },
+      },
+    },
+  });
+
+  if (!activity) {
+    throw new Error("Activity not found");
+  }
+  return activity;
+}

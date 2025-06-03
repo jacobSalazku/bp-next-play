@@ -31,3 +31,9 @@ export type AverageStatline = RouterOutput["stats"]["getStatlineAverage"];
 export type Statlines = RouterOutput["stats"]["getStatlineAverage"];
 
 export type StatlinesPerGame = RouterOutput["stats"]["getStatsPerGame"];
+
+export type TeamStats = RouterOutput["stats"]["getTeamStats"];
+
+export type ActivityInformation = RouterOutput["activity"]["getActivity"];
+
+export type Play = RouterOutput["play"]["getAllPlays"];

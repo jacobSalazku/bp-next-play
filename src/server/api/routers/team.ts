@@ -21,6 +21,7 @@ export const teamRouter = createTRPCRouter({
           message: "Role not found",
         });
       }
+
       return role;
     }),
 
