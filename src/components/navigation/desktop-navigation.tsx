@@ -92,7 +92,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="scrollbar-none relative flex w-full flex-col px-1 py-2 md:px-4">
+      <main className="scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 px-1 py-2 md:px-4">
         {children}
       </main>
     </>

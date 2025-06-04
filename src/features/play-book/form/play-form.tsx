@@ -34,7 +34,7 @@ import {
 import type { DrawingLine, Player } from "../utils/types";
 import { playSchema, type Play } from "../zod";
 
-export function CreatePlay() {
+export function PlayForm() {
   const { teamSlug } = useTeam();
   const canvasRef = useRef<HTMLCanvasElement>(null);
   const [currentTool, setCurrentTool] = useState("move");
