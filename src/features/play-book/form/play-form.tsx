@@ -252,7 +252,7 @@ export function PlayForm() {
                       {categories.map((option) => (
                         <div
                           key={option.id}
-                          className="flex items-center gap-2"
+                          className="flex items-center gap-2 rounded-lg bg-orange-400/50 px-4 py-2"
                         >
                           <RadioGroupItem
                             {...register("category")}
@@ -262,7 +262,7 @@ export function PlayForm() {
                           />
                           <label
                             htmlFor={`position-${option.id}`}
-                            className="text-md"
+                            className="text-md cursor-pointer"
                           >
                             {option.label}
                           </label>

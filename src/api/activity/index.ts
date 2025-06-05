@@ -6,3 +6,8 @@ export const getActivity = cache(async (activityId: string) => {
 
   return activity;
 });
+
+export const getGames = cache(async (teamId: string) => {
+  const games = await api.activity.getGames({ teamId: teamId });
+  return games;
+});

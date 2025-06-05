@@ -33,7 +33,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
 
-  const { selectedDate, selectedActivity, openGameModal } = useStore();
+  const { selectedDate, selectedActivity } = useStore();
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 

@@ -10,7 +10,7 @@ import type { Play } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { Eye, Trash2 } from "lucide-react";
 import Image from "next/image";
-import { useDeletePlay } from "../hooks/use-delete-play";
+import { useDeletePlay } from "../../hooks/use-delete-play";
 
 type PlayCardProps = {
   play: Play[number];

@@ -8,3 +8,12 @@ export const playSchema = z.object({
 });
 
 export type Play = z.infer<typeof playSchema>;
+
+export const gamePlanSchema = z.object({
+  name: z.string().min(1, "title is required"),
+  opponent: z.string().min(1, "Opponent name is required"),
+  notes: z.string(),
+  activityId: z.string().optional(),
+});
+
+export type GamePlanData = z.infer<typeof gamePlanSchema>;

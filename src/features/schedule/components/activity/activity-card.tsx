@@ -51,7 +51,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
   boxScoreSearchParams.set("activityId", activity.id);
 
   return (
-    <div className="group flex flex-col gap-4 rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
+    <div className="group flex flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
       <div className="flex flex-row items-start gap-4 sm:gap-6">
         <div
           className={cn(
@@ -62,8 +62,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         >
           <Icon className="h-5 w-5 lg:h-7 lg:w-7" />
         </div>
-
-        {/* Content */}
         <div className="flex-1">
           <h3 className="text-base font-semibold text-white">
             {activity.title}
@@ -75,8 +73,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
           </div>
         </div>
       </div>
-
-      {/* Actions */}
       <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
         {activity.type === "Game" && role && (
           <Link

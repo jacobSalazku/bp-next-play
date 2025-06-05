@@ -5,6 +5,7 @@ import {
   editGame,
   editPractice,
   getActivity,
+  getGames,
 } from "@/server/service/activity-service";
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
@@ -35,6 +36,7 @@ export const activityRouter = createTRPCRouter({
       const activity = await createGame(ctx, input);
       return activity;
     }),
+
   createPractice: protectedProcedure
     .input(
       practiceSchema.extend({
@@ -58,6 +60,7 @@ export const activityRouter = createTRPCRouter({
 
       return activity;
     }),
+
   editPractice: protectedProcedure
     .input(
       z.object(practiceSchema.shape).extend({
@@ -138,11 +141,20 @@ export const activityRouter = createTRPCRouter({
 
       return activities;
     }),
+
   getActivity: protectedProcedure
     .input(z.object({ activityId: z.string() }))
     .query(async ({ ctx, input }) => {
       const activity = await getActivity(ctx, input.activityId);
 
       return activity;
+    }),
+
+  getGames: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const games = await getGames(ctx, input.teamId);
+
+      return games;
     }),
 });

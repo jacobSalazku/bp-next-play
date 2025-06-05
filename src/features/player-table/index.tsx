@@ -42,7 +42,7 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
       <Card
         className={cn(
           playerSideBar && "blur-sm",
-          "w-full rounded-2xl border border-orange-300/10 bg-gradient-to-br from-gray-950 to-gray-900 text-white shadow-md transition-all duration-300",
+          "w-full rounded-2xl border border-orange-300/10 bg-gradient-to-br from-gray-950 to-gray-900 py-6 text-white shadow-md transition-all duration-300 md:px-8",
         )}
       >
         <CardHeader className="border-b border-orange-200/10 pb-6">

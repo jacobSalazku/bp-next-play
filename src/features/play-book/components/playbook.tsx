@@ -5,18 +5,25 @@ import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
 import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
-import type { Play } from "@/types";
+import type { GamePlan, Play } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { Plus } from "lucide-react";
 import { type FC, useCallback } from "react";
 import type { CoachDashTab } from "../utils/types";
-import { PlayCard } from "./play-card";
+import { PlayCard } from "./play/play-card";
 
 type PageProps = {
   playbook?: Play;
+  gamePlan?: GamePlan[];
 };
-const PlaybookBookBlock: FC<PageProps> = ({ playbook }) => {
-  const { activeCoachTab, setActiveCoachTab } = useCoachDashboardStore();
+
+const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
+  const {
+    setOpenGamePlan,
+    setGamePlanMode,
+    activeCoachTab,
+    setActiveCoachTab,
+  } = useCoachDashboardStore();
 
   const handleCoachTabChange = useCallback(
     (value: string) => {
@@ -32,10 +39,6 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook }) => {
           Plays Library
         </h1>
       </div>
-      {/* <PlayCategoryFilter
-        activeCategory={activeCategory ?? ""}
-        setActiveCategory={(id) => setActiveCategory(id as PlayCategory)}
-      /> */}
       <Tabs
         value={activeCoachTab}
         onValueChange={handleCoachTabChange}
@@ -85,17 +88,22 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook }) => {
         </div>
         <TabsContent value="gameplan">
           <Button
-            className="w-full bg-orange-500 text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-950 sm:w-auto"
             aria-label="Create new play"
+            className="w-full bg-orange-500 text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-950 sm:w-auto"
+            onClick={() => setOpenGamePlan(true)}
           >
             <Plus className="mr-2 h-4 w-4" />
-            Create gameplan
+            Create Gameplan
           </Button>
         </TabsContent>
         <TabsContent value="practice">
           <Button
             className="w-full bg-orange-500 text-white hover:bg-orange-600 focus:ring-2 focus:ring-orange-500 focus:ring-offset-2 focus:ring-offset-gray-950 sm:w-auto"
             aria-label="Create new play"
+            onClick={() => {
+              setGamePlanMode("create");
+              setOpenGamePlan(true);
+            }}
           >
             <Plus className="mr-2 h-4 w-4" />
             Create preparation
