@@ -51,7 +51,7 @@ export function PlayForm() {
     handleSubmit,
     control,
     setValue,
-    formState: { errors, isLoading },
+    formState: { errors, isSubmitting },
   } = useForm<Play>({
     resolver: zodResolver(playSchema),
     defaultValues: {},
@@ -269,7 +269,6 @@ export function PlayForm() {
                         </div>
                       ))}
                     </RadioGroup>
-
                     {errors.category && <p>{errors.category.message}</p>}
                   </div>
                 </div>
@@ -288,7 +287,7 @@ export function PlayForm() {
               </div>
               <Button type="submit" variant="secondary" className="w-full">
                 <Save className="mr-2 h-4 w-4" />
-                {isLoading ? "Saving..." : "Save Play"}
+                {isSubmitting ? "Saving..." : "Save Play"}
               </Button>
               {/* <Button
                 onClick={savePlay}

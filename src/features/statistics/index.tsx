@@ -13,6 +13,8 @@ import TeamPerfomanceChart from "./components/team/team-performance-chart";
 import TeamStatsOverView from "./components/team/team-stats-overview";
 import type { PlayerStatRow } from "./utils/types";
 
+type TabType = "team" | "players";
+
 type ChartsBlockProps = {
   teamStatlist: TeamStats;
   statsList: Statlines;
@@ -24,11 +26,11 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
   team,
   teamStatlist,
 }) => {
-  const [activeTab, setActiveTab] = useState<"team" | "players">("team");
+  const [activeTab, setActiveTab] = useState<TabType>("team");
 
   const handleTabChange = useCallback(
     (value: string) => {
-      setActiveTab(value as "team" | "players");
+      setActiveTab(value as TabType);
     },
     [setActiveTab],
   );
@@ -70,14 +72,13 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
         onValueChange={handleTabChange}
         className="flex w-full gap-12"
       >
-        <TabsList className="flex w-full gap-4 pt-10 lg:pt-16">
+        <TabsList className="flex w-full gap-4 pt-8 lg:pt-16">
           <TabsTrigger
             id="team-tab"
             value="team"
             className={cn(
-              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 text-left transition-colors duration-500 ease-in-out",
-              "data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-400",
-              "data-[state=active]:border-transparent",
+              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-3 text-left transition-colors duration-500 ease-in-out",
+              "data-[state=active]:border-transparent data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-400",
             )}
           >
             <TrendingUp className="hidden h-12 w-12 rounded-lg bg-gray-300/20 p-2 sm:block" />
@@ -93,7 +94,7 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
             id="players-tab"
             value="players"
             className={cn(
-              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-5 text-left transition-colors duration-500 ease-in-out",
+              "group flex w-1/2 flex-1 items-center gap-4 rounded-2xl border border-gray-800 bg-gray-900 px-6 py-3 text-left transition-colors duration-500 ease-in-out",
               "data-[state=active]:bg-gradient-to-r data-[state=active]:from-orange-500 data-[state=active]:to-orange-400",
             )}
           >
@@ -106,7 +107,6 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
             </div>
           </TabsTrigger>
         </TabsList>
-
         <TabsContent value="team" className="space-y-4 py-4">
           <TeamStatsOverView teamStatlist={teamStatlist} />
           <TeamPerfomanceChart title="Monthly Performance Trends" />

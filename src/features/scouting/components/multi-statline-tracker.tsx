@@ -32,6 +32,7 @@ export type PlayersData = {
   activityId: string;
   opponentStatline: OpponentStatsline;
 };
+
 type TrackerProps = {
   players: TeamMembers;
   activity: ActivityInformation;
@@ -130,7 +131,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
         opponentStatline={stats.opponentStatline as OpponentStatsline}
         setValue={setValue}
       />
-
       <form
         key={activity.id}
         onSubmit={handleSubmit(onSubmit, (errors) => {
@@ -141,7 +141,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
         <h2 className="font-righteous mb-6 text-2xl font-bold text-gray-100 sm:text-4xl">
           Player Box Score
         </h2>
-        {/* Toggle Opponent Stats */}
         <div className="mb-5">
           <Button
             variant="outline"
@@ -150,13 +149,11 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
           >
             {showOpponentStats ? "Hide" : "Show"} Opponent Stats
           </Button>
-
           {showOpponentStats && (
-            <div className="mt-6 rounded-xl bg-gray-900 p-4 shadow">
+            <div className="bg- mt-6 rounded-xl p-4 shadow">
               <h3 className="mb-4 text-xl font-bold text-white">
                 {activity.title} Stats
               </h3>
-
               <div className="grid grid-cols-3 gap-4 text-white">
                 <Button
                   variant="outline"
@@ -192,7 +189,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
                   FT +
                 </Button>
               </div>
-
               <div className="mt-4 text-white">
                 <p>
                   Total Opponent Points:{" "}
@@ -252,7 +248,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
             </Table>
           </div>
         </div>
-
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
           {statRows.map(({ key, label }) => (
             <Button
@@ -267,7 +262,6 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
             </Button>
           ))}
         </div>
-
         <div className="mt-8 flex justify-end">
           <Button
             type="submit"

@@ -12,3 +12,5 @@ export type DrawingLine = {
   color: string;
   tool: string;
 };
+
+export type CoachDashTab = "gameplan" | "play" | "practice";
