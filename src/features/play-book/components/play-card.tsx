@@ -7,8 +7,10 @@ import {
   CardTitle,
 } from "@/components/foundation/card";
 import type { Play } from "@/types";
-import { Eye } from "lucide-react";
+import { cn } from "@/utils/tw-merge";
+import { Eye, Trash2 } from "lucide-react";
 import Image from "next/image";
+import { useDeletePlay } from "../hooks/use-delete-play";
 
 type PlayCardProps = {
   play: Play[number];
@@ -17,6 +19,8 @@ type PlayCardProps = {
 };
 
 export const PlayCard = ({ play }: PlayCardProps) => {
+  const deletePlay = useDeletePlay();
+
   const getCategoryColor = (category: string) => {
     switch (category.toLowerCase()) {
       case "offense":
@@ -40,68 +44,30 @@ export const PlayCard = ({ play }: PlayCardProps) => {
         return "bg-gray-500/20 text-gray-400 border-gray-500/30";
     }
   };
+
+  const handleDelete = async () => {
+    await deletePlay.mutateAsync({ playId: play.id });
+  };
+
   return (
-    <Card className="group cursor-pointer border border-gray-800 bg-gray-900 text-xs transition-all duration-200 hover:border-orange-300/50">
+    <Card className="group relative cursor-pointer border border-gray-800 bg-gray-900 text-xs text-white transition-all duration-200 hover:border-orange-300/50">
       <CardHeader className="pb-3">
         <div className="flex items-start justify-between">
           <div>
-            <CardTitle className="text-base text-white transition-colors group-hover:text-orange-400">
+            <CardTitle className="text-base transition-colors group-hover:text-orange-400">
               {play.name}
             </CardTitle>
             <div className="mt-2 flex gap-2">
-              {/* <Badge className={getCategoryColor(play.category)}>
+              <span
+                className={cn(
+                  getCategoryColor(play.category),
+                  "rounded-2xl border px-4 py-1.5 text-xs font-semibold",
+                )}
+              >
                 {play.category}
-              </Badge>
-              <Badge className={getDifficultyColor(play.difficulty)}>
-                {play.difficulty}
-              </Badge> */}
+              </span>
             </div>
           </div>
-          {/* <DropdownMenu>
-            <DropdownMenuTrigger asChild>
-              <Button
-                variant="ghost"
-                size="sm"
-                className="h-6 w-6 p-0 text-gray-400 hover:text-white"
-                onClick={(e) => e.stopPropagation()}
-              >
-                <MoreVertical className="h-3 w-3" />
-              </Button>
-            </DropdownMenuTrigger>
-            <DropdownMenuContent className="border-gray-700 bg-gray-800">
-              <DropdownMenuItem
-                className="text-gray-300 hover:text-white"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onEdit?.(play);
-                }}
-              >
-                <Edit className="mr-2 h-3 w-3" />
-                Edit
-              </DropdownMenuItem>
-              <DropdownMenuItem
-                className="text-gray-300 hover:text-white"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDuplicate?.(play);
-                }}
-              >
-                <Copy className="mr-2 h-3 w-3" />
-                Duplicate
-              </DropdownMenuItem>
-              <DropdownMenuSeparator className="bg-gray-700" />
-              <DropdownMenuItem
-                className="text-red-400 hover:text-red-300"
-                onClick={(e) => {
-                  e.stopPropagation();
-                  onDelete?.(play.id);
-                }}
-              >
-                <Trash2 className="mr-2 h-3 w-3" />
-                Delete
-              </DropdownMenuItem>
-            </DropdownMenuContent>
-          </DropdownMenu> */}
         </div>
       </CardHeader>
       <CardContent className="pt-0">
@@ -123,11 +89,10 @@ export const PlayCard = ({ play }: PlayCardProps) => {
           {play.description}
         </p>
       </CardContent>
-      <CardFooter className="pt-0">
+      <CardFooter className="flex w-full justify-between pt-0">
         <Button
           variant="primary"
           size="sm"
-
           // onClick={(e) => {
           //   e.stopPropagation();
           //   onView?.(play);
@@ -135,6 +100,10 @@ export const PlayCard = ({ play }: PlayCardProps) => {
         >
           <Eye className="mr-1 h-3 w-3" />
           View Details
+        </Button>
+        <Button variant="outline" size="sm" onClick={handleDelete}>
+          <Trash2 className="mr-1 h-3 w-3" />
+          delete
         </Button>
       </CardFooter>
     </Card>
