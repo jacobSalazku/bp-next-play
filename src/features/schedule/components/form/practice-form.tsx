@@ -14,6 +14,7 @@ import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreatePracticeActivity } from "../../hooks/use-create-practice";
 import { useEditPracticeActivity } from "../../hooks/use-edit-activity";
+import { getButtonText } from "../../utils/button-text";
 import { practiceSchema, PracticeType, type PracticeData } from "../../zod";
 import type { Mode } from "./game-form";
 
@@ -44,7 +45,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<PracticeData>({
     resolver: zodResolver(practiceSchema),
     defaultValues: {
@@ -58,6 +59,8 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
   const isEditMode = formState === "edit";
   const isCreateMode = formState === "create";
   const role = member?.role === "COACH";
+
+  const buttonText = getButtonText(isSubmitting, formState, "Practice");
 
   const onSubmit = async (data: PracticeData) => {
     const date = new Date(data.date);
@@ -171,7 +174,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
                   }}
                   variant="outline"
                 >
-                  Edit practice
+                  {buttonText}
                 </Button>
               </div>
             )}

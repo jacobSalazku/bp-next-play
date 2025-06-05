@@ -14,6 +14,7 @@ import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateGameActivity } from "../../hooks/use-create-game";
 import { useEditGameActivity } from "../../hooks/use-edit-activity";
+import { getButtonText } from "../../utils/button-text";
 import { gameSchema, type GameData } from "../../zod";
 
 export type Mode = "view" | "edit" | "create";
@@ -40,7 +41,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<GameData>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
@@ -55,12 +56,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   const isCreateMode = formState === "create";
   const role = member?.role === "COACH";
 
-  const buttonText = () => {
-    if (createGame.status === "pending") {
-      return isEditMode ? "Editing..." : "Creating...";
-    }
-    return isCreateMode ? "Create Game" : "Edit Game";
-  };
+  const buttonText = getButtonText(isSubmitting, formState, "Game");
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
@@ -162,7 +158,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
             <div className="flex justify-end border-t border-gray-800 pt-4">
               {role && (
                 <Button type="submit" variant="outline">
-                  {buttonText()}
+                  {buttonText}
                 </Button>
               )}
             </div>

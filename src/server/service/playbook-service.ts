@@ -19,7 +19,14 @@ export async function createPlay(
   return play;
 }
 
-export async function getPlays(ctx: Context, teamId: string): Promise<Play[]> {
+export async function deletePlay(ctx: Context, playId: string) {
+  const play = await ctx.db.play.delete({
+    where: { id: playId },
+  });
+  return play;
+}
+
+export async function getPlays(ctx: Context, teamId: string) {
   const plays = await ctx.db.play.findMany({
     where: { teamId },
     orderBy: { createdAt: "desc" },
