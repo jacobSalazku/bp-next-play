@@ -71,7 +71,7 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
   const { playerSideBar, setPlayerSideBar } = useNavigationStore();
 
   return (
-    <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
+    <div className="flex h-screen flex-col bg-white text-gray-950">
       <header className="flex items-center justify-between border-b border-orange-200/30 p-4 md:hidden">
         <div className="flex w-full items-center justify-between gap-2">
           <div className="inline-flex items-center gap-2">

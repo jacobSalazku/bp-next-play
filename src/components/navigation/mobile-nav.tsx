@@ -20,7 +20,7 @@ export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
         "fixed inset-0 z-50 bg-black/20 md:hidden",
       )}
     >
-      <div className="absolute top-0 left-0 flex h-full w-[250px] flex-col bg-gray-950 shadow-lg transition-transform duration-300 ease-in-out">
+      <div className="absolute top-0 left-0 flex h-full w-[250px] flex-col bg-white shadow-lg transition-transform duration-300 ease-in-out">
         <div className="flex items-center justify-between border-b border-orange-200/30 px-4 py-6">
           <h2 className="font-righteous text-2xl font-semibold transition-opacity delay-300 duration-300">
             NextPlay

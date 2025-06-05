@@ -24,9 +24,10 @@ export function NavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        "flex w-full items-center bg-gray-950 px-4 py-7 text-sm transition-colors hover:bg-gray-800 hover:text-orange-300",
+        "flex w-full items-center px-4 py-7 text-sm text-gray-950 transition-colors hover:bg-gray-800 hover:text-orange-300",
         isCollapsed ? "justify-center" : "justify-start",
-        isActive && "bg-gray-800 font-medium hover:bg-gray-800",
+        isActive &&
+          "rounded-md bg-gray-800 font-medium text-orange-300 hover:bg-gray-800",
       )}
     >
       <Icon className={cn("h-5 w-5", isCollapsed ? "mx-auto block" : "mr-3")} />

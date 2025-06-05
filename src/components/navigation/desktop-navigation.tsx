@@ -34,7 +34,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
     <>
       <aside
         className={cn(
-          "z-40 hidden flex-col border-r border-orange-200/30 bg-gray-950 pb-10 transition-all duration-300 md:flex",
+          "z-40 hidden flex-col border-r border-orange-200/30 bg-white pb-10 text-gray-950 transition-all duration-300 md:flex",
           isOpen ? "w-64" : "w-16",
         )}
       >
@@ -51,18 +51,18 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
             onClick={handleToggle}
             className={cn(
               !isOpen && "mx-auto",
-              "cursor-pointer rounded p-2 transition-all hover:bg-gray-800",
+              "cursor-pointer rounded p-2 transition-all hover:bg-gray-800 hover:text-white",
             )}
           >
             <ChevronRight
               className={cn(
                 isOpen && "rotate-180",
-                "h-5 w-5 transition-transform duration-300",
+                "h-5 w-5 transition-transform duration-300 hover:text-white",
               )}
             />
           </button>
         </div>
-        <nav className="flex-1 overflow-y-auto bg-gray-950 py-4">
+        <nav className="flex-1 overflow-y-auto py-4">
           <ul>
             {items.map((item, idx) => (
               <li key={idx}>
@@ -92,7 +92,13 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 px-1 py-2 md:px-4">
+      <main
+        className={cn(
+          isOpen
+            ? "rounded-tr-4xll"
+            : "scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 px-1 py-2 text-white md:px-4",
+        )}
+      >
         {children}
       </main>
     </>
