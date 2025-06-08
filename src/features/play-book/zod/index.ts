@@ -14,6 +14,8 @@ export const gamePlanSchema = z.object({
   opponent: z.string().min(1, "Opponent name is required"),
   notes: z.string(),
   activityId: z.string().optional(),
+  playsId: z.array(z.string()),
+  teamId: z.string(),
 });
 
 export type GamePlanData = z.infer<typeof gamePlanSchema>;
