@@ -36,21 +36,23 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = ({
   );
 
   const data: PlayerStatRow[] = useMemo(() => {
-    return statsList.map((player) => ({
-      name: player.name ?? "",
-      teamMemberId: player.teamMemberId,
-      gamesAttended: player.gamesAttended ?? 0,
-      fieldGoalPercentage: player.averages.fieldGoalPercentage ?? 0,
-      threePointPercentage: player.averages.threePointPercentage ?? 0,
-      freeThrowPercentage: player.averages.freeThrowPercentage ?? 0,
-      points: player.averages.pointsPerGame ?? 0,
-      assists: player.averages.assists ?? 0,
-      defensiveRebounds: player.averages.defensiveRebound ?? 0,
-      offensiveRebounds: player.averages.offensiveRebound ?? 0,
-      blocks: player.averages.blocks ?? 0,
-      steals: player.averages.steals ?? 0,
-      turnovers: player.averages.turnovers ?? 0,
-    }));
+    return statsList
+      ? statsList.map((player) => ({
+          name: player.name ?? "",
+          teamMemberId: player.teamMemberId,
+          gamesAttended: player.gamesAttended ?? 0,
+          fieldGoalPercentage: player.averages.fieldGoalPercentage ?? 0,
+          threePointPercentage: player.averages.threePointPercentage ?? 0,
+          freeThrowPercentage: player.averages.freeThrowPercentage ?? 0,
+          points: player.averages.pointsPerGame ?? 0,
+          assists: player.averages.assists ?? 0,
+          defensiveRebounds: player.averages.defensiveRebound ?? 0,
+          offensiveRebounds: player.averages.offensiveRebound ?? 0,
+          blocks: player.averages.blocks ?? 0,
+          steals: player.averages.steals ?? 0,
+          turnovers: player.averages.turnovers ?? 0,
+        }))
+      : [];
   }, [statsList]);
 
   const date = new Date();

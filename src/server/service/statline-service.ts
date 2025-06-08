@@ -16,7 +16,6 @@ import {
   calculateTrueShootingPercentage,
   safeSum,
 } from "../api/utils/calculate-stats";
-import { countGamesAttended } from "../api/utils/get-games-attended";
 import { roundToDecimal } from "../api/utils/round-decimal";
 
 type InputSubmitStatlines = z.infer<typeof playersDataSchema>;
@@ -148,15 +147,19 @@ export async function getStatsPerGame(
 ) {
   const startDate = new Date(year, month - 1, 1);
   const endDate = new Date(year, month, 0, 23, 59, 59, 999);
+  const currentDate = new Date();
 
   // Fetch statlines for the player within the date range
   const statlines = await ctx.db.statline.findMany({
     where: {
       teamMemberId,
       activity: {
+        type: "Game",
+        attendees: { some: { attendanceStatus: "ATTENDING" } },
         date: {
           gte: startDate,
           lte: endDate,
+          lt: currentDate,
         },
         teamId: teamId,
       },
@@ -175,23 +178,13 @@ export async function getStatsPerGame(
     },
     orderBy: {
       activity: {
-        date: "desc",
+        date: "asc",
       },
     },
   });
 
   if (!statlines || statlines.length === 0) {
-    return [
-      {
-        gameTitle: "",
-        points: 0,
-        assists: 0,
-        offensiveRebounds: 0,
-        defensiveRebounds: 0,
-        blocks: 0,
-        steals: 0,
-      },
-    ];
+    return null;
   }
 
   const statsPerGameStats = statlines.map((entry) => {
@@ -229,20 +222,35 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
     where: {
       type: "Game",
       teamId: teamId,
+      attendees: {
+        some: { attendanceStatus: "ATTENDING" },
+      },
     },
-    select: { id: true, type: true },
+    select: { id: true, type: true, statlines: true },
   });
 
   const { activityIds, gameActivityIds } = getActivityIds(activities);
 
+  const statlineGames = await ctx.db.statline.findMany({
+    where: {
+      teamMemberId: { in: teamMembers.map((m) => m.id) },
+      activityId: { in: gameActivityIds },
+      activity: {
+        date: { lte: new Date() },
+      },
+    },
+    select: { activityId: true },
+    distinct: ["activityId"],
+  });
+
+  const gamesAttended = statlineGames.length;
+
   if (activityIds.length === 0) {
-    // No games found, return zero stats for all players
     return teamMembers.map((member) => ({
-      teamMemberId: member.id,
       name: member.user.name,
+      teamMemberId: member.id,
       totalPoints: 0,
       gamesAttended: 0,
-      averagePointsPerGame: 0,
       averages: {
         pointsPerGame: 0,
         fieldGoalPercentage: 0,
@@ -251,8 +259,8 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
         assists: 0,
         offensiveRebound: 0,
         defensiveRebound: 0,
-        steals: 0,
         blocks: 0,
+        steals: 0,
         turnovers: 0,
       },
     }));
@@ -267,6 +275,10 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
           activity: {
             teamId: teamId,
             type: "Game",
+            date: { lt: new Date() },
+            attendees: {
+              some: { attendanceStatus: "ATTENDING" },
+            },
           },
           activityId: {
             in: activityIds,
@@ -291,11 +303,11 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
         },
       });
 
-      const gamesAttended = await countGamesAttended(
-        ctx,
-        member.id,
-        gameActivityIds,
-      );
+      // const gamesAttended = await countGamesAttended(
+      //   ctx,
+      //   member.id,
+      //   gameActivityIds,
+      // );
 
       const madeFG = safeSum(stats._sum.fieldGoalsMade);
       const missedFG = safeSum(stats._sum.fieldGoalsMissed);
@@ -313,7 +325,7 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
       const twoPointMade = madeFG - made3P;
 
       const totalPoints = twoPointMade * 2 + made3P * 3 + madeFT;
-      const numberOfGames = gamesAttended ?? 1;
+      const numberOfGames = gamesAttended;
 
       console.log(
         "Total points",
@@ -327,7 +339,7 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
         name: member.user.name,
         teamMemberId: member.id,
         totalPoints: roundToDecimal(totalPoints),
-        gamesAttended,
+        gamesAttended: numberOfGames,
         averages: {
           pointsPerGame: roundToDecimal(totalPoints / numberOfGames),
           fieldGoalPercentage: roundToDecimal(fieldGoalPercentage),
@@ -356,11 +368,15 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
 }
 
 export async function getTeamStats(ctx: Context, teamId: string) {
+  const startOfTomorrow = new Date();
+  startOfTomorrow.setHours(24, 0, 0, 0);
+
   const totals = await ctx.db.statline.aggregate({
     where: {
       activity: {
         teamId: teamId,
         type: "Game",
+        date: { lt: startOfTomorrow }, // Only consider past games
       },
     },
     _sum: {
@@ -381,7 +397,12 @@ export async function getTeamStats(ctx: Context, teamId: string) {
 
   // Count unique games
   const gamesCount = await ctx.db.activity.findMany({
-    where: { type: "Game" },
+    where: {
+      type: "Game",
+      teamId: teamId,
+      date: { lt: startOfTomorrow },
+      statlines: { some: {} },
+    },
     select: { date: true },
   });
 
@@ -521,8 +542,16 @@ export async function getWeeklyTeamStatlineAverages(
   ctx: Context,
   teamId: string,
 ) {
+  const startOfTomorrow = new Date();
+  startOfTomorrow.setHours(24, 0, 0, 0);
+
   const games = await ctx.db.activity.findMany({
-    where: { type: "Game", teamId: teamId },
+    where: {
+      type: "Game",
+      teamId: teamId,
+      date: { lt: startOfTomorrow },
+      statlines: { some: {} },
+    },
     select: { id: true, date: true },
     orderBy: { date: "asc" },
   });

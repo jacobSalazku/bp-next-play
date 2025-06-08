@@ -9,7 +9,7 @@ import {
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const statsRouter = createTRPCRouter({
   submit: protectedProcedure
@@ -29,7 +29,7 @@ export const statsRouter = createTRPCRouter({
       return await submitStatlines(ctx, input, input.opponentStatline);
     }),
 
-  getStatlineAverage: protectedProcedure
+  getStatlineAverage: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
@@ -41,7 +41,7 @@ export const statsRouter = createTRPCRouter({
       return stats;
     }),
 
-  getStatsPerGame: protectedProcedure
+  getStatsPerGame: publicProcedure
     .input(
       z.object({
         teamMemberId: z.string(),
@@ -62,7 +62,7 @@ export const statsRouter = createTRPCRouter({
       return statPerGame;
     }),
 
-  getTeamStats: protectedProcedure
+  getTeamStats: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
@@ -74,7 +74,7 @@ export const statsRouter = createTRPCRouter({
       return stats;
     }),
 
-  getWeeklyTeamStatlineAverages: protectedProcedure
+  getWeeklyTeamStatlineAverages: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
