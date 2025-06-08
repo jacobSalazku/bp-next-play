@@ -21,9 +21,6 @@ export const useDeletePlay = () => {
 
       redirect(`/${teamSlug}/playbook-library`);
     },
-    onError: (error) => {
-      console.error("Error in deleting the play:", error);
-    },
   });
 
   return deletePlay;

@@ -57,7 +57,7 @@ export function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm max-w-none text-white focus:outline-none min-h-64 max-h-[250px] overflow-y-auto relative scrollbar-none p-4",
+          "prose prose-sm max-w-none text-white focus:outline-none min-h-64 max-h-[250px] overflow-y-auto relative scrollbar-none px-3 py-2",
       },
     },
   });
@@ -131,10 +131,10 @@ export function RichTextEditor({
   ];
 
   return (
-    <div className="relative mb-4 flex flex-col gap-2">
-      <label className="pb-2 text-sm">{label}</label>
+    <div className="relative mb-4 flex flex-col gap-1 pt-2">
+      <label className="pb-1 text-sm">{label}</label>
       <Card className={cn(className, "border border-gray-700")}>
-        <div className="flex flex-wrap gap-1 rounded-t-xl border border-gray-700 bg-gray-600 p-3">
+        <div className="flex flex-wrap gap-1 rounded-t-xl border border-gray-700 bg-gray-600 px-3 py-1">
           {toolbarButtons.map((button, index) => {
             if (button.type === "separator") {
               return <div key={index} className="mx-1 h-8 w-px bg-white" />;
@@ -166,7 +166,7 @@ export function RichTextEditor({
           <label className="sr-only">{label}</label>
           <EditorContent editor={editor} className="max-h-64" />
           {editor.isEmpty && (
-            <div className="pointer-events-none absolute top-6 left-4 text-gray-500">
+            <div className="pointer-events-none absolute top-4 left-3 text-gray-500">
               {placeholder}
             </div>
           )}

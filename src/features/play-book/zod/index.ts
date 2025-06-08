@@ -10,10 +10,10 @@ export const playSchema = z.object({
 export type Play = z.infer<typeof playSchema>;
 
 export const gamePlanSchema = z.object({
-  name: z.string().min(1, "title is required"),
-  opponent: z.string().min(1, "Opponent name is required"),
+  name: z.string().min(1, "title is required").max(35),
+  opponent: z.string().min(1, "Selecting Game is required"),
   notes: z.string(),
-  activityId: z.string().optional(),
+  activityId: z.string(),
   playsId: z.array(z.string()),
   teamId: z.string(),
 });

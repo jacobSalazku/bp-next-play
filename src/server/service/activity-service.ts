@@ -130,7 +130,7 @@ export async function getActivity(ctx: Context, activityId: string) {
 
 export async function getGames(ctx: Context, teamId: string) {
   const games = await ctx.db.activity.findMany({
-    where: { teamId: teamId, type: "Game" },
+    where: { teamId: teamId, type: "Game", gamePlan: null },
     orderBy: { date: "desc" },
     select: {
       id: true,

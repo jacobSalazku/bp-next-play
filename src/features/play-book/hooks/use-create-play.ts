@@ -21,7 +21,10 @@ export const useCreatePlay = (teamId: string) => {
       redirect(`/${teamId}/playbook-library`);
     },
     onError: (error) => {
-      console.error("Error creating play:", error);
+      toast.error("Failed to create a play. Please try again.", {
+        ...toastStyling,
+        position: "top-right",
+      });
     },
   });
 

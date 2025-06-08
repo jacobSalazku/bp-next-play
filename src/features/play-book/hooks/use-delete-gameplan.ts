@@ -19,9 +19,6 @@ export const useDeleteGameplan = (teamId: string) => {
 
       redirect(`/${teamId}/playbook-library`);
     },
-    onError: (error) => {
-      console.error("Error in deleting the Gameplan:", error);
-    },
   });
 
   return deletePlay;

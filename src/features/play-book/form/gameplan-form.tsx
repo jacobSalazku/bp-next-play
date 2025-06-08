@@ -14,7 +14,7 @@ import { zodResolver } from "@hookform/resolvers/zod";
 import type { Play } from "@prisma/client";
 import { format } from "date-fns";
 import { Clock, X } from "lucide-react";
-import { useEffect, useRef, useState, type FC } from "react";
+import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateGameplan } from "../hooks/use-create-gameplan";
 import { getCategoryColor } from "../utils/play-catergory-color";
@@ -36,50 +36,50 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
   playbook,
 }) => {
   const { teamSlug } = useTeam();
+  const [selectedGame, setSelectedGame] = useState<string | null>(null);
+  const [selectedPlay, setSelectedPlay] = useState<string[] | null>([]);
+  const [formState] = useState<Mode>(mode);
+
   const {
     openGamePlan,
-    selectedGameplan,
     setOpenGamePlan,
     setGamePlanMode,
     setSelectedGameplan,
   } = useCoachDashboardStore();
 
-  const [selectedGame, setSelectedGame] = useState<string | null>(null);
-  const [selectedPlay, setSelectedPlay] = useState<string[] | null>([]);
-  const [formState] = useState<Mode>(mode);
-  const createGameplan = useCreateGameplan(teamSlug, () =>
-    setOpenGamePlan(false),
+  const createGameplan = useCreateGameplan(
+    teamSlug,
+    () => setOpenGamePlan(false),
+    () => {
+      reset({
+        name: "",
+        notes: "",
+        teamId: teamSlug,
+        activityId: "",
+        opponent: "",
+        playsId: [],
+      });
+      setSelectedGame(null);
+      setSelectedPlay([]);
+    },
   );
-  const formRef = useRef<HTMLDivElement>(null);
-
-  useEffect(() => {
-    const handleClickOutside = (event: MouseEvent) => {
-      if (formRef.current && !formRef.current.contains(event.target as Node)) {
-        setOpenGamePlan(false);
-        setGamePlanMode("view");
-        setSelectedGameplan(null);
-      }
-    };
-
-    if (openGamePlan) {
-      document.addEventListener("mousedown", handleClickOutside);
-    }
-
-    return () => {
-      document.removeEventListener("mousedown", handleClickOutside);
-    };
-  }, [openGamePlan, setGamePlanMode, setOpenGamePlan, setSelectedGameplan]);
 
   const {
     register,
     handleSubmit,
     setValue,
     watch,
+    reset,
     formState: { errors, isSubmitting },
   } = useForm<GamePlanData>({
     resolver: zodResolver(gamePlanSchema),
     defaultValues: {
+      name: "",
       notes: "",
+      teamId: teamSlug,
+      activityId: "",
+      opponent: "",
+      playsId: [],
     },
   });
 
@@ -90,16 +90,19 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
   }, [register]);
 
   const notesContent = watch("notes");
-  const isViewMode = formState === "view";
   const isCreateMode = formState === "create";
   const isCoach = role === "COACH";
 
   const buttonText = getButtonText(isSubmitting, formState, "GamePlan");
 
   const handleGameSelection = (game: Game) => {
-    setSelectedGame(!selectedGame ? game.id : null);
-    setValue("opponent", game.title, { shouldValidate: true });
-    setValue("activityId", game.id, { shouldValidate: true });
+    const isSelected = selectedGame === game.id;
+
+    setSelectedGame(isSelected ? null : game.id);
+    setValue("opponent", isSelected ? "" : game.title, {
+      shouldValidate: true,
+    });
+    setValue("activityId", isSelected ? "" : game.id, { shouldValidate: true });
   };
 
   const handlePlaySelection = (play: Play) => {
@@ -115,6 +118,10 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
   };
 
   const onSubmit = async (data: GamePlanData) => {
+    if (!data.activityId) {
+      console.error("No game selected");
+      return;
+    }
     const gamePlan = {
       id: "",
       name: data.name,
@@ -130,57 +137,11 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
 
   return (
     <>
-      {openGamePlan && isViewMode && (
-        <div
-          ref={formRef}
-          className="fixed inset-0 z-50 flex items-center justify-center bg-black/10 p-4 backdrop-blur-xs"
-        >
-          <div className="relative max-h-[90vh] w-full max-w-4xl overflow-auto rounded-lg rounded-b-lg border border-gray-800 bg-gray-950 text-white">
-            <div className="flex items-center justify-between border-b border-gray-800 bg-white p-4">
-              <h2 className="font-righteous text-lg font-normal text-gray-900 sm:text-xl">
-                {isViewMode ? "View GamePlan" : "Create GamePlan"}
-              </h2>
-              <button
-                className="text-xl font-bold text-gray-400 hover:text-white"
-                aria-label="Close"
-                onClick={() => {
-                  setOpenGamePlan(false);
-                  setGamePlanMode("view");
-                  setSelectedGameplan(null);
-                }}
-              >
-                ×
-              </button>
-            </div>
-            <div className="p-6">
-              <div className="flex flex-col gap-2 space-y-2 p-4 text-sm sm:text-base">
-                <div className="flex flex-col gap-2">
-                  <div className="text-xs text-gray-400 sm:text-sm">Name</div>
-                  <div>{selectedGameplan?.name}</div>
-                </div>
-                <div className="flex flex-col space-x-2">
-                  <div className="text-xs text-gray-400 sm:text-sm">
-                    Opponent
-                  </div>
-                  <div>{selectedGameplan?.opponent}</div>
-                </div>
-                <div className="flex flex-col space-x-2">
-                  <div className="text-xs text-gray-400 sm:text-sm">Notes</div>
-                  <div>{selectedGameplan?.notes}</div>
-                </div>
-              </div>
-            </div>
-          </div>
-        </div>
-      )}
       {openGamePlan && isCreateMode && (
-        <div
-          ref={formRef}
-          className="fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/10 p-3 backdrop-blur-xs"
-        >
+        <div className="scroll bar fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/10 p-3 backdrop-blur-xs">
           <div className="flex w-full max-w-4xl items-center justify-between rounded-t-lg border border-b border-gray-800 bg-white p-2">
             <h2 className="font-righteous text-lg font-normal text-gray-950 sm:text-xl">
-              Create Gameplan
+              Create GamePlan
             </h2>
             <button
               className="rounded p-1 text-xl font-bold text-gray-950"
@@ -189,15 +150,25 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
                 setOpenGamePlan(false);
                 setGamePlanMode("view");
                 setSelectedGameplan(null);
+                setSelectedGame(null);
+                setSelectedPlay([]);
+                reset({
+                  name: "",
+                  notes: "",
+                  teamId: teamSlug,
+                  activityId: "",
+                  opponent: "",
+                  playsId: [],
+                });
               }}
             >
               <X className="h-6 w-6" />
             </button>
           </div>
-          <div className="max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-b-lg border border-gray-800 bg-gray-950 text-white">
+          <div className="scrollbar-none max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-b-lg border border-gray-800 bg-gray-950 px-3 text-white">
             <form
               onSubmit={handleSubmit(onSubmit)}
-              className="flex w-full flex-col space-y-4 px-2 py-4 lg:px-6"
+              className="flex w-full flex-col px-2 py-3 lg:px-6"
             >
               <div className="sr-only">
                 <Input
@@ -223,7 +194,16 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               <div className="flex w-full flex-row gap-4 pt-2 text-sm">
                 <div className="flex w-full flex-col gap-2">
                   <label>Connect to Game</label>
-                  <div className="scrollbar-none flex h-48 max-h-48 w-full flex-col gap-2 overflow-y-auto rounded-lg border border-gray-700 p-3">
+                  <div
+                    className={cn(
+                      errors.activityId?.message || errors.opponent?.message
+                        ? "border-red-800 focus:ring-1 focus:ring-gray-500"
+                        : "border-gray-700 focus:ring-1 focus:ring-gray-500",
+                      "scrollbar-none flex h-48 max-h-48 w-full flex-col gap-2 overflow-y-auto rounded-lg border p-3",
+                    )}
+                  >
+                    <input type="hidden" {...register("activityId")} />
+                    <input type="hidden" {...register("opponent")} />
                     {games && games.length > 0 && (
                       <>
                         {games.map((game) => (
@@ -272,6 +252,9 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
                       </>
                     )}
                   </div>
+                  <span className="text-red-700">
+                    {errors.opponent?.message}
+                  </span>
                 </div>
                 <div className="hidden w-full flex-col gap-2 md:flex">
                   <label>Select play</label>
@@ -348,7 +331,7 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               <div>
                 <RichTextEditor
                   label="Explain Game Plan"
-                  className="max-h-96 w-full max-w-full"
+                  className="max-h-64 w-full max-w-full"
                   content={notesContent ?? ""}
                   onChange={(content) =>
                     setValue("notes", content, { shouldValidate: true })
