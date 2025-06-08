@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { cache } from "react";
 
@@ -8,7 +10,7 @@ export const getPlays = cache(async (teamId: string) => {
 });
 
 export const getGameplan = cache(async (teamId: string) => {
-  const gameplan = await api.play.getGameplan({ teamId });
+  const gameplan = await api.gameplan.getGameplan({ teamId });
 
   return gameplan;
 });

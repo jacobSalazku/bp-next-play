@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { TeamMemberRole } from "@/types/enum";
 import { redirect } from "next/navigation";

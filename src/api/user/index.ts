@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
