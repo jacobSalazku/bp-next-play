@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
+import { CategoryBadge } from "@/components/foundation/category-badge";
 import { Input } from "@/components/foundation/input";
 import { useTeam } from "@/context/team-context";
 import { cn } from "@/lib/utils";
@@ -171,14 +172,10 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
               <div className="flex flex-col gap-2">
                 <div className="text-xs text-gray-400 sm:text-sm">Type</div>
                 <div className="inline-block rounded-full py-2 text-xs text-black">
-                  <span
-                    className={cn(
-                      getTypeBgColor(selectedActivity.type),
-                      "rounded-xl p-2",
-                    )}
-                  >
-                    {selectedActivity.type}
-                  </span>
+                  <CategoryBadge
+                    label={selectedActivity.type}
+                    className={cn(getTypeBgColor(selectedActivity.type))}
+                  />
                 </div>
               </div>
               {selectedActivity.type == "Practice" && (

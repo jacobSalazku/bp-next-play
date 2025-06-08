@@ -26,3 +26,5 @@ export const practiceSchema = z.object({
 export type PracticeData = z.infer<typeof practiceSchema>;
 
 export type GameData = z.infer<typeof gameSchema>;
+
+export type ActivityType = "Practice" | "Game";
