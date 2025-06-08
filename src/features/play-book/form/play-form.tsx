@@ -11,8 +11,8 @@ import {
 import { Input } from "@/components/foundation/input";
 import { RadioGroup } from "@/components/foundation/radio/radio-group";
 import { RadioGroupItem } from "@/components/foundation/radio/radio-group-item";
-import { Textarea } from "@/components/foundation/textarea";
 import { useTeam } from "@/context/team-context";
+import { RichTextEditor } from "@/features/wysiwyg/text-editor";
 import { cn } from "@/lib/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { RotateCcw, Save, Trash2 } from "lucide-react";
@@ -51,11 +51,14 @@ export function PlayForm() {
     handleSubmit,
     control,
     setValue,
+    watch,
     formState: { errors, isSubmitting },
   } = useForm<Play>({
     resolver: zodResolver(playSchema),
     defaultValues: {},
   });
+
+  const descriptionContent = watch("description");
 
   const { courtImgRef, courtImgLoaded } = useCanvasCourtImage("/BG-court.png");
   const canvasSize = useResponsiveCanvas(
@@ -101,7 +104,8 @@ export function PlayForm() {
 
   useEffect(() => {
     setValue("canvas", JSON.stringify({ players, lines: drawingLines }));
-  }, [players, drawingLines, setValue]);
+    register("description", { required: true });
+  }, [players, drawingLines, setValue, register]);
 
   const endInteraction = () => {
     setIsDrawing(false);
@@ -122,13 +126,14 @@ export function PlayForm() {
       ...data,
       canvas: canvasDataUrl,
       teamId: teamSlug,
+      category: data.category,
     };
-
+    console.log("Submitting play data:", playData.category);
     return createPlay.mutateAsync(playData);
   };
 
   return (
-    <div className="w-full space-y-6 p-2 sm:p-6">
+    <div className="mx-auto my-auto w-full max-w-7xl space-y-6 p-2 sm:p-6">
       <div className="flex items-center gap-4">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">
@@ -139,12 +144,10 @@ export function PlayForm() {
       </div>
 
       <form
-        onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log("Validation errors:", errors);
-        })}
-        className="flex flex-col-reverse gap-6 xl:flex-row"
+        onSubmit={handleSubmit(onSubmit)}
+        className="flex flex-col-reverse gap-6"
       >
-        <div className="flex w-full min-w-0 flex-1 flex-col gap-4">
+        <div className="flex w-full flex-1 flex-col gap-4">
           <Card className="border border-gray-800 bg-gray-950">
             <CardHeader>
               <CardTitle className="text-white">Draw Your Play</CardTitle>
@@ -224,8 +227,8 @@ export function PlayForm() {
             </CardContent>
           </Card>
         </div>
-        <div className="flex w-full max-w-full min-w-0 flex-col gap-4 lg:w-full xl:w-2/5">
-          <Card className="border border-gray-800 bg-gray-900">
+        <div className="flex w-full max-w-full min-w-0 flex-col gap-4 lg:w-full">
+          <Card className="border border-gray-800 bg-gray-950">
             <CardHeader>
               <CardTitle className="text-white">Play Details</CardTitle>
               <CardDescription className="text-gray-400">
@@ -248,42 +251,51 @@ export function PlayForm() {
                     Category
                   </span>
                   <div>
-                    <RadioGroup className="justify flex flex-row items-center gap-12">
-                      {categories.map((option) => (
-                        <div
-                          key={option.id}
-                          className="flex items-center gap-2 rounded-lg bg-orange-400/50 px-4 py-2"
+                    <Controller
+                      name="category"
+                      control={control}
+                      rules={{ required: "Please select a category" }}
+                      render={({ field }) => (
+                        <RadioGroup
+                          value={field.value}
+                          onValueChange={field.onChange}
+                          className="justify flex flex-row items-center gap-12"
                         >
-                          <RadioGroupItem
-                            {...register("category")}
-                            value={option.id}
-                            className="rounded-full border border-gray-500 bg-white ring-0 focus:ring-0 data-[state=checked]:bg-gray-900"
-                            id={`position-${option.id}`}
-                          />
-                          <label
-                            htmlFor={`position-${option.id}`}
-                            className="text-md cursor-pointer"
-                          >
-                            {option.label}
-                          </label>
-                        </div>
-                      ))}
-                    </RadioGroup>
+                          {categories.map((option) => (
+                            <div
+                              key={option.id}
+                              className="flex items-center gap-2 rounded-lg bg-orange-400/50 px-4 py-2"
+                            >
+                              <RadioGroupItem
+                                value={option.id}
+                                id={`position-${option.id}`}
+                                className="rounded-full border border-gray-500 bg-white ring-0 focus:ring-0 data-[state=checked]:bg-gray-900"
+                              />
+                              <label
+                                htmlFor={`position-${option.id}`}
+                                className="text-md cursor-pointer"
+                              >
+                                {option.label}
+                              </label>
+                            </div>
+                          ))}
+                        </RadioGroup>
+                      )}
+                    />
                     {errors.category && <p>{errors.category.message}</p>}
                   </div>
                 </div>
               </div>
               <div className="flex flex-col gap-2">
-                <label className="text-sm text-white">Short description</label>
-                <Textarea
-                  id="description"
-                  placeholder="Short description..."
-                  className="bg-gray-800"
-                  {...register("description")}
-                  rows={6}
-                  cols={50}
+                <RichTextEditor
+                  label="Explain the Play"
+                  className="max-h-96 w-full max-w-full"
+                  content={descriptionContent ?? ""}
+                  onChange={(content) =>
+                    setValue("description", content, { shouldValidate: true })
+                  }
                 />
-                {errors.category && <p>{errors.category.message}</p>}
+                {errors.description && <p>{errors.description.message}</p>}
               </div>
               <Button type="submit" variant="secondary" className="w-full">
                 <Save className="mr-2 h-4 w-4" />

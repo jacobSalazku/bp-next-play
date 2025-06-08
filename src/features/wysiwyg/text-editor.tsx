@@ -23,13 +23,13 @@ import { Card } from "../../components/foundation/card";
 const TextAlign = TextAlignExtension as Extension;
 const Highlight = HighlightExtension as Extension;
 
-interface RichTextEditorProps {
+type RichTextEditorProps = {
   content: string;
   onChange: (content: string) => void;
   placeholder?: string;
   className?: string;
   label?: string;
-}
+};
 
 export function RichTextEditor({
   label,
@@ -39,6 +39,7 @@ export function RichTextEditor({
   className = "",
 }: RichTextEditorProps) {
   const editor = useEditor({
+    immediatelyRender: false,
     extensions: [
       StarterKit,
       Underline,
@@ -132,13 +133,11 @@ export function RichTextEditor({
   return (
     <div className="relative mb-4 flex flex-col gap-2">
       <label className="pb-2 text-sm">{label}</label>
-      <Card className={cn(className, "border border-gray-300")}>
-        <div className="bg border-gra flex flex-wrap gap-1 rounded-t-xl border border-gray-700 bg-gray-100 p-3">
+      <Card className={cn(className, "border border-gray-700")}>
+        <div className="flex flex-wrap gap-1 rounded-t-xl border border-gray-700 bg-gray-600 p-3">
           {toolbarButtons.map((button, index) => {
             if (button.type === "separator") {
-              return (
-                <div key={index} className="mx-1 h-8 w-px bg-orange-400" />
-              );
+              return <div key={index} className="mx-1 h-8 w-px bg-white" />;
             }
             const Icon = button.icon;
             return (
@@ -148,15 +147,15 @@ export function RichTextEditor({
                 variant="ghost"
                 size="sm"
                 className={cn(
-                  button.isActive ? "bg-gray-200" : "",
-                  "h-8 w-8 p-0 hover:bg-gray-200 focus:bg-gray-200",
+                  button.isActive ? "bg-gray-800" : "",
+                  "h-8 w-8 p-0 hover:bg-gray-800 focus:bg-gray-200",
                 )}
                 onClick={button.action}
                 disabled={button.disabled}
                 title={button.tooltip}
               >
                 {Icon && (
-                  <Icon strokeWidth={2.5} className="h-4 w-4 text-gray-950" />
+                  <Icon strokeWidth={2.5} className="h-4 w-4 text-white" />
                 )}
               </Button>
             );

@@ -1,13 +1,14 @@
 import { toastStyling } from "@/features/toast-notification/styling";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
 import { api } from "@/trpc/react";
-import { redirect } from "next/navigation";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useCreateGameplan = (teamId: string, onClose: () => void) => {
   const { setActiveCoachTab } = useCoachDashboardStore();
+  const router = useRouter();
 
-  const createPlay = api.play.createGamePlan.useMutation({
+  const createPlay = api.gameplan.createGamePlan.useMutation({
     onSuccess: async () => {
       setActiveCoachTab("gameplan");
 
@@ -17,7 +18,7 @@ export const useCreateGameplan = (teamId: string, onClose: () => void) => {
       });
 
       onClose();
-      redirect(`/${teamId}/playbook-library`);
+      router.refresh();
     },
     onError: (error) => {
       console.error("Error creating play:", error);
