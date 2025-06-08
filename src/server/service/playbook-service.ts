@@ -1,5 +1,4 @@
 import type { Play } from "@/features/play-book/zod";
-import type { GamePlan } from "@prisma/client";
 import type { Context } from "../api/trpc";
 
 export async function createPlay(
@@ -20,9 +19,9 @@ export async function createPlay(
   return play;
 }
 
-export async function deletePlay(ctx: Context, playId: string) {
+export async function deletePlay(ctx: Context, playId: string, teamId: string) {
   const play = await ctx.db.play.delete({
-    where: { id: playId },
+    where: { id: playId, teamId: teamId },
   });
   return play;
 }
@@ -36,50 +35,17 @@ export async function getPlays(ctx: Context, teamId: string) {
   return plays;
 }
 
-export async function createGamePlan(
+export async function getPlaysById(
   ctx: Context,
-  input: GamePlan & { teamId: string },
+  playsId: string[] | undefined,
 ) {
-  const gamePlan = await ctx.db.gamePlan.create({
-    data: {
-      name: input.name,
-      opponent: input.opponent,
-      notes: input.notes,
-      activityId: input.activityId,
-    },
-  });
-
-  return gamePlan;
-}
-
-export async function getGameplan(ctx: Context, teamId: string) {
-  const gameplan = await ctx.db.gamePlan.findMany({
-    where: {
-      activity: {
-        is: { teamId: teamId },
-      },
-    },
-    select: {
-      id: true,
-      name: true,
-      opponent: true,
-      notes: true,
-      activityId: true,
-      createdAt: true,
-      activity: {
-        select: {
-          id: true,
-          title: true,
-          date: true,
-          time: true,
-        },
-      },
-    },
-  });
-
-  if (!gameplan) {
-    throw new Error("Game plan not found");
+  if (!playsId || playsId.length === 0) {
+    return [];
   }
 
-  return gameplan;
+  const plays = await ctx.db.play.findMany({
+    where: { id: { in: playsId } },
+  });
+
+  return plays;
 }

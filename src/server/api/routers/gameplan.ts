@@ -1,19 +1,19 @@
-import { playSchema } from "@/features/play-book/zod";
+import { gamePlanSchema } from "@/features/play-book/zod";
 import {
-  createPlay,
-  deletePlay,
-  getPlays,
-} from "@/server/service/playbook-service";
+  createGamePlan,
+  deleteGamePlan,
+  getGameplan,
+} from "@/server/service/gameplan-service";
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 
-export const playRouter = createTRPCRouter({
-  createPlay: protectedProcedure
+export const gameplanRouter = createTRPCRouter({
+  createGamePlan: protectedProcedure
     .input(
-      playSchema.extend({
-        teamId: z.string(),
+      gamePlanSchema.extend({
+        id: z.string(),
       }),
     )
     .use(async ({ ctx, input, next }) => {
@@ -28,35 +28,44 @@ export const playRouter = createTRPCRouter({
       return next();
     })
     .mutation(async ({ ctx, input }) => {
-      const play = await createPlay(ctx, input);
+      const gamePlan = await createGamePlan(ctx, {
+        ...input,
+        teamId: input.teamId,
+        opponent: input.opponent ?? null,
+        notes: input.notes ?? null,
+      });
 
-      return play;
+      return gamePlan;
     }),
 
-  getAllPlays: protectedProcedure
+  getGameplan: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
-      const plays = await getPlays(ctx, input.teamId);
+      const gameplan = await getGameplan(ctx, input.teamId);
 
-      return plays;
+      return gameplan;
     }),
 
-  deletePlay: protectedProcedure
-    .input(z.object({ playId: z.string(), teamId: z.string() }))
+  deleteGamePlan: protectedProcedure
+    .input(z.object({ gamePlanId: z.string(), teamId: z.string() }))
     .use(async ({ ctx, input, next }) => {
       const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
       if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
         throw new Error("User role not found or invalid.");
       }
       if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to delete this play.");
+        throw new Error("You do not have permission to delete this game plan.");
       }
       await checkCoachPermission(role.role);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
-      const play = await deletePlay(ctx, input.playId, input.teamId);
+      const gamePlan = await deleteGamePlan(
+        ctx,
+        input.gamePlanId,
+        input.teamId,
+      );
 
-      return play;
+      return gamePlan;
     }),
 });

@@ -1,11 +1,11 @@
 import { activityRouter } from "./routers/activity";
 import { attendanceRouter } from "./routers/attendance";
+import { gameplanRouter } from "./routers/gameplan";
 import { memberRouter } from "./routers/member";
 import { playRouter } from "./routers/play";
 import { statsRouter } from "./routers/statline";
 import { teamRouter } from "./routers/team";
 import { userRouter } from "./routers/user";
-
 import { createCallerFactory, createTRPCRouter } from "./trpc";
 
 /**
@@ -21,6 +21,7 @@ export const appRouter = createTRPCRouter({
   stats: statsRouter,
   member: memberRouter,
   attendance: attendanceRouter,
+  gameplan: gameplanRouter,
 });
 
 // export type definition of API
