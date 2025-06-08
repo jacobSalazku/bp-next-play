@@ -14,12 +14,16 @@ async function PlaybookPage({ params }: PageProps) {
   const games = await getGames(teamId);
   const gameplan = await getGameplan(teamId);
   const role = await getRole();
-
   return (
-    <>
+    <div className="scrollbar-none overflow-y-auto">
       <PlaybookBookBlock playbook={playbook} gamePlan={gameplan} />
-      <GamePlanForm mode="create" role={role} games={games} />
-    </>
+      <GamePlanForm
+        mode="create"
+        role={role}
+        games={games}
+        playbook={playbook}
+      />
+    </div>
   );
 }
 
