@@ -1,4 +1,5 @@
 import { Button } from "@/components/foundation/button/button";
+import { Link } from "@/components/foundation/button/link";
 import { Card, CardContent, CardFooter } from "@/components/foundation/card";
 import { CategoryBadge } from "@/components/foundation/category-badge";
 import { useTeam } from "@/context/team-context";
@@ -50,17 +51,17 @@ export const PlayCard = ({ play }: PlayCardProps) => {
         </div>
       </CardContent>
       <CardFooter className="flex w-full justify-between pt-0">
-        <Button
+        <Link
           variant="light"
           size="sm"
-          // onClick={(e) => {
-          //   e.stopPropagation();
-          //   onView?.(play);
-          // }}
+          href={{
+            pathname: `/${teamSlug}/playbook-library/play`,
+            query: { id: play.id },
+          }}
         >
           <Eye className="mr-1 h-3 w-3" />
           View Details
-        </Button>
+        </Link>
         <Button variant="danger" size="sm" onClick={handleDelete}>
           <Trash2 className="mr-1 h-3 w-3" />
           Delete
