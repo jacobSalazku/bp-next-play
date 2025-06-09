@@ -1,36 +1,39 @@
-import type { GamePlanData } from "@/features/play-book/zod";
+import type { PracticePreparationData } from "@/features/play-book/zod";
 import type { Context } from "../api/trpc";
 import { getPlaysById } from "./playbook-service";
 
-export async function createGamePlan(ctx: Context, input: GamePlanData) {
+export async function createPracticePreparation(
+  ctx: Context,
+  input: PracticePreparationData,
+) {
   const plays = await getPlaysById(ctx, input.playsId);
 
-  const gamePlan = await ctx.db.gamePlan.create({
+  const practicePreparation = await ctx.db.practicePreparation.create({
     data: {
-      name: input.name,
-      opponent: input.opponent,
-      notes: input.notes,
       activityId: input.activityId,
-      createdAt: new Date(),
-      teamId: input.teamId,
       plays: {
         connect: plays.map((play) => ({ id: play.id })),
       },
+      teamId: input.teamId,
+      name: input.name,
+      focus: input.focus,
+      notes: input.notes,
+      createdAt: new Date(),
     },
   });
 
-  return gamePlan;
+  return practicePreparation;
 }
 
-export async function getGameplan(ctx: Context, teamId: string) {
-  const gameplan = await ctx.db.gamePlan.findMany({
+export async function getPracticePreparation(ctx: Context, teamId: string) {
+  const practicePreparation = await ctx.db.practicePreparation.findMany({
     where: {
       teamId: teamId,
     },
     select: {
       id: true,
       name: true,
-      opponent: true,
+      focus: true,
       notes: true,
       activityId: true,
       createdAt: true,
@@ -52,31 +55,20 @@ export async function getGameplan(ctx: Context, teamId: string) {
     },
   });
 
-  if (!gameplan.length) {
+  if (!practicePreparation.length) {
     return [];
   }
 
-  return gameplan;
+  return practicePreparation;
 }
 
-export async function deleteGamePlan(
-  ctx: Context,
-  gamePlanId: string,
-  teamId: string,
-) {
-  const gamePlan = await ctx.db.gamePlan.delete({
-    where: { id: gamePlanId, teamId: teamId },
-  });
-  return gamePlan;
-}
-
-export async function getGameplanById(ctx: Context, id: string) {
-  const gameplan = await ctx.db.gamePlan.findUnique({
-    where: { id: id },
+export async function getPracticePreparationById(ctx: Context, id: string) {
+  const practicePreparation = await ctx.db.practicePreparation.findUnique({
+    where: { id },
     select: {
       id: true,
       name: true,
-      opponent: true,
+      focus: true,
       notes: true,
       activityId: true,
       createdAt: true,
@@ -98,5 +90,9 @@ export async function getGameplanById(ctx: Context, id: string) {
     },
   });
 
-  return gameplan;
+  if (!practicePreparation) {
+    throw new Error("Practice preparation not found");
+  }
+
+  return practicePreparation;
 }

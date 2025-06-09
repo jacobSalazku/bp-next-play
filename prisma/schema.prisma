@@ -92,6 +92,7 @@ model Team {
 
   // Relationships
   gamePlans  GamePlan[]  
+  practicePreparations PracticePreparation[]
   creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
 }
 
@@ -115,7 +116,7 @@ model Activity {
   id                  String              @id @default(cuid())
   title               String
   time                String
-  type                String
+  type                ActivityType
   duration            Float?
   practiceType        String?
   notes               String?
@@ -127,7 +128,7 @@ model Activity {
   statlines           Statline[]
   opponentStatline    OpponentStatline?
   gamePlan            GamePlan?
-  practicePreparation PracticePreparation?
+  practice            PracticePreparation?
 
   team                Team                  @relation(fields: [teamId], references: [id])
 }
@@ -206,7 +207,7 @@ model Play {
 }
 model GamePlan {
   id         String      @id @default(cuid())
-  activityId String?     @unique 
+  activityId String     @unique 
   teamId     String
   name       String
   opponent   String?
@@ -214,22 +215,29 @@ model GamePlan {
   createdAt  DateTime    @default(now())
 
   // Relations
-  team       Team?       @relation(fields: [teamId], references: [id])
-  activity   Activity?   @relation(fields: [activityId], references: [id])
+  team       Team       @relation(fields: [teamId], references: [id])
+  activity   Activity   @relation(fields: [activityId], references: [id])
   plays      Play[]      @relation("GamePlanPlays")
 }
 
 
 model PracticePreparation {
   id         String     @id @default(cuid())
-  activityId String?    @unique 
+  activityId String    @unique 
+  teamId     String
   name       String
   focus      String?
   notes      String?
-  completed  Boolean    @default(false)
   createdAt  DateTime   @default(now())
 
   // Relations
+  team       Team       @relation(fields: [teamId], references: [id])
   activity   Activity?  @relation(fields: [activityId], references: [id])
   plays      Play[]     @relation("PracticePlays")
+}
+
+
+enum ActivityType {
+  GAME
+  PRACTICE
 }

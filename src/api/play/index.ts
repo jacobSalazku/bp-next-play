@@ -14,3 +14,21 @@ export const getGameplan = cache(async (teamId: string) => {
 
   return gameplan;
 });
+
+export const getPlayById = cache(async (id: string) => {
+  const play = await api.play.getPlayById({ id });
+
+  return play;
+});
+
+export const getGamePlanById = cache(async (id: string) => {
+  const game = await api.gameplan.getGamePlanById({ id });
+
+  return game;
+});
+
+export const getPracticeById = cache(async (id: string) => {
+  const practice = await api.practice.getPracticePreparationById({ id });
+
+  return practice;
+});

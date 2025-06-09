@@ -2,6 +2,7 @@ import { playSchema } from "@/features/play-book/zod";
 import {
   createPlay,
   deletePlay,
+  getPlayById,
   getPlays,
 } from "@/server/service/playbook-service";
 import { getTeamRole } from "@/server/service/user-role-service";
@@ -56,6 +57,14 @@ export const playRouter = createTRPCRouter({
     })
     .mutation(async ({ ctx, input }) => {
       const play = await deletePlay(ctx, input.playId, input.teamId);
+
+      return play;
+    }),
+
+  getPlayById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const play = await getPlayById(ctx, input.id);
 
       return play;
     }),

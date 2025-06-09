@@ -6,34 +6,35 @@ import {
   editPractice,
   getActivity,
   getGames,
+  getPractices,
 } from "@/server/service/activity-service";
-import { getTeamRole } from "@/server/service/user-role-service";
-import { checkCoachPermission } from "@/server/utils";
+import { ActivityType } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { checkTeamMembership } from "../utils/check-membership";
+import {
+  checkTeamMembership,
+  verifyCoachPermission,
+} from "../utils/check-membership";
 
 export const activityRouter = createTRPCRouter({
   createGame: protectedProcedure
     .input(
       gameSchema.extend({
         teamId: z.string(),
-        type: z.literal("Game"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.GAME, {
+            message: `Activity type must be ${ActivityType.GAME}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-
-      await checkCoachPermission(role.role);
-
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
       const activity = await createGame(ctx, input);
+
       return activity;
     }),
 
@@ -41,18 +42,15 @@ export const activityRouter = createTRPCRouter({
     .input(
       practiceSchema.extend({
         teamId: z.string(),
-        type: z.literal("Practice"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.PRACTICE, {
+            message: `Activity type must be ${ActivityType.PRACTICE}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER")
-        throw new Error("You do not have permission to edit this activity.");
-
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -66,18 +64,15 @@ export const activityRouter = createTRPCRouter({
       z.object(practiceSchema.shape).extend({
         id: z.string(),
         teamId: z.string(),
-        type: z.literal("Practice"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.PRACTICE, {
+            message: `Activity type must be ${ActivityType.PRACTICE}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to edit this activity.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -91,18 +86,16 @@ export const activityRouter = createTRPCRouter({
       z.object(gameSchema.shape).extend({
         id: z.string(),
         teamId: z.string(),
-        type: z.literal("Game"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.GAME, {
+            message: `Activity type must be ${ActivityType.GAME}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to edit this activity.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
+
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -156,5 +149,13 @@ export const activityRouter = createTRPCRouter({
       const games = await getGames(ctx, input.teamId);
 
       return games;
+    }),
+
+  getPractices: protectedProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const practices = await getPractices(ctx, input.teamId);
+
+      return practices;
     }),
 });

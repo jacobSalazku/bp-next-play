@@ -49,3 +49,11 @@ export async function getPlaysById(
 
   return plays;
 }
+
+export async function getPlayById(ctx: Context, id: string) {
+  const play = await ctx.db.play.findUnique({
+    where: { id },
+  });
+
+  return play;
+}

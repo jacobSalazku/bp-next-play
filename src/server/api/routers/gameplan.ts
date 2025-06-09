@@ -3,11 +3,11 @@ import {
   createGamePlan,
   deleteGamePlan,
   getGameplan,
+  getGameplanById,
 } from "@/server/service/gameplan-service";
-import { getTeamRole } from "@/server/service/user-role-service";
-import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { verifyCoachPermission } from "../utils/check-membership";
 
 export const gameplanRouter = createTRPCRouter({
   createGamePlan: protectedProcedure
@@ -17,14 +17,8 @@ export const gameplanRouter = createTRPCRouter({
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to edit this activity.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
+
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -49,14 +43,8 @@ export const gameplanRouter = createTRPCRouter({
   deleteGamePlan: protectedProcedure
     .input(z.object({ gamePlanId: z.string(), teamId: z.string() }))
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to delete this game plan.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
+
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -67,5 +55,13 @@ export const gameplanRouter = createTRPCRouter({
       );
 
       return gamePlan;
+    }),
+
+  getGamePlanById: protectedProcedure
+    .input(z.object({ id: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const gameplan = await getGameplanById(ctx, input.id);
+
+      return gameplan;
     }),
 });
