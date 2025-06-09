@@ -24,13 +24,17 @@ export function NavItem({
       href={href}
       onClick={onClick}
       className={cn(
-        "flex w-full items-center px-4 py-7 text-sm text-gray-950 transition-colors hover:bg-gray-800 hover:text-orange-300",
+        "flex w-full items-center rounded-lg px-4 py-7 text-sm transition-colors",
         isCollapsed ? "justify-center" : "justify-start",
-        isActive &&
-          "rounded-md bg-gray-800 font-medium text-orange-300 hover:bg-gray-800",
+        isActive
+          ? "bg-gray-800 font-medium text-white"
+          : "text-gray-950 hover:bg-gray-800 hover:text-orange-300",
       )}
     >
-      <Icon className={cn("h-5 w-5", isCollapsed ? "mx-auto block" : "mr-3")} />
+      <Icon
+        strokeWidth={2}
+        className={cn("h-5", !isCollapsed ? "mr-2" : "mr-3 w-full")}
+      />
       {!isCollapsed && <span>{children}</span>}
     </Link>
   );

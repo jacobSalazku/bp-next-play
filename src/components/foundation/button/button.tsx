@@ -22,7 +22,8 @@ const buttonVariants = cva(
         ghost:
           "text-gray-400 font-light hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",
-        danger: "bg-red-900 text-red-foreground shadow-sm hover:bg-red-800",
+        danger:
+          "bg-red-900 text-red-foreground text-white shadow-sm hover:bg-red-800",
         close:
           "rounded p-2 text-white shadow-md transition-colors duration-200 hover:bg-gray-800",
       },
