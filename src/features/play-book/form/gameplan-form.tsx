@@ -73,14 +73,6 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
     formState: { errors, isSubmitting },
   } = useForm<GamePlanData>({
     resolver: zodResolver(gamePlanSchema),
-    defaultValues: {
-      name: "",
-      notes: "",
-      teamId: teamSlug,
-      activityId: "",
-      opponent: "",
-      playsId: [],
-    },
   });
 
   useEffect(() => {
@@ -181,7 +173,7 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               </div>
               <Input
                 id="name"
-                aria-label="Input the name of the opponent team"
+                aria-label="Input the name the gameplan"
                 className="border-gray-700"
                 label="Gameplan Name"
                 labelColor="light"
@@ -209,7 +201,7 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
                         {games.map((game) => (
                           <div
                             key={game.id}
-                            className={`cursor-pointer rounded-lg border border-gray-700 p-3 text-white transition-colors ${
+                            className={`cursor-pointer rounded-lg border border-gray-700 p-3 font-bold text-white transition-colors ${
                               selectedGame === game.id
                                 ? "border-gray-950 bg-gray-50"
                                 : "border-gray-200 hover:border-gray-300"
@@ -331,7 +323,7 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               <div>
                 <RichTextEditor
                   label="Explain Game Plan"
-                  className="max-h-64 w-full max-w-full"
+                  className="max-h-96 w-full max-w-full"
                   content={notesContent ?? ""}
                   onChange={(content) =>
                     setValue("notes", content, { shouldValidate: true })

@@ -264,7 +264,7 @@ export function PlayForm() {
                           {categories.map((option) => (
                             <div
                               key={option.id}
-                              className="flex items-center gap-2 rounded-lg bg-orange-400/50 px-4 py-2"
+                              className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-gray-900"
                             >
                               <RadioGroupItem
                                 value={option.id}
@@ -297,7 +297,11 @@ export function PlayForm() {
                 />
                 {errors.description && <p>{errors.description.message}</p>}
               </div>
-              <Button type="submit" variant="secondary" className="w-full">
+              <Button
+                type="submit"
+                variant="secondary"
+                className="w-full bg-white text-gray-900 hover:bg-orange-400 hover:text-white"
+              >
                 <Save className="mr-2 h-4 w-4" />
                 {isSubmitting ? "Saving..." : "Save Play"}
               </Button>
