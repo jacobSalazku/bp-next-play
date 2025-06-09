@@ -3,6 +3,8 @@
 import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { Activity } from "@/types";
+
+import { ActivityType } from "@prisma/client";
 import { format, isSameDay } from "date-fns";
 import type { FC, MouseEvent } from "react";
 import { CalendarActivityButton } from "./calendar-activity-button";
@@ -36,10 +38,11 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     e: MouseEvent<HTMLButtonElement>,
     activity: Activity,
   ) => {
-    e.stopPropagation(); // Prevent event bubbling
+    // Prevent event bubbling
+    e.stopPropagation();
     setSelectedActivity(activity);
-    if (activity.type === "Game") {
-      setOpenGameDetails(true); // Open Game details modal
+    if (activity.type === ActivityType.GAME) {
+      setOpenGameDetails(true);
     } else {
       setOpenPracticeDetails(true); // Open Practice details modal
     }
@@ -49,7 +52,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     <div
       onClick={() => setSelectedDate(day)}
       className={cn(
-        "group flex h-32 w-full cursor-pointer flex-col items-end justify-start rounded-sm p-1.5 transition-all duration-200 focus:ring-2 focus:ring-white focus:outline-none md:h-40",
+        "group flex max-h-full w-full cursor-pointer flex-col items-end justify-start rounded-sm p-1.5 transition-all duration-200 focus:ring-2 focus:ring-white focus:outline-none sm:p-2 md:p-4 xl:h-[15rem]",
         isSelected
           ? "border border-white shadow-lg ring ring-white"
           : "border border-orange-200/30 hover:bg-orange-200/10",
@@ -62,7 +65,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
         <span
           className={cn(
             isToday ? "text-orange-300" : "text-gray-300",
-            "mb-2 text-sm font-light md:text-lg",
+            "mb-2 text-sm font-light md:text-lg lg:text-2xl",
           )}
         >
           {format(day, "d")}

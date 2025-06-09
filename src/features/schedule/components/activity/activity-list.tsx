@@ -49,43 +49,72 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
   }, [activities, selectedDate, filter]);
 
   return (
-    <div className="animate-fade-in mt-3 h-full max-h-[62vh] overflow-hidden rounded-xl border border-orange-200/30 bg-gray-950 p-4 shadow-sm duration-300 sm:h-auto sm:max-h-full sm:p-6">
-      <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
-        <h2 className="flex items-center text-xl font-semibold text-white">
-          <CalendarClock className="mr-2 h-5 text-sm text-gray-400" />
-          Activities for {format(selectedDate, "MMMM d, yyyy")}
-        </h2>
-        <ActivityFilter
-          currentFilter={filter}
-          onFilterChange={(newFilter) => setFilter(newFilter)}
-        />
-      </div>
-      {filteredActivities.length > 0 ? (
-        <div className="scrollbar-none mb-6 flex max-h-8/12 flex-col gap-1 overflow-y-auto pr-2 sm:max-h-96 md:max-h-full">
-          {filteredActivities.map((activity) => (
-            <ActivityCard
-              key={activity.id}
-              activity={activity}
-              member={member}
-            />
-          ))}
+    <>
+      <div className="animate-fade-in mt-3 max-h-full overflow-hidden rounded-xl border border-orange-200/30 bg-gray-950 p-4 shadow-sm duration-300 sm:p-6">
+        <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
+          <h2 className="flex items-center text-xl font-semibold text-white">
+            <CalendarClock className="mr-2 h-5 text-sm text-gray-400" />
+            Activities for {format(selectedDate, "MMMM d, yyyy")}
+          </h2>
+          <ActivityFilter
+            currentFilter={filter}
+            onFilterChange={(newFilter) => setFilter(newFilter)}
+          />
         </div>
-      ) : (
-        <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-gray-800 p-6 sm:max-h-80">
-          <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
-          <p className="text-gray-400">No activities scheduled for this day</p>
+        {filteredActivities.length > 0 ? (
+          <div className="scrollbar-none flex max-h-96 flex-col gap-1 overflow-y-auto pr-2 md:mb-6 md:max-h-72 xl:max-h-96">
+            {filteredActivities.map((activity) => (
+              <ActivityCard
+                key={activity.id}
+                activity={activity}
+                member={member}
+              />
+            ))}
+          </div>
+        ) : (
+          <div className="mt-4 flex flex-col items-center gap-3 rounded-2xl bg-gray-800 p-6 sm:max-h-80">
+            <AlertCircle className="mx-auto mb-3 h-10 w-10 text-gray-400 opacity-50" />
+            <p className="text-gray-400">
+              No activities scheduled for this day
+            </p>
+            {role && (
+              <Button
+                variant="outline"
+                size="sm"
+                className="mt-4 bg-gray-950 hover:bg-orange-200/10"
+                onClick={() => setOpenGameModal(true)}
+              >
+                <Plus className="mr-1 h-4 w-4" /> Add Activity
+              </Button>
+            )}
+          </div>
+        )}
+
+        <div className="mt-4 flex w-full justify-center gap-4 sm:mt-auto">
           {role && (
-            <Button
-              variant="outline"
-              size="sm"
-              className="mt-4 bg-gray-950 hover:bg-orange-200/10"
-              onClick={() => setOpenGameModal(true)}
-            >
-              <Plus className="mr-1 h-4 w-4" /> Add Activity
-            </Button>
+            <>
+              <Button
+                onClick={() => setOpenGameModal(true)}
+                type="button"
+                variant="outline"
+                className="w-1/2"
+              >
+                Create Game
+              </Button>
+              <Button
+                onClick={() => {
+                  setOpenPracticeModal(true);
+                }}
+                type="button"
+                variant="outline"
+                className="w-1/2"
+              >
+                Create Practice
+              </Button>
+            </>
           )}
         </div>
-      )}
+      </div>
       {openGameModal && selectedDate && (
         <GameForm
           team={team}
@@ -122,30 +151,6 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
       {openPracticeAttendance && (
         <AttendanceModal member={member} mode="Practice" />
       )}
-      <div className="mt-4 flex w-full justify-center gap-4">
-        {role && (
-          <>
-            <Button
-              onClick={() => setOpenGameModal(true)}
-              type="button"
-              variant="outline"
-              className="w-1/2"
-            >
-              Create Game
-            </Button>
-            <Button
-              onClick={() => {
-                setOpenPracticeModal(true);
-              }}
-              type="button"
-              variant="outline"
-              className="w-1/2"
-            >
-              Create Practice
-            </Button>
-          </>
-        )}
-      </div>
-    </div>
+    </>
   );
 }

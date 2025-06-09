@@ -7,6 +7,7 @@ import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { Activity, UserTeamMember } from "@/types";
 import { getActivityStyle } from "@/utils";
+import { ActivityType } from "@prisma/client";
 import { Clock } from "lucide-react";
 import { type FC } from "react";
 
@@ -31,16 +32,16 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
 
   const handleViewDetails = () => {
     setSelectedActivity(activity);
-    if (activity.type === "Game") {
+    if (activity.type === ActivityType.GAME) {
       setOpenGameDetails(true);
-    } else if (activity.type === "Practice") {
+    } else if (activity.type === ActivityType.PRACTICE) {
       setOpenPracticeDetails(true);
     }
   };
 
   const handleAttendance = () => {
     setSelectedActivity(activity);
-    if (activity.type === "Game") {
+    if (activity.type === ActivityType.GAME) {
       setOpenGameAttendance(true);
     } else {
       setOpenPracticeAttendance(true);
@@ -74,7 +75,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         </div>
       </div>
       <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
-        {activity.type === "Game" && role && (
+        {activity.type === ActivityType.GAME && role && (
           <Link
             href={{
               pathname: `/${teamSlug}/box-score`,
