@@ -25,9 +25,10 @@ type PageProps = {
 const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
   const { teamSlug } = useTeam();
   const {
-    setOpenGamePlan,
-    setGamePlanMode,
     activeCoachTab,
+    setOpenGamePlan,
+
+    setOpenPracticePreparation,
     setActiveCoachTab,
   } = useCoachDashboardStore();
 
@@ -108,9 +109,9 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
                 key={idx}
                 item={item}
                 onDelete={() => handleDeleteGamePlan(item.id)}
-                openEditView={() => {
-                  setGamePlanMode("create");
-                  setOpenGamePlan(true);
+                onView={{
+                  pathname: `/${teamSlug}/playbook-library/gameplan`,
+                  query: { id: item.id },
                 }}
               />
             ))}
@@ -127,14 +128,29 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
             </Card>
           </div>
         </TabsContent>
-        <TabsContent value="practice"></TabsContent>
+        <TabsContent value="practice">
+          <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
+            <Card className="group flex h-72 cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-10 text-xs text-white transition-all duration-200 hover:border-white/50">
+              <Button
+                onClick={() => setOpenPracticePreparation(true)}
+                className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
+              >
+                <Plus className="h-6 w-6" />
+              </Button>
+              <span className="font-righteous text-xl font-bold transition-colors">
+                Add New Preparation
+              </span>
+            </Card>
+          </div>
+        </TabsContent>
+
         <TabsContent value="play" className="flex flex-col gap-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {playbook?.map((play, idx) => <PlayCard key={idx} play={play} />)}
             <Card className="group flex cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-24 text-xs text-white transition-all duration-200 hover:border-white/50">
               <Link
                 href={{
-                  pathname: `/${teamSlug}/playbook-library/play`,
+                  pathname: `/${teamSlug}/playbook-library/create`,
                 }}
                 className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
               >
