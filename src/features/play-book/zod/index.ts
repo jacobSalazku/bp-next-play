@@ -19,3 +19,14 @@ export const gamePlanSchema = z.object({
 });
 
 export type GamePlanData = z.infer<typeof gamePlanSchema>;
+
+export const practicePrepartionSchema = z.object({
+  name: z.string().min(1, "title is required").max(35),
+  focus: z.string().min(1, "Focus is required"),
+  notes: z.string(),
+  activityId: z.string().min(1, "Plese select a practice"),
+  teamId: z.string(),
+  playsId: z.array(z.string()),
+});
+
+export type PracticePreparationData = z.infer<typeof practicePrepartionSchema>;

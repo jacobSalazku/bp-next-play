@@ -20,12 +20,6 @@ export const useCreatePlay = (teamId: string) => {
 
       redirect(`/${teamId}/playbook-library`);
     },
-    onError: (error) => {
-      toast.error("Failed to create a play. Please try again.", {
-        ...toastStyling,
-        position: "top-right",
-      });
-    },
   });
 
   return createPlay;
