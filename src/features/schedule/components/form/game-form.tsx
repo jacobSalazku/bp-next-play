@@ -9,6 +9,7 @@ import useStore from "@/store/store";
 import type { TeamInformation, UserTeamMember } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
@@ -66,7 +67,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
       teamId: teamSlug,
-      type: "Game" as const,
+      type: ActivityType.GAME,
     };
 
     if (formState === "edit") {
@@ -177,7 +178,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
                   />
                 </div>
               </div>
-              {selectedActivity.type == "Practice" && (
+              {selectedActivity.type == ActivityType.PRACTICE && (
                 <div className="flex flex-col space-x-2">
                   <div className="text-xs text-gray-400 sm:text-sm">
                     Type of Practice

@@ -8,6 +8,7 @@ import useStore from "@/store/store";
 import type { TeamInformation, UserTeamMember } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
@@ -70,7 +71,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
       teamId: teamSlug,
-      type: "Practice" as const,
+      type: ActivityType.PRACTICE,
     };
 
     if (formState === "edit") {
