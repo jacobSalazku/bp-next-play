@@ -1,12 +1,11 @@
 import { createStatlineInputSchema } from "@/features/scouting/zod/player-stats";
-import {
-  getGamesWithFullBoxscore,
-  getStatlineAverages,
-  getStatsPerGame,
-  getTeamStats,
-  getWeeklyTeamStatlineAverages,
-  submitStatlines,
-} from "@/server/service/statline-service";
+
+import { getGamesWithFullBoxscore } from "@/server/service/statline-service/games-with-box-scores";
+import { getStatlineAverages } from "@/server/service/statline-service/statline-averages";
+import { getStatsPerGame } from "@/server/service/statline-service/stats-per-game";
+import { submitStatlines } from "@/server/service/statline-service/submit-statlines";
+import { getTeamStats } from "@/server/service/statline-service/team-stats";
+import { getWeeklyTeamStatlineAverages } from "@/server/service/statline-service/weekly-team-averages";
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
