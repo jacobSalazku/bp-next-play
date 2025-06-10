@@ -40,7 +40,7 @@ async function PlayerPage({ params, searchParams }: PageProps) {
   }
 
   return (
-    <div className="flex min-h-screen w-full flex-col items-center justify-start text-white">
+    <div className="flex min-h-screen w-full flex-col items-center justify-start overflow-y-auto text-white">
       <div className="flex h-screen max-h-[1024px] w-full max-w-6xl flex-row justify-center py-4">
         <Suspense fallback={<Skeleton />}>
           <MultiStatlineTracker activity={activity} players={players} />

@@ -27,8 +27,8 @@ export function NavItem({
         "flex w-full items-center rounded-lg px-4 py-7 text-sm transition-colors",
         isCollapsed ? "justify-center" : "justify-start",
         isActive
-          ? "bg-gray-800 font-medium text-white"
-          : "text-gray-950 hover:bg-gray-800 hover:text-orange-300",
+          ? "bg-gray-800 font-medium text-orange-300"
+          : "text-gray-950 hover:bg-gray-800 hover:text-white",
       )}
     >
       <Icon

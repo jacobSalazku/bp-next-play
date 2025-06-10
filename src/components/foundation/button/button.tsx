@@ -25,7 +25,7 @@ const buttonVariants = cva(
         danger:
           "bg-red-900 text-red-foreground text-white shadow-sm hover:bg-red-800",
         close:
-          "rounded p-2 text-white shadow-md transition-colors duration-200 hover:bg-gray-800",
+          "rounded p-2 text-gray-900 transition-colors duration-200 hover:bg-gray-800",
       },
       size: {
         default: "h-9 px-4 py-2",

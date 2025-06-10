@@ -34,7 +34,7 @@ export const playRouter = createTRPCRouter({
       return play;
     }),
 
-  getAllPlays: protectedProcedure
+  getPlays: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const plays = await getPlays(ctx, input.teamId);
