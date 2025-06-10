@@ -121,7 +121,7 @@ const PracticePreparationForm: FC<PageProps> = ({
     <>
       {openPracticePreparation && isCreateMode && (
         <div className="scroll bar fixed inset-0 z-50 flex flex-col items-center justify-center bg-black/10 p-3 backdrop-blur-xs">
-          <div className="flex w-full max-w-4xl items-center justify-between rounded-t-lg border border-b border-gray-800 bg-white p-2">
+          <div className="flex w-full max-w-4xl items-center justify-between rounded-t-lg border border-b border-gray-800 bg-white px-4 py-3">
             <h2 className="font-righteous text-lg font-normal text-gray-950 sm:text-xl">
               Create Practice Preparation
             </h2>

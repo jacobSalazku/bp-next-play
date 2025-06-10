@@ -28,7 +28,7 @@ export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
           <Button
             variant="close"
             onClick={onClose}
-            className="rounded p-2 text-white hover:bg-gray-800"
+            className="rounded p-2 shadow-none hover:text-white"
           >
             <X className="h-5 w-5" />
           </Button>

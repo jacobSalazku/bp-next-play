@@ -10,6 +10,7 @@ import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
@@ -93,21 +94,21 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
       <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
-          <h2 className="text-lg font-normal sm:text-xl">
+        <div className="flex items-center justify-between border-b border-gray-800 bg-white px-4 py-3 text-gray-900">
+          <h2 className="font-righteous text-lg font-normal sm:text-xl">
             {isViewMode
               ? selectedActivity?.title
               : isEditMode
                 ? (selectedActivity?.title ?? "Edit Game")
                 : "Create Game"}
           </h2>
-          <button
+          <Button
             onClick={onClose}
-            className="text-xl font-bold text-gray-400 hover:text-white"
-            aria-label="Close"
+            className="bg-transparent py-2 text-xl font-bold text-gray-400 shadow-none hover:bg-gray-900 hover:text-white"
+            aria-label="Close Practice Form"
           >
-            ×
-          </button>
+            <X className="h-6 w-6" />
+          </Button>
         </div>
         {isViewMode && selectedActivity && (
           <>
