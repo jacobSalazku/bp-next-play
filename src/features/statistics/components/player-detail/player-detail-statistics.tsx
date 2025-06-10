@@ -10,9 +10,6 @@ import { PlayerPerformanceChart } from "./player-performance-chart";
 
 type PlayerDetailViewProps = {
   player: PlayerStatRow;
-  // timeFrame: "weekly" | "monthly";
-  // onTimeFrameChange: (timeFrame: "weekly" | "monthly") => void;
-  // onBack: () => void;
 };
 
 export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {

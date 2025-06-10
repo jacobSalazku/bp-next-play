@@ -8,14 +8,15 @@ import {
 import type { ColumnDef } from "@tanstack/react-table";
 
 import { useTeam } from "@/context/team-context";
+import { memo } from "react";
 import type { PlayerStatRow } from "../utils/types";
 import { PlayerAverageDataTable } from "./players-data-table";
 
-const PlayerAveragesStatsCard = ({
+const PlayerAveragesStatsCard = memo(function PlayerAveragesStatsCard({
   statsList,
 }: {
   statsList: PlayerStatRow[];
-}) => {
+}) {
   const { teamSlug } = useTeam();
 
   const columns: ColumnDef<PlayerStatRow>[] = [
@@ -102,6 +103,6 @@ const PlayerAveragesStatsCard = ({
       </div>
     </Card>
   );
-};
+});
 
 export { PlayerAveragesStatsCard };

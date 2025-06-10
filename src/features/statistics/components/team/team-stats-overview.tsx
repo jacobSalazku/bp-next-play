@@ -1,9 +1,14 @@
 "use client";
 
 import type { TeamStats } from "@/types";
+
 import { StatisticsCard } from "../stats-card";
 
-const TeamStatsOverView = ({ teamStatlist }: { teamStatlist: TeamStats }) => {
+const TeamStatsOverViewCharts = ({
+  teamStatlist,
+}: {
+  teamStatlist: TeamStats;
+}) => {
   const averages = teamStatlist?.averages;
   const advanced = teamStatlist?.advanced;
 
@@ -12,7 +17,7 @@ const TeamStatsOverView = ({ teamStatlist }: { teamStatlist: TeamStats }) => {
       <>
         <StatisticsCard
           title="Points Per Game"
-          value={averages?.pointsPerGame ? averages.pointsPerGame : "0"}
+          value={averages?.pointsPerGame ?? "0"}
           subtitle={`Total Points: ${averages?.pointsPerGame ?? 0}`}
         />
         <StatisticsCard
@@ -39,7 +44,7 @@ const TeamStatsOverView = ({ teamStatlist }: { teamStatlist: TeamStats }) => {
         />
         <StatisticsCard
           title="AST/TO Ratio"
-          value={advanced?.assistToTurnoverRatio ?? "0"}
+          value={Number(advanced?.assistToTurnoverRatio) ?? "0"}
           subtitle="counts how many assists per turnover"
         />
         <StatisticsCard
@@ -52,4 +57,4 @@ const TeamStatsOverView = ({ teamStatlist }: { teamStatlist: TeamStats }) => {
   );
 };
 
-export default TeamStatsOverView;
+export default TeamStatsOverViewCharts;
