@@ -23,3 +23,11 @@ export const getWeeklyTeamStatlineAverages = cache(async (teamId: string) => {
 
   return weeklyStatline;
 });
+
+export const getGamesStatline = cache(async (teamId: string) => {
+  const gamesStatlines = await api.stats.getGamesWithScores({
+    teamId: teamId,
+  });
+
+  return gamesStatlines;
+});

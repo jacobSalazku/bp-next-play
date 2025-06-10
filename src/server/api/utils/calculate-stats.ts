@@ -35,12 +35,12 @@ export function calculateTrueShootingPercentage({
 
 export function calculateAssistToTurnoverRatio({
   assists,
-  turonvers,
+  turnovers,
 }: {
   assists: number;
-  turonvers: number;
+  turnovers: number;
 }): number {
-  return assists / turonvers;
+  return turnovers > 0 ? assists / turnovers : 0;
 }
 
 export function calculateOffensiveRating({

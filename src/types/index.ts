@@ -43,3 +43,6 @@ export type Game = RouterOutput["activity"]["getGames"][number];
 export type GamePlan = RouterOutput["gameplan"]["getGameplan"][number];
 
 export type Practices = RouterOutput["activity"]["getPractices"];
+
+export type GamesStatlines =
+  RouterOutput["stats"]["getGamesWithScores"][number];

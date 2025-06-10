@@ -1,5 +1,6 @@
 import { createStatlineInputSchema } from "@/features/scouting/zod/player-stats";
 import {
+  getGamesWithFullBoxscore,
   getStatlineAverages,
   getStatsPerGame,
   getTeamStats,
@@ -87,5 +88,20 @@ export const statsRouter = createTRPCRouter({
         return [];
       }
       return stats;
+    }),
+
+  getGamesWithScores: publicProcedure
+    .input(
+      z.object({
+        teamId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const gamesWithScores = await getGamesWithFullBoxscore(ctx, input.teamId);
+
+      if (!gamesWithScores) {
+        throw new Error("No statlines found for this game.");
+      }
+      return gamesWithScores;
     }),
 });
