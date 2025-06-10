@@ -10,7 +10,7 @@ export const useCreatePlay = (teamId: string) => {
 
   const createPlay = api.play.createPlay.useMutation({
     onSuccess: async () => {
-      void utils.play.getAllPlays.invalidate({ teamId });
+      void utils.play.getPlays.invalidate({ teamId });
       setActiveCoachTab("play");
 
       toast.success("Your play has been successfully created", {

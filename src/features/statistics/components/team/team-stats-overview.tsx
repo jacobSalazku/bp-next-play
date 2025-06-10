@@ -18,7 +18,7 @@ const TeamStatsOverViewCharts = ({
         <StatisticsCard
           title="Points Per Game"
           value={averages?.pointsPerGame ?? "0"}
-          subtitle={`Total Points: ${averages?.pointsPerGame ?? 0}`}
+          subtitle={`Total Points: ${teamStatlist?.totalPoints ?? 0}`}
         />
         <StatisticsCard
           title="Field Goal Percentage"
