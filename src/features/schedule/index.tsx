@@ -15,7 +15,7 @@ const ScheduleBlock = async ({
   if (!teamMember) return null;
 
   return (
-    <div className="font-roboto flex w-full items-center justify-center bg-transparent px-2 py-3">
+    <div className="font-roboto flex h-full w-full items-start justify-center overflow-y-auto bg-transparent px-2 py-3">
       <div className="h-full w-full">
         <HorizontalCalender activities={activities} team={team} />
         <ActivityList activities={activities} team={team} member={teamMember} />

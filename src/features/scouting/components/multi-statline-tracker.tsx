@@ -133,24 +133,33 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
       />
       <form
         key={activity.id}
-        onSubmit={handleSubmit(onSubmit, (errors) => {
-          console.log("Validation errors:", errors);
-        })}
-        className="mx-auto hidden w-full p-4 sm:block sm:p-6"
+        onSubmit={handleSubmit(onSubmit)}
+        className="mx-auto hidden w-full p-4 sm:p-6 lg:block"
       >
         <h2 className="font-righteous mb-6 text-2xl font-bold text-gray-100 sm:text-4xl">
           Player Box Score
         </h2>
         <div className="mb-5">
-          <Button
-            variant="outline"
-            className="mb-4"
-            onClick={() => setShowOpponentStats((prev) => !prev)}
-          >
-            {showOpponentStats ? "Hide" : "Show"} Opponent Stats
-          </Button>
+          <div className="flex w-full items-center justify-between">
+            <Button
+              variant="outline"
+              onClick={() => setShowOpponentStats((prev) => !prev)}
+            >
+              {showOpponentStats ? "Hide" : "Show"} Opponent Stats
+            </Button>
+
+            <Button
+              type="submit"
+              variant="outline"
+              size="lg"
+              className="w-full sm:w-auto"
+            >
+              Submit Stats
+            </Button>
+          </div>
+
           {showOpponentStats && (
-            <div className="bg- mt-6 rounded-xl p-4 shadow">
+            <div className="mt-4 rounded-xl bg-gray-900 px-4 py-2 shadow">
               <h3 className="mb-4 text-xl font-bold text-white">
                 {activity.title} Stats
               </h3>
@@ -254,23 +263,12 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
               key={key}
               type="button"
               size="lg"
-              variant="outline"
+              variant="light"
               onClick={() => handleChange(activePlayerIndex, key, +1)}
-              className="h-14 w-full rounded-xl bg-white/5 text-base text-white transition hover:bg-white/10 sm:text-sm"
             >
               {label} +
             </Button>
           ))}
-        </div>
-        <div className="mt-8 flex justify-end">
-          <Button
-            type="submit"
-            variant="outline"
-            size="lg"
-            className="w-full sm:w-auto"
-          >
-            Submit Stats
-          </Button>
         </div>
       </form>
     </>
