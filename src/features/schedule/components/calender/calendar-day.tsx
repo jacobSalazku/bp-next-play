@@ -52,7 +52,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     <div
       onClick={() => setSelectedDate(day)}
       className={cn(
-        "group flex max-h-full w-full cursor-pointer flex-col items-end justify-start rounded-sm p-1.5 transition-all duration-200 focus:ring-2 focus:ring-white focus:outline-none sm:p-2 md:p-4 xl:h-[15rem]",
+        "group flex max-h-full min-h-40 w-full cursor-pointer flex-col items-end justify-start rounded-sm p-1.5 transition-all duration-200 focus:ring-2 focus:ring-white focus:outline-none md:p-2 lg:p-4 xl:h-[15rem]",
         isSelected
           ? "border border-white shadow-lg ring ring-white"
           : "border border-orange-200/30 hover:bg-orange-200/10",
@@ -60,7 +60,7 @@ export const CalendarDay: FC<CalendarDayProps> = ({ day, activities }) => {
     >
       <div className="inline-flex w-full flex-row items-center justify-between px-1">
         <span className="text-xs font-medium text-gray-400">
-          {format(day, "EEE")} {/* Mon, Tue, etc. */}
+          {format(day, "EEE")}
         </span>
         <span
           className={cn(

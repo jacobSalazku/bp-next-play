@@ -77,7 +77,7 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
           <div className="inline-flex items-center gap-2">
             <button
               onClick={() => setMobileNavOpen(true)}
-              className="rounded p-2 hover:bg-gray-800"
+              className="cursor-pointer rounded p-2 transition-colors duration-300 hover:bg-gray-900 hover:text-white"
             >
               <Menu className="py h-5 w-5" />
             </button>
