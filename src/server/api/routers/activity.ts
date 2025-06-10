@@ -1,13 +1,16 @@
 import { gameSchema, practiceSchema } from "@/features/schedule/zod";
+
 import {
   createGame,
-  createPractice,
   editGame,
-  editPractice,
   getActivity,
   getGames,
+} from "@/server/service/game-service";
+import {
+  createPractice,
+  editPractice,
   getPractices,
-} from "@/server/service/activity-service";
+} from "@/server/service/practice-activity";
 import { ActivityType } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
