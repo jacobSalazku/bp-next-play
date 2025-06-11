@@ -1,9 +1,11 @@
 import { getStatlineAverage } from "@/api/statline";
+import PlayerDetailSkeleton from "@/features/statistics/components/player-detail/player-detail-skeleton";
 import { PlayerDetailStatistics } from "@/features/statistics/components/player-detail/player-detail-statistics";
 import type { PlayerStatRow } from "@/features/statistics/utils/types";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
 import { notFound } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
+import { Suspense } from "react";
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
@@ -37,7 +39,11 @@ async function PlayerStatisticsDetailPage({ params, searchParams }: PageProps) {
     turnovers: player.averages.turnovers,
   };
 
-  return <PlayerDetailStatistics player={mappedPlayer} />;
+  return (
+    <Suspense fallback={<PlayerDetailSkeleton />}>
+      <PlayerDetailStatistics player={mappedPlayer} />
+    </Suspense>
+  );
 }
 
 export default PlayerStatisticsDetailPage;

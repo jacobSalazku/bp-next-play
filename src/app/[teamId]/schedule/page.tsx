@@ -1,8 +1,10 @@
 import { getTeamActivities } from "@/api/team";
 import withAuth from "@/features/auth/components/with-auth";
 import { ScheduleBlock } from "@/features/schedule";
+import { ScheduleSkeleton } from "@/features/schedule/components/schedule-skeleton";
 
 import { redirect } from "next/navigation";
+import { Suspense } from "react";
 
 async function SchedulePage({
   params,
@@ -17,6 +19,10 @@ async function SchedulePage({
     redirect("/create-team");
   }
 
-  return <ScheduleBlock activities={activities} team={team} />;
+  return (
+    <Suspense fallback={<ScheduleSkeleton />}>
+      <ScheduleBlock activities={activities} team={team} />
+    </Suspense>
+  );
 }
 export default withAuth(SchedulePage);
