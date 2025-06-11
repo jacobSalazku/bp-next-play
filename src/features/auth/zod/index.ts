@@ -21,6 +21,7 @@ export const createTeamSchema = z.object({
     .string()
     .min(3, { message: "Team name must be at least 3 characters." }),
   image: z.string().optional(),
+  ageGroup: z.string().min(1, "Age group is required"),
 });
 
 export const updateUserSchema = z.object({
