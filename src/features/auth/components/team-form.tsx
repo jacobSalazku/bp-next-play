@@ -55,8 +55,6 @@ const CreateTeamForm = () => {
 
   const onSubmit = (data: CreateTeamData) => {
     startTransition(() => {
-      console.log("Submitting data with file:", file);
-
       createTeam.mutate(
         {
           ...data,
@@ -66,10 +64,6 @@ const CreateTeamForm = () => {
           onSuccess: (newTeam) => {
             createTeam.reset();
             router.push("/");
-            console.log("Team created successfully:", newTeam);
-          },
-          onError: (error) => {
-            console.error("Error creating team:", error);
           },
         },
       );

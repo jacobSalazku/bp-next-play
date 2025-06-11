@@ -144,7 +144,6 @@ export async function getTeamStats(ctx: Context, teamId: string) {
       threePointersMade: total3P,
       fieldGoalsAttempted: totalFGAttempts,
     });
-    console.log("totalPoints", gamesCount.length);
 
     return {
       date: gamesCount[0]?.date,

@@ -35,8 +35,6 @@ export const PerformanceComparisonChart = memo(
       blocks: player.averages.blocks,
     }));
 
-    console.log("Chart Data:", chartData);
-
     return (
       <Card className="w-full border-gray-800 bg-gray-900/50 backdrop-blur-sm">
         <CardHeader>

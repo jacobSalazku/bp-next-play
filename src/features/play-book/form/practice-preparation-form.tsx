@@ -101,7 +101,6 @@ const PracticePreparationForm: FC<PageProps> = ({
 
   const onSubmit = async (data: PracticePreparationData) => {
     if (!data.activityId) {
-      console.error("No game selected");
       return;
     }
     const gamePlan = {

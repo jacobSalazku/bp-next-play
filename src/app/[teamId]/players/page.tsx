@@ -1,5 +1,6 @@
 import { getTeam } from "@/api/team";
 import { getTeamMembers } from "@/api/user";
+import withAuth from "@/features/auth/components/with-auth";
 
 import { PlayerBlock } from "@/features/player-table";
 
@@ -24,4 +25,4 @@ async function PlayerPage({ params }: { params: Promise<{ teamId: string }> }) {
     </div>
   );
 }
-export default PlayerPage;
+export default withAuth(PlayerPage);

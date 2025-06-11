@@ -128,7 +128,7 @@ export function PlayForm() {
       teamId: teamSlug,
       category: data.category,
     };
-    console.log("Submitting play data:", playData.category);
+
     return createPlay.mutateAsync(playData);
   };
 

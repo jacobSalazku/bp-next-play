@@ -29,7 +29,6 @@ const JoinTeamForm = () => {
     startTransition(() => {
       joinTeam.mutate(data, {
         onSuccess: () => {
-          console.log("request to join team successfully!");
           joinTeam.reset();
           router.push("/");
         },

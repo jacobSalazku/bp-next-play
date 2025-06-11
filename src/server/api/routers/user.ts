@@ -1,5 +1,6 @@
 import { updateUserSchema } from "@/features/auth/zod";
 import {
+  deleteTeamMember,
   getUserbyId,
   getUserProfile,
   updateUser,
@@ -28,5 +29,12 @@ export const userRouter = createTRPCRouter({
       const { user, teamMember } = await getUserProfile(ctx, input.userId);
 
       return { user, teamMember };
+    }),
+  deleteTeamMember: protectedProcedure
+    .input(z.object({ userId: z.string() }))
+    .mutation(async ({ ctx, input }) => {
+      const deletedUser = await deleteTeamMember(ctx, input.userId);
+
+      return deletedUser;
     }),
 });

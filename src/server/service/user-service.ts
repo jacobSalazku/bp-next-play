@@ -247,10 +247,10 @@ export async function getUserProfile(ctx: Context, userId: string) {
   return { user, teamMember };
 }
 
-// export async function deleteTeamMember(ctx: Context, userId: string) {
-//   const teamMember = await ctx.db.user.findUnique({
-//     where: { id: userId },
-//   });
+export async function deleteTeamMember(ctx: Context, userId: string) {
+  const teamMember = await ctx.db.user.findUnique({
+    where: { id: userId },
+  });
 
-//   return { success: true, teamMember };
-// }
+  return { success: true, teamMember };
+}
