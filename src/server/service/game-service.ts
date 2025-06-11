@@ -51,7 +51,15 @@ export async function editGame(ctx: Context, input: EditGameInput) {
   return { success: true, activity: updatedGame };
 }
 
-export async function deteleGame(ctx: Context, activityId: string) {
+export async function deleteActivity(ctx: Context, activityId: string) {
+  await ctx.db.opponentStatline.deleteMany({
+    where: { activityId },
+  });
+
+  await ctx.db.statline.deleteMany({
+    where: { activityId },
+  });
+
   const deletedGame = await ctx.db.activity.delete({
     where: { id: activityId },
   });

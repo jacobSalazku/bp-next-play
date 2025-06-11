@@ -6,7 +6,7 @@ import {
   getPracticePreparation,
 } from "@/server/service/practice-praparation-service";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { verifyCoachPermission } from "../utils/check-membership";
 
 export const practiceRouter = createTRPCRouter({
@@ -23,7 +23,7 @@ export const practiceRouter = createTRPCRouter({
       return practicePreparation;
     }),
 
-  getPracticePreparation: protectedProcedure
+  getPracticePreparation: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const practicePreparation = await getPracticePreparation(

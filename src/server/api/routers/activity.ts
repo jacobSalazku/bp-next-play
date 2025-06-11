@@ -2,6 +2,7 @@ import { gameSchema, practiceSchema } from "@/features/schedule/zod";
 
 import {
   createGame,
+  deleteActivity,
   editGame,
   getActivity,
   getGames,
@@ -10,7 +11,7 @@ import {
   createPractice,
   editPractice,
   getPractices,
-} from "@/server/service/practice-activity";
+} from "@/server/service/practice-service";
 import { ActivityType } from "@prisma/client";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
@@ -60,6 +61,18 @@ export const activityRouter = createTRPCRouter({
       const activity = await createPractice(ctx, input);
 
       return activity;
+    }),
+
+  deleteActivity: protectedProcedure
+    .input(z.object({ activityId: z.string(), teamId: z.string() }))
+    .use(async ({ ctx, input, next }) => {
+      await verifyCoachPermission(ctx, input.teamId);
+      return next();
+    })
+    .mutation(async ({ ctx, input }) => {
+      const deletedActivity = await deleteActivity(ctx, input.activityId);
+
+      return deletedActivity;
     }),
 
   editPractice: protectedProcedure

@@ -7,6 +7,7 @@ import {
 } from "@/server/service/user-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { verifyCoachPermission } from "../utils/check-membership";
 
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
@@ -31,10 +32,14 @@ export const userRouter = createTRPCRouter({
       return { user, teamMember };
     }),
   deleteTeamMember: protectedProcedure
-    .input(z.object({ userId: z.string() }))
+    .input(z.object({ teamMemberId: z.string(), teamId: z.string() }))
+    .use(async ({ ctx, input, next }) => {
+      await verifyCoachPermission(ctx, input.teamId);
+      return next();
+    })
     .mutation(async ({ ctx, input }) => {
-      const deletedUser = await deleteTeamMember(ctx, input.userId);
+      const deletedMember = await deleteTeamMember(ctx, input.teamMemberId);
 
-      return deletedUser;
+      return deletedMember;
     }),
 });

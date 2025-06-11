@@ -1,9 +1,9 @@
 import { attendanceSchema } from "@/features/attendance/zod";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const attendanceRouter = createTRPCRouter({
-  getAttendanceByActivities: protectedProcedure
+  getAttendanceByActivities: publicProcedure
     .input(
       z.object({
         activityId: z.string(),

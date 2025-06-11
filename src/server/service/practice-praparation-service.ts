@@ -69,3 +69,11 @@ export async function deletePracticePreparation(ctx: Context, id: string) {
 
   return deletedPracticePreparation;
 }
+
+export async function deletePractice(ctx: Context, activityId: string) {
+  const deletedPractice = await ctx.db.activity.delete({
+    where: { id: activityId },
+  });
+
+  return deletedPractice;
+}

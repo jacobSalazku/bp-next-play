@@ -65,10 +65,3 @@ export async function getPractices(ctx: Context, teamId: string) {
 
   return practices;
 }
-
-export async function deletePractice(ctx: Context, activityId: string) {
-  const deletedPractice = await ctx.db.activity.delete({
-    where: { id: activityId },
-  });
-  return { success: true, activity: deletedPractice };
-}
