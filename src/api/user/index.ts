@@ -23,6 +23,17 @@ export const getUser = cache(async () => {
   }
 });
 
+export const getUserById = cache(async (id: string) => {
+  const { user, teamMember } = await api.user.getUserById({ userId: id });
+  if (!user || !teamMember) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found.",
+    });
+  }
+  return { user, teamMember };
+});
+
 export const getTeamMembers = cache(async (teamId: string) => {
   const members = await api.member.getTeamMembers({
     teamId: teamId,
