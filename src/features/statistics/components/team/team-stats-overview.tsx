@@ -44,7 +44,7 @@ const TeamStatsOverViewCharts = ({
         />
         <StatisticsCard
           title="AST/TO Ratio"
-          value={Number(advanced?.assistToTurnoverRatio) ?? "0"}
+          value={advanced?.assistToTurnoverRatio ?? "0"}
           subtitle="counts how many assists per turnover"
         />
         <StatisticsCard
