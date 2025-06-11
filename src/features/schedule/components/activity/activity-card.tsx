@@ -48,9 +48,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
     }
   };
 
-  const boxScoreSearchParams = new URLSearchParams();
-  boxScoreSearchParams.set("activityId", activity.id);
-
   return (
     <div className="group flex flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
       <div className="flex flex-row items-start gap-4 sm:gap-6">
@@ -77,8 +74,9 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
       <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
         {activity.type === ActivityType.GAME && role && (
           <Link
+            aria-label="Create Box Score"
             href={{
-              pathname: `/${teamSlug}/box-score`,
+              pathname: `/${teamSlug}/schedule/box-score`,
               query: { activityId: activity.id },
             }}
             size="sm"
@@ -90,6 +88,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         )}
         {!role && (
           <Button
+            aria-label="Attendance"
             onClick={handleAttendance}
             size="sm"
             variant="default"
@@ -99,6 +98,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
           </Button>
         )}
         <Button
+          aria-label="View Details"
           onClick={handleViewDetails}
           variant="outline"
           size="sm"
