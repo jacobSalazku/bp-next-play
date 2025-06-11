@@ -10,6 +10,7 @@ async function Dashboard() {
     redirect("/create/onboarding");
   }
 
+
   return (
     <>
       <div className="flex h-screen bg-gray-950 text-white">
