@@ -338,7 +338,11 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               </div>
               <div className="bg-g flex justify-end border-t border-gray-800 pt-4">
                 {isCoach && (
-                  <Button type="submit" variant="outline">
+                  <Button
+                    aria-label="Submit Game Plan"
+                    type="submit"
+                    variant="outline"
+                  >
                     {buttonText}
                   </Button>
                 )}

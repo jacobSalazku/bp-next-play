@@ -12,9 +12,10 @@ import { getCategoryColor } from "../../utils/play-catergory-color";
 
 type PlayCardProps = {
   play: Play[number];
+  role: string;
 };
 
-export const PlayCard = ({ play }: PlayCardProps) => {
+export const PlayCard = ({ play, role }: PlayCardProps) => {
   const { teamSlug } = useTeam();
   const deletePlay = useDeletePlay();
 
@@ -52,6 +53,7 @@ export const PlayCard = ({ play }: PlayCardProps) => {
       </CardContent>
       <CardFooter className="flex w-full justify-between pt-0">
         <Link
+          aria-label="View Play Details"
           variant="light"
           size="sm"
           href={{
@@ -62,10 +64,12 @@ export const PlayCard = ({ play }: PlayCardProps) => {
           <Eye className="mr-1 h-3 w-3" />
           View Details
         </Link>
-        <Button variant="danger" size="sm" onClick={handleDelete}>
-          <Trash2 className="mr-1 h-3 w-3" />
-          Delete
-        </Button>
+        {role === "COACH" && (
+          <Button variant="danger" size="sm" onClick={handleDelete}>
+            <Trash2 className="mr-1 h-3 w-3" />
+            Delete
+          </Button>
+        )}
       </CardFooter>
     </Card>
   );

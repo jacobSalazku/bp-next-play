@@ -8,21 +8,31 @@ import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import { useTeam } from "@/context/team-context";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
-import type { GamePlan, Play } from "@/types";
+import type { GamePlan, Play, Practice, PracticePreparation } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { Plus } from "lucide-react";
 import { type FC, useCallback } from "react";
 import { useDeleteGameplan } from "../hooks/use-delete-gameplan";
+import { useDeletePracticePreparation } from "../hooks/use-delete-practice-preparation";
 import type { CoachDashTab } from "../utils/types";
+import { PlanCard } from "./play/plan-card";
 import { PlayCard } from "./play/play-card";
-import { PreparationCard } from "./play/preparation-card";
 
 type PageProps = {
+  practicePreparation: PracticePreparation[];
   playbook?: Play;
   gamePlan?: GamePlan[];
+  role: string;
+  practices: Practice[];
 };
 
-const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
+const PlaybookBookBlock: FC<PageProps> = ({
+  practicePreparation,
+  playbook,
+  gamePlan,
+  role,
+  practices,
+}) => {
   const { teamSlug } = useTeam();
   const {
     activeCoachTab,
@@ -34,6 +44,8 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
 
   const deleteGamePlan = useDeleteGameplan(teamSlug);
 
+  const deletePracticePreparation = useDeletePracticePreparation(teamSlug);
+
   const handleCoachTabChange = useCallback(
     (value: string) => {
       setActiveCoachTab(value as CoachDashTab);
@@ -41,11 +53,21 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
     [setActiveCoachTab],
   );
 
-  const handleDeleteGamePlan = async (gamePlanId: string) => {
-    await deleteGamePlan.mutateAsync({
-      teamId: teamSlug,
-      gamePlanId,
-    });
+  const handleDeletePlan = async (
+    planId: string,
+    type: "gameplan" | "practice",
+  ) => {
+    if (type === "gameplan") {
+      await deleteGamePlan.mutateAsync({
+        teamId: teamSlug,
+        gamePlanId: planId,
+      });
+    } else if (type === "practice") {
+      await deletePracticePreparation.mutateAsync({
+        teamId: teamSlug,
+        gamePlanId: planId,
+      });
+    }
   };
 
   return (
@@ -105,61 +127,86 @@ const PlaybookBookBlock: FC<PageProps> = ({ playbook, gamePlan }) => {
         <TabsContent value="gameplan">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
             {gamePlan?.map((item, idx) => (
-              <PreparationCard
+              <PlanCard
                 key={idx}
-                item={item}
-                onDelete={() => handleDeleteGamePlan(item.id)}
+                role={role}
+                plan={item}
+                type="gameplan"
+                onDelete={() => handleDeletePlan(item.id, "gameplan")}
                 onView={{
                   pathname: `/${teamSlug}/playbook-library/gameplan`,
                   query: { id: item.id },
                 }}
               />
             ))}
-            <Card className="group flex h-72 cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-10 text-xs text-white transition-all duration-200 hover:border-white/50">
-              <Button
-                onClick={() => setOpenGamePlan(true)}
-                className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
-              >
-                <Plus className="h-6 w-6" />
-              </Button>
-              <span className="font-righteous text-xl font-bold transition-colors">
-                Add New GamePlan
-              </span>
-            </Card>
+            {role === "COACH" && (
+              <Card className="group flex h-80 cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-10 text-xs text-white transition-all duration-200 hover:border-white/50">
+                <Button
+                  aria-label="Add New GamePlan"
+                  onClick={() => setOpenGamePlan(true)}
+                  className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
+                >
+                  <Plus className="h-6 w-6" />
+                </Button>
+                <span className="font-righteous text-xl font-bold transition-colors">
+                  Add New GamePlan
+                </span>
+              </Card>
+            )}
           </div>
         </TabsContent>
         <TabsContent value="practice">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            <Card className="group flex h-72 cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-10 text-xs text-white transition-all duration-200 hover:border-white/50">
-              <Button
-                onClick={() => setOpenPracticePreparation(true)}
-                className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
-              >
-                <Plus className="h-6 w-6" />
-              </Button>
-              <span className="font-righteous text-xl font-bold transition-colors">
-                Add New Preparation
-              </span>
-            </Card>
+            {practicePreparation?.map((practice, idx) => (
+              <PlanCard
+                key={idx}
+                role={role}
+                plan={practice}
+                type="practice"
+                onDelete={() => handleDeletePlan(practice.id, "practice")}
+                onView={{
+                  pathname: `/${teamSlug}/playbook-library/practice`,
+                  query: { id: practice.id },
+                }}
+              />
+            ))}
+            {role === "COACH" && (
+              <Card className="group flex h-80 cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-10 text-xs text-white transition-all duration-200 hover:border-white/50">
+                <Button
+                  onClick={() => setOpenPracticePreparation(true)}
+                  className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
+                >
+                  <Plus className="h-6 w-6" />
+                </Button>
+                <span className="font-righteous text-xl font-bold transition-colors">
+                  Add New Preparation
+                </span>
+              </Card>
+            )}
           </div>
         </TabsContent>
 
         <TabsContent value="play" className="flex flex-col gap-6">
           <div className="grid grid-cols-1 gap-6 sm:grid-cols-2 lg:grid-cols-3 xl:grid-cols-4">
-            {playbook?.map((play, idx) => <PlayCard key={idx} play={play} />)}
-            <Card className="group flex cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-24 text-xs text-white transition-all duration-200 hover:border-white/50">
-              <Link
-                href={{
-                  pathname: `/${teamSlug}/playbook-library/create`,
-                }}
-                className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
-              >
-                <Plus className="h-6 w-6" />
-              </Link>
-              <span className="font-righteous text-xl font-bold transition-colors">
-                Add New Play
-              </span>
-            </Card>
+            {playbook?.map((play, idx) => (
+              <PlayCard key={idx} role={role} play={play} />
+            ))}
+            {role === "COACH" && (
+              <Card className="group flex cursor-pointer flex-col items-center justify-center gap-6 border border-gray-800 py-24 text-xs text-white transition-all duration-200 hover:border-white/50">
+                <Link
+                  aria-label="Add New Play"
+                  href={{
+                    pathname: `/${teamSlug}/playbook-library/create`,
+                  }}
+                  className="flex items-center justify-center rounded-lg border-gray-700 bg-gray-900 px-6 py-6 group-hover:bg-gray-700 md:px-10 md:py-10"
+                >
+                  <Plus className="h-6 w-6" />
+                </Link>
+                <span className="font-righteous text-xl font-bold transition-colors">
+                  Add New Play
+                </span>
+              </Card>
+            )}
           </div>
         </TabsContent>
       </Tabs>

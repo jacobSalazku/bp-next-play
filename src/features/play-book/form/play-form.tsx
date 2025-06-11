@@ -156,6 +156,7 @@ export function PlayForm() {
               <div className="flex flex-wrap gap-2">
                 {tools.map(({ id, icon: Icon, label }) => (
                   <Button
+                    aria-label="Select Tool"
                     key={id}
                     onClick={() => setCurrentTool(id)}
                     variant={currentTool === id ? "secondary" : "outline"}
@@ -164,15 +165,27 @@ export function PlayForm() {
                     <Icon className="h-4 w-4" /> {label}
                   </Button>
                 ))}
-                <Button variant="outline" onClick={undoLastLine}>
+                <Button
+                  aria-label="Undo Last Line"
+                  variant="outline"
+                  onClick={undoLastLine}
+                >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Undo Line
                 </Button>
-                <Button variant="outline" onClick={clearDrawings}>
+                <Button
+                  aria-label="Clear Drawings"
+                  variant="outline"
+                  onClick={clearDrawings}
+                >
                   <Trash2 className="mr-2 h-4 w-4" />
                   Clear Lines
                 </Button>
-                <Button variant="outline" onClick={resetPlayers}>
+                <Button
+                  aria-label="Reset Players"
+                  variant="outline"
+                  onClick={resetPlayers}
+                >
                   <RotateCcw className="mr-2 h-4 w-4" />
                   Reset Players
                 </Button>
