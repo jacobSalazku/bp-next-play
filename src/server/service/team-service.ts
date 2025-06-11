@@ -12,6 +12,7 @@ export async function createNewTeam(ctx: Context, input: CreateTeamData) {
       name: input.name,
       image: input.image,
       creatorId: user.id,
+      ageGroup: input.ageGroup,
       code: Math.random().toString(36).substring(2, 8),
       createdAt: new Date(),
       members: {
@@ -172,6 +173,7 @@ export async function getTeam(ctx: Context, teamId: string) {
       name: true,
       code: true,
       image: true,
+      ageGroup: true,
       members: {
         select: {
           userId: true,
