@@ -258,12 +258,20 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
             />
             <div className="flex justify-end gap-3 pt-4">
               {role && isEditMode && (
-                <Button type="submit" variant="outline">
+                <Button
+                  aria-label="Edit Practice"
+                  type="submit"
+                  variant="outline"
+                >
                   Edit Practice
                 </Button>
               )}
               {role && isCreateMode && (
-                <Button type="submit" variant="outline">
+                <Button
+                  aria-label="Create Practice "
+                  type="submit"
+                  variant="outline"
+                >
                   Create Practice
                 </Button>
               )}

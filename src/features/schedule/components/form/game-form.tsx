@@ -159,7 +159,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
             />
             <div className="flex justify-end border-t border-gray-800 pt-4">
               {role && (
-                <Button type="submit" variant="outline">
+                <Button aria-label={buttonText} type="submit" variant="outline">
                   {buttonText}
                 </Button>
               )}
@@ -212,6 +212,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
             {role && (
               <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
                 <Button
+                  aria-label="Edit Game Form"
                   onClick={() => {
                     setFormState("edit");
                     reset({
