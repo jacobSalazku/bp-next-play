@@ -81,6 +81,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
             </p>
             {role && (
               <Button
+                aria-label="Add Activity"
                 variant="secondary"
                 size="sm"
                 className="mt-4 bg-gray-950 hover:bg-orange-200/10"
@@ -95,6 +96,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
         {role && (
           <div className="mt-auto flex w-full items-end justify-center gap-4 pt-4">
             <Button
+              aria-label="Create Game"
               onClick={() => setOpenGameModal(true)}
               type="button"
               variant="light"
@@ -103,6 +105,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
               Create Game
             </Button>
             <Button
+              aria-label="Create Practice"
               onClick={() => setOpenPracticeModal(true)}
               type="button"
               variant="outline"
