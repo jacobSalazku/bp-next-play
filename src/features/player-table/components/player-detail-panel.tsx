@@ -13,10 +13,16 @@ import type { User } from "@/types";
 import { format } from "date-fns";
 import { Calendar, User as UserICon } from "lucide-react";
 import Image from "next/image";
+import { useRouter } from "next/navigation";
+import { useDeletePlayer } from "../hooks/use-delete-member";
 import { getFullPosition } from "../utils";
 import { PlayerDetailItem } from "./player-detail-item";
 
 const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
+  const deletePlayer = useDeletePlayer();
+  const teamId = selectedPlayer.teamMember?.team.id;
+  const router = useRouter();
+
   if (!selectedPlayer) {
     return <div className="p-6 text-center text-white">Player not found.</div>;
   }
@@ -29,7 +35,15 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
           <Button
             variant="danger"
             size="sm"
-            // onClick={() => setIsEditing((prev) => !prev)}
+            onClick={() => {
+              if (selectedPlayer.teamMember?.id) {
+                deletePlayer.mutate({
+                  teamMemberId: selectedPlayer.teamMember.id,
+                  teamId: selectedPlayer.teamMember.team.id,
+                });
+                router.push(`/${teamId}/players`);
+              }
+            }}
           >
             Kick off Team
           </Button>

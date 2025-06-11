@@ -4,11 +4,11 @@ import { api } from "@/trpc/react";
 import { redirect } from "next/navigation";
 import { toast } from "sonner";
 
-export const useDeletePlay = () => {
+export const useDeletePlayer = () => {
   const { teamSlug } = useTeam();
   const utils = api.useUtils();
 
-  const deletePlay = api.user.deleteTeamMember.useMutation({
+  const deletePlayer = api.user.deleteTeamMember.useMutation({
     onSuccess: async () => {
       await utils.member.getTeamMembers.invalidate();
 
@@ -17,9 +17,10 @@ export const useDeletePlay = () => {
         icon: "🗑️",
         ...toastStyling,
       });
+
       redirect(`/${teamSlug}/players`);
     },
   });
 
-  return deletePlay;
+  return deletePlayer;
 };
