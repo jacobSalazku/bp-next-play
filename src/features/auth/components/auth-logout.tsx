@@ -26,7 +26,7 @@ const AuthLogoutModal = () => {
             <Button
               aria-label="Logout Button"
               size="lg"
-              onClick={() => signOut({ callbackUrl: "/" })}
+              onClick={() => signOut({ callbackUrl: "/login" })}
               variant="danger"
             >
               Logout

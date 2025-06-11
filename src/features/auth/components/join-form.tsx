@@ -76,14 +76,13 @@ const JoinTeamForm = () => {
         aria-label="Enter Jersey Number:"
         label="Jersey Number"
         type="text"
-        variant="dark"
         {...register("number")}
         error={errors.number}
         errorMessage={errors.number?.message}
       />
       <div className="space-2 flex items-center justify-between pt-2">
-        <Button type="submit" disabled={isPending}>
-          {isPending ? "Joining..." : "Request to Join"}
+        <Button aria-label="Join team" type="submit" disabled={isPending}>
+          {isPending ? "Joining..." : "Join Team"}
         </Button>
       </div>
     </form>
