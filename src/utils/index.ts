@@ -3,13 +3,13 @@ import { Trophy, Users } from "lucide-react";
 export function getTypeBgColor(type: string): string {
   switch (type.toLowerCase()) {
     case "game":
-      return "bg-indigo-300 text-indigo-800"; // closest to #a5b4fc
+      return "bg-indigo-300 text-indigo-800";
     case "practice":
-      return "bg-green-300 text-green-700"; // closest to #a7f3d0
+      return "bg-green-300 text-green-700";
     case "other":
-      return "bg-red-200 text-red-950"; // closest to #fecaca
+      return "bg-red-200 text-red-950";
     default:
-      return "bg-slate-200 text-slate-950"; // closest to #cbd5e1
+      return "bg-slate-200 text-slate-950";
   }
 }
 

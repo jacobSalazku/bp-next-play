@@ -17,8 +17,11 @@ import { Clock, X } from "lucide-react";
 import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreatePracticePreparation } from "../hooks/use-create-practice-preparation";
-import { getCategoryColor } from "../utils/play-catergory-color";
-import { practicePrepartionSchema, type PracticePreparationData } from "../zod";
+import { getCategoryColor } from "../utils/play-category-color";
+import {
+  practicePreparationSchema,
+  type PracticePreparationData,
+} from "../zod";
 
 export type Mode = "view" | "create";
 
@@ -43,8 +46,7 @@ const PracticePreparationForm: FC<PageProps> = ({
   const { setOpenPracticePreparation, openPracticePreparation } =
     useCoachDashboardStore();
 
-  const createPractocePreparation = useCreatePracticePreparation(
-    teamSlug,
+  const createPracticePreparation = useCreatePracticePreparation(
     () => setOpenPracticePreparation(false),
     () => {
       reset({
@@ -67,7 +69,7 @@ const PracticePreparationForm: FC<PageProps> = ({
     reset,
     formState: { errors, isSubmitting },
   } = useForm<PracticePreparationData>({
-    resolver: zodResolver(practicePrepartionSchema),
+    resolver: zodResolver(practicePreparationSchema),
   });
 
   useEffect(() => {
@@ -113,7 +115,7 @@ const PracticePreparationForm: FC<PageProps> = ({
       focus: data.focus,
     };
 
-    await createPractocePreparation.mutateAsync(gamePlan);
+    await createPracticePreparation.mutateAsync(gamePlan);
   };
 
   return (

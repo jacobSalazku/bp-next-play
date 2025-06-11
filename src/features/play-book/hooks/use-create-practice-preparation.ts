@@ -6,7 +6,6 @@ import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 export const useCreatePracticePreparation = (
-  teamId: string,
   onClose: () => void,
   resetForm: () => void,
 ) => {
@@ -21,7 +20,7 @@ export const useCreatePracticePreparation = (
         await utils.gameplan.invalidate();
         onClose();
 
-        toast.success("Your gameplan has been succesfully created", {
+        toast.success("Your gameplan has been successfully created", {
           ...toastStyling,
           position: "top-right",
         });
@@ -29,7 +28,7 @@ export const useCreatePracticePreparation = (
         resetForm();
         void router.refresh();
       },
-      onError: (error) => {
+      onError: () => {
         toast.error("Failed to create gameplan. Please try again.", {
           ...toastStyling,
           position: "top-right",

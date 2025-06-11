@@ -11,7 +11,7 @@ export const useDeletePracticePreparation = (teamId: string) => {
       await utils.gameplan.invalidate();
       console.log("Successfully deleted Practice Preparation");
 
-      toast.success("Praparation has been Deleted", {
+      toast.success("Preparation has been Deleted", {
         position: "top-right",
         icon: "🗑️",
         ...toastStyling,

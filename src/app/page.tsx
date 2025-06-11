@@ -4,12 +4,11 @@ import ProfileDropDown from "@/features/auth/components/profile-dropdown";
 import { redirect } from "next/navigation";
 
 async function Dashboard() {
-  const { user, teamMember } = await getUser();
+  const { user } = await getUser();
 
   if (user.hasOnBoarded === false) {
     redirect("/create/onboarding");
   }
-
 
   return (
     <>

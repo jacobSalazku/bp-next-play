@@ -11,7 +11,7 @@ import { BarChart3, TrendingUp } from "lucide-react";
 import { memo, useCallback, useMemo, useState } from "react";
 import { PlayerAveragesStatsCard } from "./components/player-average-stats-card";
 import { PerformanceComparisonChart } from "./components/player-performance-comparison-chart";
-import TeamPerfomanceChart from "./components/team/team-performance-chart";
+import TeamPerformanceChart from "./components/team/team-performance-chart";
 import TeamStatsOverView from "./components/team/team-stats-overview";
 import type { PlayerStatRow } from "./utils/types";
 
@@ -113,11 +113,11 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = memo(
                 aria-label="Export Team Statistics PDF"
                 href={`/${teamSlug}/statistics/pdf`}
               >
-                Exporteer Statistieken
+                Export Statistics
               </Link>
             </div>
             <TeamStatsOverView teamStatlist={teamStatlist} />
-            <TeamPerfomanceChart
+            <TeamPerformanceChart
               teamStatlist={teamStatlist}
               title="Monthly Performance Trends"
             />

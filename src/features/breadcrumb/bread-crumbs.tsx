@@ -59,7 +59,7 @@ export const Breadcrumb = () => {
               <Link
                 aria-label={label}
                 href={href}
-                className="font-righteous bg-transparant bg:hover-text text-2xl transition-colors duration-200 hover:bg-transparent hover:text-orange-300"
+                className="font-righteous bg:hover-text bg-transparent text-2xl transition-colors duration-200 hover:bg-transparent hover:text-orange-300"
               >
                 {label}
               </Link>

@@ -8,7 +8,7 @@ import { cn } from "@/utils/tw-merge";
 import { Eye, Trash2 } from "lucide-react";
 import Image from "next/image";
 import { useDeletePlay } from "../../hooks/use-delete-play";
-import { getCategoryColor } from "../../utils/play-catergory-color";
+import { getCategoryColor } from "../../utils/play-category-color";
 
 type PlayCardProps = {
   play: Play[number];

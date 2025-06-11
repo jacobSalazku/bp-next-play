@@ -2,7 +2,6 @@
 
 import { RotateCcw, Shield, Target, Users } from "lucide-react";
 
-import { useRouter } from "next/navigation";
 import type { PlayerStatRow } from "../../utils/types";
 import { StatisticsCard } from "../stats-card";
 import { PlayerPerformanceChart } from "./player-performance-chart";
@@ -12,8 +11,6 @@ type PlayerDetailViewProps = {
 };
 
 export function PlayerDetailStatistics({ player }: PlayerDetailViewProps) {
-  const router = useRouter();
-
   return (
     <div className="flex max-h-screen w-full flex-col bg-gray-950 pb-20">
       <div className="scrollbar-none flex-1 overflow-y-auto">

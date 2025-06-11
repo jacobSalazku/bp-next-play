@@ -28,7 +28,7 @@ export const useCreateGameplan = (
       resetForm();
       void router.refresh();
     },
-    onError: (error) => {
+    onError: () => {
       toast.error("Failed to create gameplan. Please try again.", {
         ...toastStyling,
         position: "top-right",

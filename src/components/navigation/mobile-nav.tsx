@@ -58,7 +58,7 @@ export function MobileNav({ items, onClose, isOpen, teamId }: MobileNavProps) {
                 !isOpen ? "mx-auto block" : "mr-1",
               )}
             />
-            {isOpen && <span>Lougout</span>}
+            {isOpen && <span>Logout</span>}
           </Button>
         </nav>
       </div>

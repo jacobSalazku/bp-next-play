@@ -28,7 +28,7 @@ type TeamPerformanceChartProps = {
   teamStatlist: TeamStats;
 };
 
-const TeamPerfomanceChart = memo(function TeamPerfomanceChart({
+const TeamPerformanceChart = memo(function TeamPerformanceChart({
   title,
   teamStatlist,
 }: TeamPerformanceChartProps) {
@@ -188,4 +188,4 @@ const TeamPerfomanceChart = memo(function TeamPerfomanceChart({
   );
 });
 
-export default TeamPerfomanceChart;
+export default TeamPerformanceChart;

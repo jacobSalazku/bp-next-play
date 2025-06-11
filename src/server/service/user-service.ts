@@ -7,7 +7,7 @@ type User = UpdateUserData & {
   hasOnBoarded: boolean;
 };
 
-export async function getUserbyId(ctx: Context) {
+export async function getUserById(ctx: Context) {
   if (!ctx.session?.user) {
     throw new TRPCError({
       code: "UNAUTHORIZED",

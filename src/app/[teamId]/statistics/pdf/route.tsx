@@ -10,10 +10,10 @@ import { NextResponse } from "next/server";
 
 export async function GET(
   req: Request,
-  { params }: { params: { teamId: string } },
+  { params }: { params: Promise<{ teamId: string }> },
 ) {
   try {
-    const { teamId } = params;
+    const { teamId } = await params;
     const { team } = await getTeam(teamId);
     const stats = await getStatlineAverage(teamId);
     const gamesWithScores = await getGamesStatline(teamId);

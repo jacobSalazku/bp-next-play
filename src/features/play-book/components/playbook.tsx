@@ -8,7 +8,7 @@ import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
 import { useTeam } from "@/context/team-context";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
-import type { GamePlan, Play, Practice, PracticePreparation } from "@/types";
+import type { GamePlan, Play, PracticePreparation } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { Plus } from "lucide-react";
 import { type FC, useCallback } from "react";
@@ -23,7 +23,6 @@ type PageProps = {
   playbook?: Play;
   gamePlan?: GamePlan[];
   role: string;
-  practices: Practice[];
 };
 
 const PlaybookBookBlock: FC<PageProps> = ({
@@ -31,7 +30,6 @@ const PlaybookBookBlock: FC<PageProps> = ({
   playbook,
   gamePlan,
   role,
-  practices,
 }) => {
   const { teamSlug } = useTeam();
   const {

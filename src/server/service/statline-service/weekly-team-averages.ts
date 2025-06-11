@@ -31,7 +31,7 @@ export async function getWeeklyTeamStatlineAverages(
     const weekKey: string = startOfWeek.toISOString().split("T")[0] ?? "";
 
     gamesByWeek[weekKey] ??= [];
-    gamesByWeek[weekKey].push(game.id);
+    gamesByWeek[weekKey]?.push(game.id);
   }
 
   const weeklyStats = [];

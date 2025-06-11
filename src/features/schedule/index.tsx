@@ -1,7 +1,7 @@
 import { getUser } from "@/api/user";
 import type { Activity, TeamInformation } from "@/types";
 import { ActivityList } from "./components/activity/activity-list";
-import { HorizontalCalender } from "./components/calender/horizontal-calander";
+import { HorizontalCalender } from "./components/calender/horizontal-calender";
 
 const ScheduleBlock = async ({
   activities,

@@ -1,17 +1,16 @@
-import { practicePrepartionSchema } from "@/features/play-book/zod";
-
+import { practicePreparationSchema } from "@/features/play-book/zod";
 import {
   createPracticePreparation,
   deletePracticePreparation,
   getPracticePreparation,
-} from "@/server/service/practice-praparation-service";
+} from "@/server/service/practice-preparation-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { verifyCoachPermission } from "../utils/check-membership";
 
 export const practiceRouter = createTRPCRouter({
   createPracticePreparation: protectedProcedure
-    .input(practicePrepartionSchema)
+    .input(practicePreparationSchema)
     .use(async ({ ctx, input, next }) => {
       await verifyCoachPermission(ctx, input.teamId);
 

@@ -53,7 +53,7 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
               </div>
               <div className="flex items-center gap-2">
                 <MapPin className="h-4 w-4 text-white/40" />
-                <span className="text-white/60">Locatie</span>
+                <span className="text-white/60">Location</span>
               </div>
             </>
           ) : (

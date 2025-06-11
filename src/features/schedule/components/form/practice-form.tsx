@@ -191,7 +191,7 @@ const PracticeForm: FC<PracticeProps> = ({ mode, onClose, member }) => {
               label="Title"
               labelColor="light"
               type="text"
-              placeholder="voorbereiding wedstrijd"
+              placeholder="Preparation for next match"
               {...register("title")}
               error={errors.title}
               errorMessage={errors.title?.message}

@@ -19,7 +19,7 @@ import { useEffect, useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { toast } from "sonner";
 import { useCreateGameplan } from "../hooks/use-create-gameplan";
-import { getCategoryColor } from "../utils/play-catergory-color";
+import { getCategoryColor } from "../utils/play-category-color";
 import { gamePlanSchema, type GamePlanData } from "../zod";
 
 export type Mode = "view" | "create";

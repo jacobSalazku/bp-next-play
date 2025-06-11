@@ -62,7 +62,7 @@ const CreateTeamForm = () => {
           image: file ? file.name : undefined,
         },
         {
-          onSuccess: (newTeam) => {
+          onSuccess: () => {
             createTeam.reset();
             router.push("/");
           },

@@ -1,5 +1,6 @@
 "use client";
 
+import { Link } from "@/components/foundation/button/link";
 import {
   Card,
   CardContent,
@@ -13,12 +14,10 @@ import { TableCell } from "@/components/foundation/table/table-cell";
 import { TableHead } from "@/components/foundation/table/table-head";
 import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
-import type { TeamInformation, TeamMember } from "@/types";
-import { type FC } from "react";
-
-import { Link } from "@/components/foundation/button/link";
 import { useTeam } from "@/context/team-context";
+import type { TeamInformation, TeamMember } from "@/types";
 import { Copy } from "lucide-react";
+import { type FC } from "react";
 import { toast } from "sonner";
 import { toastStyling } from "../toast-notification/styling";
 import { getFullPosition } from "./utils";
@@ -57,7 +56,7 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                   TeamCode
                   <span
                     onClick={handleCopy}
-                    className="curson-pointer text-sm text-gray-400"
+                    className="cursor-pointer text-sm text-gray-400"
                   >
                     <Copy className="h-4 w-4 cursor-pointer" />
                   </span>

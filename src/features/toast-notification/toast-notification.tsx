@@ -1,11 +1,11 @@
 import { cn } from "@/utils/tw-merge";
 import { Toaster as Sonner } from "sonner";
 
-type ToastNotficationProps = {
+type ToastNotificationProps = {
   className?: string;
 };
 
-const Toaster = ({ className, ...props }: ToastNotficationProps) => {
+const Toaster = ({ className, ...props }: ToastNotificationProps) => {
   return (
     <Sonner
       position="top-center"
