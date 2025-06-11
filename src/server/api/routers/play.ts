@@ -8,7 +8,7 @@ import {
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const playRouter = createTRPCRouter({
   createPlay: protectedProcedure
@@ -34,7 +34,7 @@ export const playRouter = createTRPCRouter({
       return play;
     }),
 
-  getPlays: protectedProcedure
+  getPlays: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const plays = await getPlays(ctx, input.teamId);
@@ -61,7 +61,7 @@ export const playRouter = createTRPCRouter({
       return play;
     }),
 
-  getPlayById: protectedProcedure
+  getPlayById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const play = await getPlayById(ctx, input.id);

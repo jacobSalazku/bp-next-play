@@ -13,7 +13,7 @@ import {
 } from "@/server/service/practice-activity";
 import { ActivityType } from "@prisma/client";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import {
   checkTeamMembership,
   verifyCoachPermission,
@@ -107,7 +107,7 @@ export const activityRouter = createTRPCRouter({
       return updatedGame;
     }),
 
-  getActivities: protectedProcedure
+  getActivities: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       await checkTeamMembership(ctx, input.teamId);
@@ -138,7 +138,7 @@ export const activityRouter = createTRPCRouter({
       return activities;
     }),
 
-  getActivity: protectedProcedure
+  getActivity: publicProcedure
     .input(z.object({ activityId: z.string() }))
     .query(async ({ ctx, input }) => {
       const activity = await getActivity(ctx, input.activityId);
@@ -146,7 +146,7 @@ export const activityRouter = createTRPCRouter({
       return activity;
     }),
 
-  getGames: protectedProcedure
+  getGames: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const games = await getGames(ctx, input.teamId);
@@ -154,7 +154,7 @@ export const activityRouter = createTRPCRouter({
       return games;
     }),
 
-  getPractices: protectedProcedure
+  getPractices: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const practices = await getPractices(ctx, input.teamId);

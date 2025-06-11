@@ -1,9 +1,10 @@
 import { practicePrepartionSchema } from "@/features/play-book/zod";
+
 import {
   createPracticePreparation,
+  deletePracticePreparation,
   getPracticePreparation,
-  getPracticePreparationById,
-} from "@/server/service/practice-service";
+} from "@/server/service/practice-praparation-service";
 import { z } from "zod";
 import { createTRPCRouter, protectedProcedure } from "../trpc";
 import { verifyCoachPermission } from "../utils/check-membership";
@@ -21,6 +22,7 @@ export const practiceRouter = createTRPCRouter({
 
       return practicePreparation;
     }),
+
   getPracticePreparation: protectedProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
@@ -31,14 +33,19 @@ export const practiceRouter = createTRPCRouter({
 
       return practicePreparation;
     }),
-  getPracticePreparationById: protectedProcedure
-    .input(z.object({ id: z.string() }))
-    .query(async ({ ctx, input }) => {
-      const practicePreparation = await getPracticePreparationById(
+
+  deletePracticePreparation: protectedProcedure
+    .input(z.object({ id: z.string(), teamId: z.string() }))
+    .use(async ({ ctx, input, next }) => {
+      await verifyCoachPermission(ctx, input.teamId);
+
+      return next();
+    })
+    .mutation(async ({ ctx, input }) => {
+      const deletedPracticePreparation = await deletePracticePreparation(
         ctx,
         input.id,
       );
-
-      return practicePreparation;
+      return deletedPracticePreparation;
     }),
 });

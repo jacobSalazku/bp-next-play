@@ -6,7 +6,7 @@ import {
   getGameplanById,
 } from "@/server/service/gameplan-service";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 import { verifyCoachPermission } from "../utils/check-membership";
 
 export const gameplanRouter = createTRPCRouter({
@@ -32,7 +32,7 @@ export const gameplanRouter = createTRPCRouter({
       return gamePlan;
     }),
 
-  getGameplan: protectedProcedure
+  getGameplan: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       const gameplan = await getGameplan(ctx, input.teamId);
@@ -57,7 +57,7 @@ export const gameplanRouter = createTRPCRouter({
       return gamePlan;
     }),
 
-  getGamePlanById: protectedProcedure
+  getGamePlanById: publicProcedure
     .input(z.object({ id: z.string() }))
     .query(async ({ ctx, input }) => {
       const gameplan = await getGameplanById(ctx, input.id);
