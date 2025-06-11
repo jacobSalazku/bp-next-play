@@ -1,6 +1,7 @@
 import { getActivity } from "@/api/activity";
 import { getRole } from "@/api/role";
 import { getActiveTeamMember } from "@/api/user";
+import withAuth from "@/features/auth/components/with-auth";
 import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
@@ -49,4 +50,4 @@ async function PlayerPage({ params, searchParams }: PageProps) {
     </div>
   );
 }
-export default PlayerPage;
+export default withAuth(PlayerPage);

@@ -1,17 +1,17 @@
-import { getPlays } from "@/api/play";
-import PlaybookLibraryPage from "@/features/play-book/components/playbook-library";
-import type { SearchParams } from "nuqs/server";
+// import { getPlays } from "@/api/play";
 
-type PageProps = {
-  searchParams: Promise<SearchParams>;
-  params: Promise<{ teamId: string }>;
-};
+// import type { SearchParams } from "nuqs/server";
 
-async function CoachPage({ params, searchParams }: PageProps) {
-  const { teamId } = await params;
-  const playbook = await getPlays(teamId);
+// type PageProps = {
+//   searchParams: Promise<SearchParams>;
+//   params: Promise<{ teamId: string }>;
+// };
 
-  return <PlaybookLibraryPage playbook={playbook} />;
-}
+// async function CoachPage({ params, searchParams }: PageProps) {
+//   const { teamId } = await params;
+//   const playbook = await getPlays(teamId);
 
-export default CoachPage;
+//   return <PlaybookLibraryPage playbook={playbook} />;
+// }
+
+// export default CoachPage;

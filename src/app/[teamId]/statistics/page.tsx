@@ -1,5 +1,6 @@
 import { getStatlineAverage, getTeamStats } from "@/api/statline";
 import { getTeam } from "@/api/team";
+import WithAuth from "@/features/auth/components/with-auth";
 import StatisticsBlock from "@/features/statistics";
 
 type PageProps = {
@@ -26,4 +27,4 @@ async function StatisticsPage({ params }: PageProps) {
     </div>
   );
 }
-export default StatisticsPage;
+export default WithAuth(StatisticsPage);
