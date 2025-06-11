@@ -2,6 +2,8 @@ import { getStatlineAverage, getTeamStats } from "@/api/statline";
 import { getTeam } from "@/api/team";
 import WithAuth from "@/features/auth/components/with-auth";
 import StatisticsBlock from "@/features/statistics";
+import StatisticsSkeleton from "@/features/statistics/components/skeleton-statistics";
+import { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{ teamId: string }>;
@@ -23,7 +25,13 @@ async function StatisticsPage({ params }: PageProps) {
 
   return (
     <div className="scrollbar-none overflow-y-auto">
-      <StatisticsBlock teamStatlist={stats} statsList={statsList} team={team} />
+      <Suspense fallback={<StatisticsSkeleton />}>
+        <StatisticsBlock
+          teamStatlist={stats}
+          statsList={statsList}
+          team={team}
+        />
+      </Suspense>
     </div>
   );
 }
