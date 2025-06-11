@@ -153,8 +153,8 @@ model Statline {
   activityId          String
   
   // Relationships
-  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id])
-  activity            Activity     @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  activity            Activity     @relation(fields: [activityId], references: [id],onDelete: Cascade)
 
   @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") 
 }
@@ -187,7 +187,7 @@ model OpponentStatline {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  activity         Activity   @relation(fields: [activityId], references: [id])
+  activity         Activity   @relation(fields: [activityId], references: [id],onDelete: Cascade)
   @@unique([activityId], map: "opponent_activity_unique")
 }
 
