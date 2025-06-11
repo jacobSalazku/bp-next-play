@@ -1,4 +1,9 @@
-import { StyleSheet } from "@react-pdf/renderer";
+import { Font, StyleSheet } from "@react-pdf/renderer";
+
+Font.register({
+  family: "Righteous",
+  src: "https://github.com/google/fonts/raw/main/ofl/righteous/Righteous-Regular.ttf",
+});
 
 export const PDFstyles = StyleSheet.create({
   page: {

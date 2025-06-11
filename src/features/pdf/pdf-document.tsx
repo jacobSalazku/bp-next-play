@@ -25,7 +25,7 @@ export function PDFDocument({
           <Text>NextPlays</Text>
         </View>
         <View style={PDFstyles.section}>
-          <Text>{teamName} Player Stat</Text>
+          <Text>{teamName} Team Stats</Text>
           <Text style={{ fontSize: 14, color: "#6b7280" }}>
             {new Date().toLocaleDateString("nl-BE", {
               year: "numeric",
