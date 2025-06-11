@@ -1,8 +1,10 @@
 "use client";
 
+import { Link } from "@/components/foundation/button/link";
 import { Tabs, TabsList } from "@/components/foundation/tabs/tab-list";
 import { TabsContent } from "@/components/foundation/tabs/tabs-content";
 import { TabsTrigger } from "@/components/foundation/tabs/tabs-trigger";
+import { useTeam } from "@/context/team-context";
 import type { Statlines, TeamInformation, TeamStats } from "@/types";
 import { cn } from "@/utils/tw-merge";
 import { BarChart3, TrendingUp } from "lucide-react";
@@ -23,6 +25,7 @@ type ChartsBlockProps = {
 
 const StatisticsBlock: React.FC<ChartsBlockProps> = memo(
   function StatisticsBlock({ statsList, team, teamStatlist }) {
+    const { teamSlug } = useTeam();
     const [activeTab, setActiveTab] = useState<TabType>("team");
 
     const handleTabChange = useCallback(
@@ -105,6 +108,14 @@ const StatisticsBlock: React.FC<ChartsBlockProps> = memo(
             </TabsTrigger>
           </TabsList>
           <TabsContent value="team" className="space-y-4 py-4">
+            <div>
+              <Link
+                aria-label="Export Team Statistics PDF"
+                href={`/${teamSlug}/statistics/pdf`}
+              >
+                Exporteer Statistieken
+              </Link>
+            </div>
             <TeamStatsOverView teamStatlist={teamStatlist} />
             <TeamPerfomanceChart
               teamStatlist={teamStatlist}

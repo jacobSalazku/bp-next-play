@@ -77,10 +77,15 @@ const TeamPerfomanceChart = memo(function TeamPerfomanceChart({
             {title}
           </CardTitle>
           <div className="mt-2 flex justify-center space-x-4">
-            <Button onClick={handlePrevPage} disabled={page === 0}>
+            <Button
+              aria-label="Previous Page"
+              onClick={handlePrevPage}
+              disabled={page === 0}
+            >
               Previous
             </Button>
             <Button
+              aria-label="Next Page"
               onClick={handleNextPage}
               disabled={(page + 1) * itemsPerPage >= totalItems}
             >
