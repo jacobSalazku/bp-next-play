@@ -141,8 +141,8 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
             <h2 className="font-righteous text-lg font-normal text-gray-950 sm:text-xl">
               Create GamePlan
             </h2>
-            <button
-              className="rounded p-1 text-xl font-bold text-gray-950"
+            <Button
+              className="bg-transparent py-2 text-xl font-bold text-gray-400 shadow-none hover:bg-gray-900 hover:text-white"
               aria-label="Close"
               onClick={() => {
                 setOpenGamePlan(false);
@@ -161,7 +161,7 @@ const GamePlanForm: FC<GamePlanFormProps> = ({
               }}
             >
               <X className="h-6 w-6" />
-            </button>
+            </Button>
           </div>
           <div className="scrollbar-none max-h-[90vh] w-full max-w-4xl overflow-y-auto rounded-b-lg border border-gray-800 bg-gray-950 px-3 text-white">
             <form
