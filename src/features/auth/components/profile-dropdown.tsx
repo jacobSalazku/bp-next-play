@@ -1,7 +1,9 @@
 "use client";
 
+import { Button } from "@/components/foundation/button/button";
 import { Link } from "@/components/foundation/button/link";
 import { User } from "lucide-react";
+import { signOut } from "next-auth/react";
 import { useEffect, useRef, useState } from "react";
 
 const ProfileDropDown = () => {
@@ -25,7 +27,7 @@ const ProfileDropDown = () => {
     <div ref={dropdownRef} className="relative inline-block text-left">
       <button
         onClick={() => setOpen((prev) => !prev)}
-        className="flex items-center gap-2 rounded-full border border-white px-4 py-2 hover:bg-gray-600"
+        className="flex items-center gap-2 rounded-full border border-white/50 px-4 py-2 hover:bg-gray-600"
       >
         <User className="h-5 w-5" />
         <span>Profile</span>
@@ -43,16 +45,17 @@ const ProfileDropDown = () => {
           <Link
             aria-label="create team"
             href="/create/create-team"
-            className="hover:text-whi block px-4 py-2 hover:bg-gray-700"
+            className="block px-4 py-2 hover:bg-gray-700 hover:text-white"
           >
             Create Team
           </Link>
-          <Link
-            href="/logout"
-            className="hover:text-whi block px-4 py-2 hover:bg-gray-700"
+          <Button
+            size="full"
+            onClick={() => signOut({ callbackUrl: "/login" })}
+            className="justify-start px-4 py-2 hover:bg-gray-700 hover:text-white"
           >
             Logout
-          </Link>
+          </Button>
         </div>
       )}
     </div>

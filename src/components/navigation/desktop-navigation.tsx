@@ -4,10 +4,9 @@ import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
 import { Breadcrumb } from "@/features/breadcrumb/bread-crumbs";
 import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
-import { ChevronRight, LogOut } from "lucide-react";
+import { ChevronRight } from "lucide-react";
 import type { FC } from "react";
 import type { NavItemType } from ".";
-import { Button } from "../foundation/button/button";
 import { NavItem } from "./nav-item";
 
 type DesktopNavProps = {
@@ -73,26 +72,9 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
                 </NavItem>
               </li>
             ))}
-
             {openLogOutModal && <AuthLogoutModal />}
           </ul>
         </nav>
-        <Button
-          aria-label="Logout"
-          className={cn(
-            "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
-            isOpen ? "justify-start" : "justify-center",
-          )}
-          onClick={() => setOpenLogOutModal(true)}
-        >
-          <LogOut
-            className={cn(
-              "mr-2 h-5 w-5 rotate-180",
-              !isOpen ? "mx-auto block" : "mr-1",
-            )}
-          />
-          {isOpen && <span>Lougout</span>}
-        </Button>
       </aside>
 
       <main className="scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 text-white md:rounded-tl-2xl md:rounded-bl-xl md:px-4">
