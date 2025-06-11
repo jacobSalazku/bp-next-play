@@ -100,7 +100,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
               onClick={() => setOpenGameModal(true)}
               type="button"
               variant="light"
-              className="w-1/2"
+              className="w-1/2 py-5"
             >
               Create Game
             </Button>
@@ -109,7 +109,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
               onClick={() => setOpenPracticeModal(true)}
               type="button"
               variant="outline"
-              className="w-1/2"
+              className="w-1/2 py-5"
             >
               Create Practice
             </Button>
