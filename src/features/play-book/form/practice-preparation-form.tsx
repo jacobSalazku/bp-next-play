@@ -9,7 +9,7 @@ import { getButtonText } from "@/features/schedule/utils/button-text";
 import { RichTextEditor } from "@/features/wysiwyg/text-editor";
 import { cn } from "@/lib/utils";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
-import type { Game, Practices } from "@/types";
+import type { Game, Practice } from "@/types";
 import { zodResolver } from "@hookform/resolvers/zod";
 import type { Play } from "@prisma/client";
 import { format } from "date-fns";
@@ -23,7 +23,7 @@ import { practicePrepartionSchema, type PracticePreparationData } from "../zod";
 export type Mode = "view" | "create";
 
 type PageProps = {
-  practices: Practices;
+  practices: Practice[];
   mode: Mode;
   role: string;
   playbook?: Play[];
@@ -335,7 +335,11 @@ const PracticePreparationForm: FC<PageProps> = ({
               </div>
               <div className="bg-g flex justify-end border-t border-gray-800 pt-4">
                 {isCoach && (
-                  <Button type="submit" variant="outline">
+                  <Button
+                    aria-label="Submit Practice Preparation"
+                    type="submit"
+                    variant="outline"
+                  >
                     {buttonText}
                   </Button>
                 )}

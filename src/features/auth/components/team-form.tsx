@@ -3,6 +3,7 @@
 import { Button } from "@/components/foundation/button/button";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -115,11 +116,12 @@ const CreateTeamForm = () => {
             className="max-h-64 w-full rounded object-contain shadow"
           />
           <button
+            aria-label="Remove file"
             onClick={removeFile}
             type="button"
             className="absolute top-2 right-2 rounded-full bg-white p-1 text-lg text-gray-700 hover:text-red-500"
           >
-            ×
+            <X className="h-5 w-5" />
           </button>
         </div>
       )}

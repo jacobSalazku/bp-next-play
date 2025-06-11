@@ -1,6 +1,5 @@
 "use client";
 
-import { Button } from "@/components/foundation/button/button";
 import {
   Card,
   CardContent,
@@ -14,12 +13,14 @@ import { TableCell } from "@/components/foundation/table/table-cell";
 import { TableHead } from "@/components/foundation/table/table-head";
 import { TableHeader } from "@/components/foundation/table/table-header";
 import { TableRow } from "@/components/foundation/table/table-row";
-import { cn } from "@/lib/utils";
-import { useNavigationStore } from "@/store/use-navigation-store";
 import type { TeamInformation, TeamMember } from "@/types";
-import { useState, type FC } from "react";
+import { type FC } from "react";
 
-import PlayerDetailPanel from "./components/player-detail-panel";
+import { Link } from "@/components/foundation/button/link";
+import { useTeam } from "@/context/team-context";
+import { Copy } from "lucide-react";
+import { toast } from "sonner";
+import { toastStyling } from "../toast-notification/styling";
 import { getFullPosition } from "./utils";
 
 type PlayerBlockProps = {
@@ -28,34 +29,43 @@ type PlayerBlockProps = {
 };
 
 export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
-  const { playerSideBar, setPlayerSideBar, setNavOpen } = useNavigationStore();
-  const [selectedPlayer, setSelectedPlayer] = useState<TeamMember | null>(null);
+  const { teamSlug } = useTeam();
 
-  const handlePlayerClick = (player: TeamMember) => {
-    setSelectedPlayer(player);
-    setPlayerSideBar(true);
-    setNavOpen(false);
+  const handleCopy = () => {
+    navigator.clipboard
+      .writeText(team.code)
+      .then(() => {
+        toast.success("Team code copied to clipboard!", toastStyling);
+      })
+      .catch(() => {
+        toast.error("Failed to copy team code.");
+      });
   };
 
   return (
     <>
-      <Card
-        className={cn(
-          playerSideBar && "blur-sm",
-          "w-full rounded-2xl border border-orange-300/10 bg-gradient-to-br from-gray-950 to-gray-900 py-6 text-white shadow-md transition-all duration-300 md:px-8",
-        )}
-      >
+      <Card className="w-full rounded-2xl border-none py-6 text-white shadow-md transition-all duration-300 md:px-8">
         <CardHeader className="border-b border-orange-200/10 pb-6">
           <div className="flex flex-col gap-4">
-            <CardTitle className="text-3xl font-semibold tracking-wide">
+            <CardTitle className="font-righteous text-3xl font-semibold tracking-wide">
               {team.name} Players
             </CardTitle>
-            <CardDescription className="text-sm text-gray-400">
+            <CardDescription className="flex flex-col gap-4 text-sm text-gray-400">
               Manage your basketball team roster and access player details.
+              <div className="flex items-center justify-between">
+                <div className="flex items-center gap-2">
+                  TeamCode
+                  <span
+                    onClick={handleCopy}
+                    className="curson-pointer text-sm text-gray-400"
+                  >
+                    <Copy className="h-4 w-4 cursor-pointer" />
+                  </span>
+                </div>
+              </div>
             </CardDescription>
           </div>
         </CardHeader>
-
         <CardContent>
           <div className="overflow-x-auto">
             <Table>
@@ -70,13 +80,11 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                   <TableHead className="text-right"></TableHead>
                 </TableRow>
               </TableHeader>
-
               <TableBody>
                 {members && members.length > 0 ? (
                   members.map((player) => (
                     <TableRow
                       key={player.id}
-                      onClick={() => handlePlayerClick(player)}
                       className="group cursor-pointer border-b border-gray-800 transition-colors hover:bg-orange-200/5"
                     >
                       <TableCell className="py-4 font-semibold">
@@ -108,17 +116,17 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                       </TableCell>
 
                       <TableCell className="text-right">
-                        <Button
-                          variant="outline"
-                          size="sm"
-                          onClick={(e) => {
-                            e.stopPropagation();
-                            handlePlayerClick(player);
+                        <Link
+                          aria-label="View Player Profile"
+                          href={{
+                            pathname: `/${teamSlug}/players/profile`,
+                            query: { id: player.user.id },
                           }}
-                          className="transition group-hover:border-orange-300 group-hover:text-orange-300"
+                          variant="default"
+                          size="sm"
                         >
                           View
-                        </Button>
+                        </Link>
                       </TableCell>
                     </TableRow>
                   ))
@@ -137,12 +145,6 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
           </div>
         </CardContent>
       </Card>
-
-      {playerSideBar && selectedPlayer && (
-        <div className="mt-6">
-          <PlayerDetailPanel selectedPlayer={selectedPlayer} />
-        </div>
-      )}
     </>
   );
 };
