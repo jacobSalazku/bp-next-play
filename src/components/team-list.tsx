@@ -9,9 +9,9 @@ const Teamlist = async () => {
     return null;
   }
   return (
-    <div className="flex w-full flex-col items-center justify-center gap-4 px-4 py-8">
+    <div className="flex w-full flex-col items-center justify-center gap-4 px-2 py-8">
       {teams.length > 0 ? (
-        <div className="grid w-full gap-6 md:grid-cols-2 lg:grid-cols-3">
+        <div className="grid w-full max-w-7xl gap-6 md:grid-cols-2 lg:grid-cols-3">
           {teams.map((team) => (
             <TeamCard key={team.code} team={team} />
           ))}
@@ -22,15 +22,21 @@ const Teamlist = async () => {
             You are not part of any team
           </h2>
           <div className="inline-flex gap-6">
-            <Link href="/create/create-team" size="lg" variant="outline">
+            <Link
+              aria-label="create team"
+              href="/create/create-team"
+              size="lg"
+              variant="outline"
+            >
               Create Team
             </Link>
             <Link
+              aria-label="join team"
               href="/create/join-team"
               size="lg"
               className="mr-2 inline-flex justify-center bg-[#DCE6F1] px-4 py-2 font-medium text-gray-900 hover:brightness-90"
             >
-              Request to Join
+              Join Team
             </Link>
           </div>
         </div>

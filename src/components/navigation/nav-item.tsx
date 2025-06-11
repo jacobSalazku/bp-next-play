@@ -10,6 +10,7 @@ type NavItemProps = {
   isCollapsed?: boolean;
   onClick?: () => void;
 };
+
 export function NavItem({
   href,
   icon: Icon,
@@ -18,7 +19,8 @@ export function NavItem({
   onClick,
 }: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname.startsWith(href);
+
   return (
     <Link
       href={href}

@@ -9,9 +9,10 @@ type MobileNavProps = {
   items: NavItemType[];
   onClose: () => void;
   isOpen: boolean;
+  teamId?: string;
 };
 
-export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
+export function MobileNav({ items, onClose, isOpen, teamId }: MobileNavProps) {
   const { mobileNavOpen, setOpenLogOutModal } = useNavigationStore();
   return (
     <div
@@ -26,6 +27,7 @@ export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
             NextPlay
           </h2>
           <Button
+            aria-label="Close Mobile Navigation"
             variant="close"
             onClick={onClose}
             className="rounded p-2 shadow-none hover:text-white"
@@ -35,13 +37,15 @@ export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
         </div>
         <nav className="flex-1 overflow-y-auto">
           <ul className="space-y-1 pt-4">
-            {items.map((item, idx) => (
-              <NavItem key={idx} {...item} onClick={onClose}>
-                {item.label}
-              </NavItem>
-            ))}
+            {teamId &&
+              items.map((item, idx) => (
+                <NavItem key={idx} {...item} onClick={onClose}>
+                  {item.label}
+                </NavItem>
+              ))}
           </ul>
           <Button
+            aria-label="Logout"
             className={cn(
               "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
               isOpen ? "justify-start" : "justify-center",

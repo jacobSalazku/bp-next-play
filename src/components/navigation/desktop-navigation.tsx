@@ -1,6 +1,7 @@
 "use client";
 
 import { AuthLogoutModal } from "@/features/auth/components/auth-logout";
+import { Breadcrumb } from "@/features/breadcrumb/bread-crumbs";
 import { cn } from "@/lib/utils";
 import { useNavigationStore } from "@/store/use-navigation-store";
 import { ChevronRight, LogOut } from "lucide-react";
@@ -14,6 +15,7 @@ type DesktopNavProps = {
   isOpen: boolean;
   onToggle: () => void;
   children: React.ReactNode;
+  teamId?: string;
 };
 
 export const DesktopNavigation: FC<DesktopNavProps> = ({
@@ -22,12 +24,10 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
   onToggle,
   children,
 }) => {
-  const { setPlayerSideBar, openLogOutModal, setOpenLogOutModal } =
-    useNavigationStore();
+  const { openLogOutModal, setOpenLogOutModal } = useNavigationStore();
 
   const handleToggle = () => {
     onToggle();
-    setPlayerSideBar(false);
   };
 
   return (
@@ -39,7 +39,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
           "shadow-inner shadow-black/40",
         )}
       >
-        <div className="flex items-center justify-between border-b border-orange-200/30 px-4 py-6">
+        <div className="flex items-center justify-between border-b-2 border-gray-900 px-4 py-4">
           <h2
             className={cn(
               "font-righteous text-3xl font-bold transition-opacity delay-1000 duration-300",
@@ -49,6 +49,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
             NextPlay
           </h2>
           <button
+            aria-label="Toggle Navigation"
             onClick={handleToggle}
             className={cn(
               !isOpen && "mx-auto",
@@ -77,6 +78,7 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
           </ul>
         </nav>
         <Button
+          aria-label="Logout"
           className={cn(
             "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
             isOpen ? "justify-start" : "justify-center",
@@ -93,7 +95,8 @@ export const DesktopNavigation: FC<DesktopNavProps> = ({
         </Button>
       </aside>
 
-      <main className="scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 px-1 py-2 text-white md:rounded-tl-2xl md:rounded-bl-xl md:px-4">
+      <main className="scrollbar-none relative flex w-full flex-col bg-gradient-to-br from-black to-gray-900 text-white md:rounded-tl-2xl md:rounded-bl-xl md:px-4">
+        <Breadcrumb />
         {children}
       </main>
     </>
