@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
+import { Input } from "@/components/foundation/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { X } from "lucide-react";
@@ -121,21 +122,24 @@ const CreateTeamForm = () => {
       )}
 
       <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="mb-2 block text-sm font-bold text-gray-700"
-        >
-          Team Name:
-        </label>
-        <input
-          type="text"
+        <Input
           id="name"
+          label="Team Name"
+          type="text"
           {...register("name")}
-          className="focus:shadow-outline w-full rounded border px-3 py-2 leading-tight text-black shadow focus:outline-none"
+          error={errors.name}
+          errorMessage={errors.name?.message}
         />
-        {errors.name && (
-          <p className="text-xs text-red-500 italic">{errors.name.message}</p>
-        )}
+      </div>
+      <div className="mb-4">
+        <Input
+          id="name"
+          label="Age group"
+          type="text"
+          {...register("ageGroup")}
+          error={errors.ageGroup}
+          errorMessage={errors.ageGroup?.message}
+        />
       </div>
 
       <div className="flex items-center justify-between">

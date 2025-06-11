@@ -1,5 +1,6 @@
 'use client";';
 import type { Team } from "@/types";
+import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar, Clock, MapPin } from "lucide-react";
 import type { FC } from "react";
@@ -16,7 +17,7 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
         <div className="flex items-center justify-between">
           <h2 className="truncate text-lg font-semibold">{team.name}</h2>
           <span className="rounded border border-white/20 px-2 py-0.5 text-sm text-white/80">
-            U14
+            {team.ageGroup}
           </span>
         </div>
         <p className="mt-1 text-sm text-white/60">
@@ -29,12 +30,12 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
             <>
               <div className="flex justify-between">
                 <span className="font-medium text-white">Next Activity:</span>
-                {team.activities[0]?.type === "Game" && (
+                {team.activities[0]?.type === ActivityType.GAME && (
                   <span className="text-white/80">
                     vs {team.activities[0].title}
                   </span>
                 )}
-                {team.activities[0]?.type === "Practice" && (
+                {team.activities[0]?.type === ActivityType.PRACTICE && (
                   <span className="text-white/80">
                     {team.activities[0].title}
                   </span>

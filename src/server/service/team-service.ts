@@ -124,6 +124,7 @@ export async function getTeams(ctx: Context) {
       name: true,
       code: true,
       image: true,
+      ageGroup: true,
       createdAt: true,
       creatorId: true,
       activities: {
