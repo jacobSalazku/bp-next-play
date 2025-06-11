@@ -2,6 +2,7 @@ import { getStatlineAverage } from "@/api/statline";
 import { PlayerDetailStatistics } from "@/features/statistics/components/player-detail/player-detail-statistics";
 import type { PlayerStatRow } from "@/features/statistics/utils/types";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
+import { notFound } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 
 type PageProps = {
@@ -14,13 +15,12 @@ async function PlayerStatisticsDetailPage({ params, searchParams }: PageProps) {
   const { id } = await boxScoreSearchParamsCache.parse(searchParams);
 
   const statsList = await getStatlineAverage(teamId);
-  const player = statsList.find((stat) => stat.teamMemberId === id);
+  const player = statsList?.find((stat) => stat.teamMemberId === id);
 
   if (!player) {
-    return <div>Player not found.</div>;
+    return notFound();
   }
 
-  // Map player object to PlayerStatRow structure
   const mappedPlayer: PlayerStatRow = {
     teamMemberId: player.teamMemberId,
     name: player.name ?? "",

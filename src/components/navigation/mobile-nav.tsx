@@ -9,9 +9,10 @@ type MobileNavProps = {
   items: NavItemType[];
   onClose: () => void;
   isOpen: boolean;
+  teamId?: string;
 };
 
-export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
+export function MobileNav({ items, onClose, isOpen, teamId }: MobileNavProps) {
   const { mobileNavOpen, setOpenLogOutModal } = useNavigationStore();
   return (
     <div
@@ -20,28 +21,31 @@ export function MobileNav({ items, onClose, isOpen }: MobileNavProps) {
         "fixed inset-0 z-50 bg-black/20 md:hidden",
       )}
     >
-      <div className="absolute top-0 left-0 flex h-full w-[250px] flex-col bg-gray-950 shadow-lg transition-transform duration-300 ease-in-out">
+      <div className="absolute top-0 left-0 flex h-full w-[250px] flex-col bg-white shadow-lg transition-transform duration-300 ease-in-out">
         <div className="flex items-center justify-between border-b border-orange-200/30 px-4 py-6">
           <h2 className="font-righteous text-2xl font-semibold transition-opacity delay-300 duration-300">
             NextPlay
           </h2>
           <Button
+            aria-label="Close Mobile Navigation"
             variant="close"
             onClick={onClose}
-            className="rounded p-2 text-white hover:bg-gray-800"
+            className="rounded p-2 shadow-none hover:text-white"
           >
             <X className="h-5 w-5" />
           </Button>
         </div>
         <nav className="flex-1 overflow-y-auto">
           <ul className="space-y-1 pt-4">
-            {items.map((item, idx) => (
-              <NavItem key={idx} {...item} onClick={onClose}>
-                {item.label}
-              </NavItem>
-            ))}
+            {teamId &&
+              items.map((item, idx) => (
+                <NavItem key={idx} {...item} onClick={onClose}>
+                  {item.label}
+                </NavItem>
+              ))}
           </ul>
           <Button
+            aria-label="Logout"
             className={cn(
               "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
               isOpen ? "justify-start" : "justify-center",

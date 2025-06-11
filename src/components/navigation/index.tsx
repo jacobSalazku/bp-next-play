@@ -7,14 +7,11 @@ import {
   BookOpen,
   Calendar,
   ChartArea,
-  Home,
   Menu,
-  User,
-  X,
+  User as UserIcon,
   type LucideIcon,
 } from "lucide-react";
 import { type FC } from "react";
-import { Button } from "../foundation/button/button";
 import { DesktopNavigation } from "./desktop-navigation";
 import { MobileNav } from "./mobile-nav";
 
@@ -36,21 +33,15 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
 
   const navItems = [
     {
-      label: "Dashboard",
-      href: `/${teamSlug}/dashboard`,
-      icon: Home,
-      active: true,
+      label: "Schedule",
+      href: `/${teamSlug}/schedule`,
+      icon: Calendar,
+      active: false,
     },
     {
       label: "Players",
       href: `/${teamSlug}/players`,
-      icon: User,
-      active: false,
-    },
-    {
-      label: "Schedule",
-      href: `/${teamSlug}/schedule`,
-      icon: Calendar,
+      icon: UserIcon,
       active: false,
     },
     {
@@ -68,39 +59,37 @@ const Navigation: FC<NavigationProps> = ({ children }) => {
   ];
 
   const title = useNavRoute();
-  const { playerSideBar, setPlayerSideBar } = useNavigationStore();
 
   return (
-    <div className="flex h-screen flex-col bg-gray-950 text-gray-100">
+    <div className="flex h-screen flex-col bg-white text-gray-950">
       <header className="flex items-center justify-between border-b border-orange-200/30 p-4 md:hidden">
         <div className="flex w-full items-center justify-between gap-2">
           <div className="inline-flex items-center gap-2">
             <button
+              aria-label="Open Mobile Navigation"
               onClick={() => setMobileNavOpen(true)}
-              className="rounded p-2 hover:bg-gray-800"
+              className="cursor-pointer rounded p-2 transition-colors duration-300 hover:bg-gray-900 hover:text-white"
             >
               <Menu className="py h-5 w-5" />
             </button>
             <h1 className="font-righteous text-xl font-bold">{title}</h1>
           </div>
-          {playerSideBar && (
-            <Button variant="close" onClick={() => setPlayerSideBar(false)}>
-              <X className="h-5 w-5" />
-            </Button>
-          )}
         </div>
       </header>
+
       {mobileNavOpen && (
         <MobileNav
           items={navItems}
           onClose={() => setMobileNavOpen(false)}
           isOpen={navOpen}
+          teamId={teamSlug}
         />
       )}
       <div className="flex flex-1 overflow-hidden">
         <DesktopNavigation
           items={navItems}
           isOpen={navOpen}
+          teamId={teamSlug}
           onToggle={() => setNavOpen(!navOpen)}
         >
           {children}

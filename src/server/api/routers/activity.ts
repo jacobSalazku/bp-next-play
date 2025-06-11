@@ -1,56 +1,60 @@
 import { gameSchema, practiceSchema } from "@/features/schedule/zod";
+
 import {
   createGame,
-  createPractice,
+  deleteActivity,
   editGame,
-  editPractice,
   getActivity,
-} from "@/server/service/activity-service";
-import { getTeamRole } from "@/server/service/user-role-service";
-import { checkCoachPermission } from "@/server/utils";
+  getGames,
+} from "@/server/service/game-service";
+import {
+  createPractice,
+  editPractice,
+  getPractices,
+} from "@/server/service/practice-service";
+import { ActivityType } from "@prisma/client";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
-import { checkTeamMembership } from "../utils/check-membership";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
+import {
+  checkTeamMembership,
+  verifyCoachPermission,
+} from "../utils/check-membership";
 
 export const activityRouter = createTRPCRouter({
   createGame: protectedProcedure
     .input(
       gameSchema.extend({
         teamId: z.string(),
-        type: z.literal("Game"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.GAME, {
+            message: `Activity type must be ${ActivityType.GAME}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-
-      await checkCoachPermission(role.role);
-
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
       const activity = await createGame(ctx, input);
+
       return activity;
     }),
+
   createPractice: protectedProcedure
     .input(
       practiceSchema.extend({
         teamId: z.string(),
-        type: z.literal("Practice"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.PRACTICE, {
+            message: `Activity type must be ${ActivityType.PRACTICE}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER")
-        throw new Error("You do not have permission to edit this activity.");
-
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -58,23 +62,33 @@ export const activityRouter = createTRPCRouter({
 
       return activity;
     }),
+
+  deleteActivity: protectedProcedure
+    .input(z.object({ activityId: z.string(), teamId: z.string() }))
+    .use(async ({ ctx, input, next }) => {
+      await verifyCoachPermission(ctx, input.teamId);
+      return next();
+    })
+    .mutation(async ({ ctx, input }) => {
+      const deletedActivity = await deleteActivity(ctx, input.activityId);
+
+      return deletedActivity;
+    }),
+
   editPractice: protectedProcedure
     .input(
       z.object(practiceSchema.shape).extend({
         id: z.string(),
         teamId: z.string(),
-        type: z.literal("Practice"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.PRACTICE, {
+            message: `Activity type must be ${ActivityType.PRACTICE}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to edit this activity.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -88,18 +102,16 @@ export const activityRouter = createTRPCRouter({
       z.object(gameSchema.shape).extend({
         id: z.string(),
         teamId: z.string(),
-        type: z.literal("Game"),
+        type: z
+          .nativeEnum(ActivityType)
+          .refine((val) => val === ActivityType.GAME, {
+            message: `Activity type must be ${ActivityType.GAME}`,
+          }),
       }),
     )
     .use(async ({ ctx, input, next }) => {
-      const role = await getTeamRole(ctx, ctx.session.user.id, input.teamId);
-      if (!role || (role.role !== "COACH" && role.role !== "PLAYER")) {
-        throw new Error("User role not found or invalid.");
-      }
-      if (role.role === "PLAYER") {
-        throw new Error("You do not have permission to edit this activity.");
-      }
-      await checkCoachPermission(role.role);
+      await verifyCoachPermission(ctx, input.teamId);
+
       return next();
     })
     .mutation(async ({ ctx, input }) => {
@@ -108,7 +120,7 @@ export const activityRouter = createTRPCRouter({
       return updatedGame;
     }),
 
-  getActivities: protectedProcedure
+  getActivities: publicProcedure
     .input(z.object({ teamId: z.string() }))
     .query(async ({ ctx, input }) => {
       await checkTeamMembership(ctx, input.teamId);
@@ -138,11 +150,28 @@ export const activityRouter = createTRPCRouter({
 
       return activities;
     }),
-  getActivity: protectedProcedure
+
+  getActivity: publicProcedure
     .input(z.object({ activityId: z.string() }))
     .query(async ({ ctx, input }) => {
       const activity = await getActivity(ctx, input.activityId);
 
       return activity;
+    }),
+
+  getGames: publicProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const games = await getGames(ctx, input.teamId);
+
+      return games;
+    }),
+
+  getPractices: publicProcedure
+    .input(z.object({ teamId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const practices = await getPractices(ctx, input.teamId);
+
+      return practices;
     }),
 });

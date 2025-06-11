@@ -1,9 +1,10 @@
 import { getTeamActivities } from "@/api/team";
+import withAuth from "@/features/auth/components/with-auth";
 import { ScheduleBlock } from "@/features/schedule";
 
 import { redirect } from "next/navigation";
 
-export default async function SchedulePage({
+async function SchedulePage({
   params,
 }: {
   params: Promise<{ teamId: string }>;
@@ -18,3 +19,4 @@ export default async function SchedulePage({
 
   return <ScheduleBlock activities={activities} team={team} />;
 }
+export default withAuth(SchedulePage);

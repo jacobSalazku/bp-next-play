@@ -25,12 +25,12 @@ export const PerformanceComparisonChart = ({
 }: PerformanceComparisonChartProps) => {
   const chartData = statsList.map((player) => ({
     name: player.name,
-    points: Number(player.averages.averagePointsPerGame),
-    assists: Number(player.averages.averageAssists),
+    points: Number(player.averages.pointsPerGame),
+    assists: Number(player.averages.assists),
     rebounds:
-      Number(player.averages.averageOffensiveRebound) +
-      Number(player.averages.averageDefensiveRebound),
-    blocks: Number(player.averages.averageBlocks),
+      Number(player.averages.offensiveRebound) +
+      Number(player.averages.offensiveRebound),
+    blocks: Number(player.averages.blocks),
   }));
 
   return (

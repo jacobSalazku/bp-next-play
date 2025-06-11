@@ -1,5 +1,6 @@
 import { getStatlineAverage, getTeamStats } from "@/api/statline";
 import { getTeam } from "@/api/team";
+import WithAuth from "@/features/auth/components/with-auth";
 import StatisticsBlock from "@/features/statistics";
 
 type PageProps = {
@@ -12,10 +13,10 @@ async function StatisticsPage({ params }: PageProps) {
   const statsList = await getStatlineAverage(teamId);
   const stats = await getTeamStats(teamId);
 
-  if (!team || !statsList || !stats) {
+  if (!team) {
     return (
       <div className="flex h-screen w-full items-center justify-center">
-        <div className="text-white">No statistics found for this team.</div>
+        <div className="text-white">no team is Found</div>
       </div>
     );
   }
@@ -26,4 +27,4 @@ async function StatisticsPage({ params }: PageProps) {
     </div>
   );
 }
-export default StatisticsPage;
+export default WithAuth(StatisticsPage);

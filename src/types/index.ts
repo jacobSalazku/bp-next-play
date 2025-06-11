@@ -36,4 +36,16 @@ export type TeamStats = RouterOutput["stats"]["getTeamStats"];
 
 export type ActivityInformation = RouterOutput["activity"]["getActivity"];
 
-export type Play = RouterOutput["play"]["getAllPlays"];
+export type Play = RouterOutput["play"]["getPlays"];
+
+export type Game = RouterOutput["activity"]["getGames"][number];
+
+export type GamePlan = RouterOutput["gameplan"]["getGameplan"][number];
+
+export type Practice = RouterOutput["activity"]["getPractices"][number];
+
+export type GamesStatlines =
+  RouterOutput["stats"]["getGamesWithScores"][number];
+
+export type PracticePreparation =
+  RouterOutput["practice"]["getPracticePreparation"][number];

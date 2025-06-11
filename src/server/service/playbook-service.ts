@@ -19,11 +19,41 @@ export async function createPlay(
   return play;
 }
 
-export async function getPlays(ctx: Context, teamId: string): Promise<Play[]> {
+export async function deletePlay(ctx: Context, playId: string, teamId: string) {
+  const play = await ctx.db.play.delete({
+    where: { id: playId, teamId: teamId },
+  });
+  return play;
+}
+
+export async function getPlays(ctx: Context, teamId: string) {
   const plays = await ctx.db.play.findMany({
     where: { teamId },
     orderBy: { createdAt: "desc" },
   });
 
   return plays;
+}
+
+export async function getPlaysById(
+  ctx: Context,
+  playsId: string[] | undefined,
+) {
+  if (!playsId || playsId.length === 0) {
+    return [];
+  }
+
+  const plays = await ctx.db.play.findMany({
+    where: { id: { in: playsId } },
+  });
+
+  return plays;
+}
+
+export async function getPlayById(ctx: Context, id: string) {
+  const play = await ctx.db.play.findUnique({
+    where: { id },
+  });
+
+  return play;
 }

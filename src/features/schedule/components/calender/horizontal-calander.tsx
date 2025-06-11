@@ -32,7 +32,7 @@ export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
     setCurrentDate((prevDate) => addDays(prevDate, isMobile ? 3 : 5));
 
   return (
-    <div className="w-full rounded-xl border border-orange-200/30 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
+    <div className="max-h-full min-h-60 w-full rounded-xl border border-orange-200/30 bg-gray-950 p-3 shadow-2xl transition-colors duration-300 md:p-6">
       <div className="mb-4 flex items-center justify-between">
         <h2 className="text-lg font-semibold tracking-tight text-gray-100">
           {format(visibleDays[0] ?? new Date(), "MMM d")} -{" "}
@@ -59,7 +59,10 @@ export function HorizontalCalender({ activities }: HorizontalCalendarProps) {
         </div>
       </div>
       <div
-        className={cn("grid gap-1", isMobile ? "grid-cols-3" : "grid-cols-5")}
+        className={cn(
+          "grid max-h-4/5 gap-1",
+          isMobile ? "grid-cols-3" : "grid-cols-5",
+        )}
       >
         {visibleDays.map((day, index) => (
           <CalendarDay key={index} day={day} activities={activities} />

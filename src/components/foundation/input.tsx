@@ -27,7 +27,7 @@ const inputVariants = cva(
         default: "border-gray-300 focus:ring-yellow-500 bg-gray-800",
         error:
           "border-red-500 text-red-900 placeholder-red-300 focus:ring-red-500 ",
-        dark: "bg-gray-900 text-white border-orange-300/30 placeholder-gray-400",
+        dark: "bg-neutral-200 text-white border-orange-300/30 placeholder-gray-400",
       },
     },
     defaultVariants: {

@@ -49,7 +49,7 @@ export const MobileMultiStatlineTracker = ({
     <form
       key={activity.id}
       onSubmit={onSubmit}
-      className="w-full space-y-6 rounded-xl bg-gray-950 px-2 sm:hidden"
+      className="w-full space-y-6 overflow-y-auto rounded-xl bg-gray-950 px-2 lg:hidden"
     >
       <div className="scrollbar-none flex gap-2 overflow-x-auto">
         {players.map((player, index) => (

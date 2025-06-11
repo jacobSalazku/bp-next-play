@@ -1,17 +1,47 @@
-import { getPlays } from "@/api/play";
-import PlaybookLibraryPage from "@/features/play-book/components/playbook-library";
-import type { SearchParams } from "nuqs/server";
+import { getGames, getPractices } from "@/api/activity";
+import { getGameplan, getPlays, getPracticePreparations } from "@/api/play";
+import { getRole } from "@/api/role";
+import withAuth from "@/features/auth/components/with-auth";
+import PlaybookBookBlock from "@/features/play-book/components/playbook";
+import GamePlanForm from "@/features/play-book/form/gameplan-form";
+import PracticePreparationForm from "@/features/play-book/form/practice-preparation-form";
 
 type PageProps = {
-  searchParams: Promise<SearchParams>;
   params: Promise<{ teamId: string }>;
 };
 
-async function PlaybookPage({ params, searchParams }: PageProps) {
+async function PlaybookPage({ params }: PageProps) {
   const { teamId } = await params;
   const playbook = await getPlays(teamId);
+  const games = await getGames(teamId);
+  const gameplan = await getGameplan(teamId);
+  const practices = await getPractices(teamId);
+  const practicePreparation = await getPracticePreparations(teamId);
+  const role = await getRole();
 
-  return <PlaybookLibraryPage playbook={playbook} />;
+  return (
+    <div className="scrollbar-none h-auto max-w-screen-2xl overflow-y-auto">
+      <PlaybookBookBlock
+        practicePreparation={practicePreparation}
+        practices={practices}
+        role={role}
+        playbook={playbook}
+        gamePlan={gameplan}
+      />
+      <GamePlanForm
+        mode="create"
+        role={role}
+        games={games}
+        playbook={playbook}
+      />
+      <PracticePreparationForm
+        mode="create"
+        role={role}
+        practices={practices}
+        playbook={playbook}
+      />
+    </div>
+  );
 }
 
-export default PlaybookPage;
+export default withAuth(PlaybookPage);

@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { TRPCError } from "@trpc/server";
 import { redirect } from "next/navigation";
@@ -19,6 +21,17 @@ export const getUser = cache(async () => {
     }
     throw error;
   }
+});
+
+export const getUserById = cache(async (id: string) => {
+  const { user, teamMember } = await api.user.getUserById({ userId: id });
+  if (!user || !teamMember) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "User not found.",
+    });
+  }
+  return { user, teamMember };
 });
 
 export const getTeamMembers = cache(async (teamId: string) => {

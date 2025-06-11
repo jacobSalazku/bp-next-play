@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { TeamMemberRole } from "@/types/enum";
 import { redirect } from "next/navigation";
@@ -15,6 +17,7 @@ export const getTeams = cache(async () => {
 
 export const getTeam = cache(async (teamId: string) => {
   const team = await api.team.getTeam({ teamId });
+
   return { team };
 });
 

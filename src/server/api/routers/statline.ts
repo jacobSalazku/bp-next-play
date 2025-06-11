@@ -1,15 +1,15 @@
 import { createStatlineInputSchema } from "@/features/scouting/zod/player-stats";
-import {
-  getStatlineAverages,
-  getStatsPerGame,
-  getTeamStats,
-  getWeeklyTeamStatlineAverages,
-  submitStatlines,
-} from "@/server/service/statline-service";
+
+import { getGamesWithFullBoxscore } from "@/server/service/statline-service/games-with-box-scores";
+import { getStatlineAverages } from "@/server/service/statline-service/statline-averages";
+import { getStatsPerGame } from "@/server/service/statline-service/stats-per-game";
+import { submitStatlines } from "@/server/service/statline-service/submit-statlines";
+import { getTeamStats } from "@/server/service/statline-service/team-stats";
+import { getWeeklyTeamStatlineAverages } from "@/server/service/statline-service/weekly-team-averages";
 import { getTeamRole } from "@/server/service/user-role-service";
 import { checkCoachPermission } from "@/server/utils";
 import { z } from "zod";
-import { createTRPCRouter, protectedProcedure } from "../trpc";
+import { createTRPCRouter, protectedProcedure, publicProcedure } from "../trpc";
 
 export const statsRouter = createTRPCRouter({
   submit: protectedProcedure
@@ -29,7 +29,7 @@ export const statsRouter = createTRPCRouter({
       return await submitStatlines(ctx, input, input.opponentStatline);
     }),
 
-  getStatlineAverage: protectedProcedure
+  getStatlineAverage: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
@@ -41,7 +41,7 @@ export const statsRouter = createTRPCRouter({
       return stats;
     }),
 
-  getStatsPerGame: protectedProcedure
+  getStatsPerGame: publicProcedure
     .input(
       z.object({
         teamMemberId: z.string(),
@@ -62,7 +62,7 @@ export const statsRouter = createTRPCRouter({
       return statPerGame;
     }),
 
-  getTeamStats: protectedProcedure
+  getTeamStats: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
@@ -74,7 +74,7 @@ export const statsRouter = createTRPCRouter({
       return stats;
     }),
 
-  getWeeklyTeamStatlineAverages: protectedProcedure
+  getWeeklyTeamStatlineAverages: publicProcedure
     .input(
       z.object({
         teamId: z.string(),
@@ -87,5 +87,20 @@ export const statsRouter = createTRPCRouter({
         return [];
       }
       return stats;
+    }),
+
+  getGamesWithScores: publicProcedure
+    .input(
+      z.object({
+        teamId: z.string(),
+      }),
+    )
+    .query(async ({ ctx, input }) => {
+      const gamesWithScores = await getGamesWithFullBoxscore(ctx, input.teamId);
+
+      if (!gamesWithScores) {
+        throw new Error("No statlines found for this game.");
+      }
+      return gamesWithScores;
     }),
 });

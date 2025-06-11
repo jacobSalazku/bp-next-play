@@ -1,6 +1,7 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
+import { CategoryBadge } from "@/components/foundation/category-badge";
 import { Input } from "@/components/foundation/input";
 import { useTeam } from "@/context/team-context";
 import { cn } from "@/lib/utils";
@@ -8,12 +9,15 @@ import useStore from "@/store/store";
 import type { TeamInformation, UserTeamMember } from "@/types";
 import { getTypeBgColor } from "@/utils";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
+import { X } from "lucide-react";
 import { useRouter } from "next/navigation";
 import { useState, type FC } from "react";
 import { useForm } from "react-hook-form";
 import { useCreateGameActivity } from "../../hooks/use-create-game";
 import { useEditGameActivity } from "../../hooks/use-edit-activity";
+import { getButtonText } from "../../utils/button-text";
 import { gameSchema, type GameData } from "../../zod";
 
 export type Mode = "view" | "edit" | "create";
@@ -31,8 +35,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   const createGame = useCreateGameActivity(teamSlug, onClose);
   const editGame = useEditGameActivity(teamSlug, onClose);
   const router = useRouter();
-
-  const { selectedDate, selectedActivity, openGameModal } = useStore();
+  const { selectedDate, selectedActivity } = useStore();
 
   const formattedDate = format(selectedDate, "yyyy-MM-dd");
 
@@ -40,7 +43,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
     register,
     handleSubmit,
     reset,
-    formState: { errors },
+    formState: { errors, isSubmitting },
   } = useForm<GameData>({
     resolver: zodResolver(gameSchema),
     defaultValues: {
@@ -55,12 +58,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   const isCreateMode = formState === "create";
   const role = member?.role === "COACH";
 
-  const buttonText = () => {
-    if (createGame.status === "pending") {
-      return isEditMode ? "Editing..." : "Creating...";
-    }
-    return isCreateMode ? "Create Game" : "Edit Game";
-  };
+  const buttonText = getButtonText(isSubmitting, formState, "Game");
 
   const onSubmit = async (data: GameData) => {
     const date = new Date(data.date);
@@ -70,7 +68,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
       id: selectedActivity?.id ?? "",
       date: date.toISOString(),
       teamId: teamSlug,
-      type: "Game" as const,
+      type: ActivityType.GAME,
     };
 
     if (formState === "edit") {
@@ -89,21 +87,21 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
   return (
     <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 backdrop-blur-sm">
       <div className="max-h-[90vh] w-full max-w-md overflow-auto rounded-lg border border-gray-800 bg-black">
-        <div className="flex items-center justify-between border-b border-gray-800 p-4">
-          <h2 className="text-lg font-normal sm:text-xl">
+        <div className="flex items-center justify-between border-b border-gray-800 bg-white px-4 py-3 text-gray-900">
+          <h2 className="font-righteous text-lg font-normal sm:text-xl">
             {isViewMode
               ? selectedActivity?.title
               : isEditMode
                 ? (selectedActivity?.title ?? "Edit Game")
                 : "Create Game"}
           </h2>
-          <button
+          <Button
             onClick={onClose}
-            className="text-xl font-bold text-gray-400 hover:text-white"
-            aria-label="Close"
+            className="bg-transparent py-2 text-xl font-bold text-gray-400 shadow-none hover:bg-gray-900 hover:text-white"
+            aria-label="Close Game Form"
           >
-            ×
-          </button>
+            <X className="h-6 w-6" />
+          </Button>
         </div>
 
         {(isEditMode || isCreateMode) && (
@@ -161,8 +159,8 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
             />
             <div className="flex justify-end border-t border-gray-800 pt-4">
               {role && (
-                <Button type="submit" variant="outline">
-                  {buttonText()}
+                <Button aria-label={buttonText} type="submit" variant="outline">
+                  {buttonText}
                 </Button>
               )}
             </div>
@@ -175,17 +173,13 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
               <div className="flex flex-col gap-2">
                 <div className="text-xs text-gray-400 sm:text-sm">Type</div>
                 <div className="inline-block rounded-full py-2 text-xs text-black">
-                  <span
-                    className={cn(
-                      getTypeBgColor(selectedActivity.type),
-                      "rounded-xl p-2",
-                    )}
-                  >
-                    {selectedActivity.type}
-                  </span>
+                  <CategoryBadge
+                    label={selectedActivity.type}
+                    className={cn(getTypeBgColor(selectedActivity.type))}
+                  />
                 </div>
               </div>
-              {selectedActivity.type == "Practice" && (
+              {selectedActivity.type == ActivityType.PRACTICE && (
                 <div className="flex flex-col space-x-2">
                   <div className="text-xs text-gray-400 sm:text-sm">
                     Type of Practice
@@ -218,6 +212,7 @@ const GameForm: FC<GameFormProps> = ({ onClose, mode, member }) => {
             {role && (
               <div className="flex justify-end space-x-2 border-t border-gray-800 p-4">
                 <Button
+                  aria-label="Edit Game Form"
                   onClick={() => {
                     setFormState("edit");
                     reset({

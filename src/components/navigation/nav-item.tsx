@@ -10,6 +10,7 @@ type NavItemProps = {
   isCollapsed?: boolean;
   onClick?: () => void;
 };
+
 export function NavItem({
   href,
   icon: Icon,
@@ -18,18 +19,24 @@ export function NavItem({
   onClick,
 }: NavItemProps) {
   const pathname = usePathname();
-  const isActive = pathname === href;
+  const isActive = pathname.startsWith(href);
+
   return (
     <Link
       href={href}
       onClick={onClick}
       className={cn(
-        "flex w-full items-center bg-gray-950 px-4 py-7 text-sm transition-colors hover:bg-gray-800 hover:text-orange-300",
+        "flex w-full items-center rounded-lg px-4 py-7 text-sm transition-colors",
         isCollapsed ? "justify-center" : "justify-start",
-        isActive && "bg-gray-800 font-medium hover:bg-gray-800",
+        isActive
+          ? "bg-gray-800 font-medium text-orange-300"
+          : "text-gray-950 hover:bg-gray-800 hover:text-white",
       )}
     >
-      <Icon className={cn("h-5 w-5", isCollapsed ? "mx-auto block" : "mr-3")} />
+      <Icon
+        strokeWidth={2}
+        className={cn("h-5", !isCollapsed ? "mr-2" : "mr-3 w-full")}
+      />
       {!isCollapsed && <span>{children}</span>}
     </Link>
   );

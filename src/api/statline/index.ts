@@ -1,3 +1,5 @@
+import "server-only";
+
 import { api } from "@/trpc/server";
 import { cache } from "react";
 
@@ -20,4 +22,12 @@ export const getWeeklyTeamStatlineAverages = cache(async (teamId: string) => {
   });
 
   return weeklyStatline;
+});
+
+export const getGamesStatline = cache(async (teamId: string) => {
+  const gamesStatlines = await api.stats.getGamesWithScores({
+    teamId: teamId,
+  });
+
+  return gamesStatlines;
 });

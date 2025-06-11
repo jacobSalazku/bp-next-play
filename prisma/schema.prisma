@@ -6,7 +6,7 @@ generator client {
 }
 
 datasource db {
-    provider = "sqlite"
+    provider = "postgresql"
     // NOTE: When using mysql or sqlserver, uncomment the @db.Text annotations in model Account below
     // Further reading:
     // https://next-auth.js.org/adapters/prisma#create-the-prisma-schema
@@ -15,7 +15,7 @@ datasource db {
 }
 
 
-// User table
+
 model User {
   id            String        @id @default(cuid())
   name          String?
@@ -38,7 +38,7 @@ model User {
   teamMembers   TeamMember[]
 }
 
-// Account table
+
 model Account {
   id                        String     @id @default(cuid())
   userId                    String
@@ -57,11 +57,10 @@ model Account {
 
   // Relationships
   user      User            @relation(fields: [userId], references: [id])
-  @@unique([provider, providerAccountId]) // <--- Add this line
+  @@unique([provider, providerAccountId]) 
   @@index([userId])
 }
 
-// Session table
 model Session {
   id            String      @id @default(cuid())
   sessionToken  String      @unique
@@ -79,22 +78,25 @@ model VerificationToken {
 
   @@unique([identifier, token])
 } 
-// Team table
+
 model Team {
   id         String      @id @default(cuid())
   name       String
   code       String      @unique
+  ageGroup   String?
   image      String?
   creatorId  String
   createdAt  DateTime
   members    TeamMember[]
   activities Activity[]
   plays      Play[]    
+
   // Relationships
+  gamePlans  GamePlan[]  
+  practicePreparations PracticePreparation[]
   creator    User          @relation("TeamCreator", fields: [creatorId], references: [id])
 }
 
-// TeamMember table
 model TeamMember {
   id           String        @id @default(cuid())
   userId       String
@@ -111,12 +113,11 @@ model TeamMember {
   team         Team          @relation(fields: [teamId], references: [id])
 }
 
-// Activity table
 model Activity {
   id                  String              @id @default(cuid())
   title               String
   time                String
-  type                String
+  type                ActivityType
   duration            Float?
   practiceType        String?
   notes               String?
@@ -128,12 +129,11 @@ model Activity {
   statlines           Statline[]
   opponentStatline    OpponentStatline?
   gamePlan            GamePlan?
-  practicePreparation PracticePreparation?
+  practice            PracticePreparation?
 
   team                Team                  @relation(fields: [teamId], references: [id])
 }
 
-// Statline table
 model Statline {
   id                  String      @id @default(cuid())
   teamMemberId        String
@@ -154,8 +154,8 @@ model Statline {
   activityId          String
   
   // Relationships
-  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id])
-  activity            Activity     @relation(fields: [activityId], references: [id])
+  teamMember          TeamMember   @relation(fields: [teamMemberId], references: [id], onDelete: Cascade)
+  activity            Activity     @relation(fields: [activityId], references: [id],onDelete: Cascade)
 
   @@unique([teamMemberId, activityId], name: "teamMemberId_activityId") 
 }
@@ -188,7 +188,7 @@ model OpponentStatline {
   createdAt         DateTime  @default(now())
   updatedAt         DateTime  @updatedAt
 
-  activity         Activity   @relation(fields: [activityId], references: [id])
+  activity         Activity   @relation(fields: [activityId], references: [id],onDelete: Cascade)
   @@unique([activityId], map: "opponent_activity_unique")
 }
 
@@ -206,31 +206,39 @@ model Play {
   gamePlans   GamePlan[]            @relation("GamePlanPlays")
   practices   PracticePreparation[] @relation("PracticePlays")
 }
-
-
 model GamePlan {
-  id        String      @id @default(cuid())
-  activityId String?    @unique  // Optional link to an Activity
-  name      String
-  opponent  String?
-  notes     String?
-  createdAt DateTime    @default(now())
+  id         String      @id @default(cuid())
+  activityId String     @unique 
+  teamId     String
+  name       String
+  opponent   String?
+  notes      String?
+  createdAt  DateTime    @default(now())
 
   // Relations
-  activity   Activity?  @relation(fields: [activityId], references: [id])
-  plays      Play[]     @relation("GamePlanPlays")
+  team       Team       @relation(fields: [teamId], references: [id])
+  activity   Activity   @relation(fields: [activityId], references: [id])
+  plays      Play[]      @relation("GamePlanPlays")
 }
+
 
 model PracticePreparation {
   id         String     @id @default(cuid())
-  activityId String?    @unique  // Optional link to an Activity
+  activityId String    @unique 
+  teamId     String
   name       String
   focus      String?
   notes      String?
-  completed  Boolean    @default(false)
   createdAt  DateTime   @default(now())
 
   // Relations
+  team       Team       @relation(fields: [teamId], references: [id])
   activity   Activity?  @relation(fields: [activityId], references: [id])
   plays      Play[]     @relation("PracticePlays")
+}
+
+
+enum ActivityType {
+  GAME
+  PRACTICE
 }

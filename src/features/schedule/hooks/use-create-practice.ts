@@ -1,4 +1,6 @@
+import { toastStyling } from "@/features/toast-notification/styling";
 import { api } from "@/trpc/react";
+import { toast } from "sonner";
 
 export const useCreatePracticeActivity = (
   teamId: string,
@@ -9,6 +11,9 @@ export const useCreatePracticeActivity = (
   const createPractice = api.activity.createPractice.useMutation({
     onSuccess: () => {
       void utils.activity.getActivities.invalidate({ teamId: teamId });
+
+      toast.success("Practice created successfully!", toastStyling);
+
       onClose();
     },
     onError: (error) => {

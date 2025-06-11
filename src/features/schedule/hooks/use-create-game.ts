@@ -7,7 +7,7 @@ export const useCreateGameActivity = (teamId: string, onClose: () => void) => {
     onSuccess: async () => {
       await utils.activity.getActivities.invalidate({ teamId: teamId });
       onClose();
-    }, // Add missing comma here
+    },
     onError: (error) => {
       console.error("Error creating game:", error);
     },

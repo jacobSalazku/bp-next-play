@@ -1,8 +1,10 @@
 "use client";
 
 import { Button } from "@/components/foundation/button/button";
+import { Input } from "@/components/foundation/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
+import { X } from "lucide-react";
 import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
@@ -54,8 +56,6 @@ const CreateTeamForm = () => {
 
   const onSubmit = (data: CreateTeamData) => {
     startTransition(() => {
-      console.log("Submitting data with file:", file);
-
       createTeam.mutate(
         {
           ...data,
@@ -65,10 +65,6 @@ const CreateTeamForm = () => {
           onSuccess: (newTeam) => {
             createTeam.reset();
             router.push("/");
-            console.log("Team created successfully:", newTeam);
-          },
-          onError: (error) => {
-            console.error("Error creating team:", error);
           },
         },
       );
@@ -115,31 +111,35 @@ const CreateTeamForm = () => {
             className="max-h-64 w-full rounded object-contain shadow"
           />
           <button
+            aria-label="Remove file"
             onClick={removeFile}
             type="button"
             className="absolute top-2 right-2 rounded-full bg-white p-1 text-lg text-gray-700 hover:text-red-500"
           >
-            ×
+            <X className="h-5 w-5" />
           </button>
         </div>
       )}
 
       <div className="mb-4">
-        <label
-          htmlFor="name"
-          className="mb-2 block text-sm font-bold text-gray-700"
-        >
-          Team Name:
-        </label>
-        <input
-          type="text"
+        <Input
           id="name"
+          label="Team Name"
+          type="text"
           {...register("name")}
-          className="focus:shadow-outline w-full rounded border px-3 py-2 leading-tight text-black shadow focus:outline-none"
+          error={errors.name}
+          errorMessage={errors.name?.message}
         />
-        {errors.name && (
-          <p className="text-xs text-red-500 italic">{errors.name.message}</p>
-        )}
+      </div>
+      <div className="mb-4">
+        <Input
+          id="name"
+          label="Age group"
+          type="text"
+          {...register("ageGroup")}
+          error={errors.ageGroup}
+          errorMessage={errors.ageGroup?.message}
+        />
       </div>
 
       <div className="flex items-center justify-between">

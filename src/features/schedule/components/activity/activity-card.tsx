@@ -7,8 +7,12 @@ import { cn } from "@/lib/utils";
 import useStore from "@/store/store";
 import type { Activity, UserTeamMember } from "@/types";
 import { getActivityStyle } from "@/utils";
-import { Clock } from "lucide-react";
+import { ActivityType } from "@prisma/client";
+import { isToday } from "date-fns";
+import { Clock, Trash } from "lucide-react";
+import { useRouter } from "next/navigation";
 import { type FC } from "react";
+import { useDeleteActivity } from "../../hooks/use-delete-activity";
 
 type ActivityCardProps = {
   activity: Activity;
@@ -17,7 +21,8 @@ type ActivityCardProps = {
 
 export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
   const { teamSlug } = useTeam();
-
+  const deleteActivity = useDeleteActivity(activity.id);
+  const router = useRouter();
   const {
     setOpenPracticeDetails,
     setOpenGameDetails,
@@ -31,27 +36,25 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
 
   const handleViewDetails = () => {
     setSelectedActivity(activity);
-    if (activity.type === "Game") {
+    if (activity.type === ActivityType.GAME) {
       setOpenGameDetails(true);
-    } else if (activity.type === "Practice") {
+    } else if (activity.type === ActivityType.PRACTICE) {
       setOpenPracticeDetails(true);
     }
   };
 
   const handleAttendance = () => {
     setSelectedActivity(activity);
-    if (activity.type === "Game") {
+    if (activity.type === ActivityType.GAME) {
       setOpenGameAttendance(true);
     } else {
       setOpenPracticeAttendance(true);
     }
   };
-
-  const boxScoreSearchParams = new URLSearchParams();
-  boxScoreSearchParams.set("activityId", activity.id);
+  const date = isToday(new Date(activity.date));
 
   return (
-    <div className="group flex flex-col gap-4 rounded-sm border border-gray-800 p-4 shadow-sm transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
+    <div className="group flex flex-col gap-4 rounded-lg border border-gray-800 bg-gray-950 p-4 transition-all hover:border-gray-700 hover:shadow-md sm:flex-row sm:items-center sm:gap-6">
       <div className="flex flex-row items-start gap-4 sm:gap-6">
         <div
           className={cn(
@@ -62,8 +65,6 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         >
           <Icon className="h-5 w-5 lg:h-7 lg:w-7" />
         </div>
-
-        {/* Content */}
         <div className="flex-1">
           <h3 className="text-base font-semibold text-white">
             {activity.title}
@@ -75,13 +76,12 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
           </div>
         </div>
       </div>
-
-      {/* Actions */}
       <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
-        {activity.type === "Game" && role && (
+        {activity.type === ActivityType.GAME && role && date && (
           <Link
+            aria-label="Create Box Score"
             href={{
-              pathname: `/${teamSlug}/box-score`,
+              pathname: `/${teamSlug}/schedule/box-score`,
               query: { activityId: activity.id },
             }}
             size="sm"
@@ -93,6 +93,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         )}
         {!role && (
           <Button
+            aria-label="Attendance"
             onClick={handleAttendance}
             size="sm"
             variant="default"
@@ -102,6 +103,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
           </Button>
         )}
         <Button
+          aria-label="View Details"
           onClick={handleViewDetails}
           variant="outline"
           size="sm"
@@ -109,6 +111,25 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         >
           View Details
         </Button>
+        {role && (
+          <Button
+            onClick={() => {
+              deleteActivity.mutate({
+                teamId: teamSlug,
+                activityId: activity.id,
+              });
+
+              router.push(`/${teamSlug}/schedule`);
+            }}
+            aria-label="Delete Activity"
+            size="sm"
+            variant="danger"
+            className="w-full sm:w-auto"
+          >
+            <Trash className="mr-2 h-4 w-4" />
+            Delete
+          </Button>
+        )}
       </div>
     </div>
   );
