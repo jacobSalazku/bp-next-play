@@ -62,37 +62,10 @@ export async function getPracticePreparation(ctx: Context, teamId: string) {
   return practicePreparation;
 }
 
-export async function getPracticePreparationById(ctx: Context, id: string) {
-  const practicePreparation = await ctx.db.practicePreparation.findUnique({
+export async function deletePracticePreparation(ctx: Context, id: string) {
+  const deletedPracticePreparation = await ctx.db.practicePreparation.delete({
     where: { id },
-    select: {
-      id: true,
-      name: true,
-      focus: true,
-      notes: true,
-      activityId: true,
-      createdAt: true,
-      activity: {
-        select: {
-          id: true,
-          title: true,
-          date: true,
-          time: true,
-        },
-      },
-      plays: {
-        select: {
-          id: true,
-          name: true,
-          category: true,
-        },
-      },
-    },
   });
 
-  if (!practicePreparation) {
-    throw new Error("Practice preparation not found");
-  }
-
-  return practicePreparation;
+  return deletedPracticePreparation;
 }

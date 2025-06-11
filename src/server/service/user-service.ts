@@ -22,6 +22,11 @@ export async function getUserbyId(ctx: Context) {
       name: true,
       email: true,
       image: true,
+      dominantHand: true,
+      dateOfBirth: true,
+      phone: true,
+      height: true,
+      weight: true,
       createdAt: true,
       updatedAt: true,
       hasOnBoarded: true,
@@ -42,6 +47,22 @@ export async function getUserbyId(ctx: Context) {
       id: true,
       status: true,
       role: true,
+      number: true,
+      position: true,
+      attendances: {
+        select: {
+          attendanceStatus: true,
+          reason: true,
+          activity: {
+            select: {
+              id: true,
+              title: true,
+              time: true,
+              date: true,
+            },
+          },
+        },
+      },
     },
   });
 
@@ -163,3 +184,73 @@ export async function updateUser(ctx: Context, input: User) {
   });
   return { user, success: true };
 }
+
+export async function getUserProfile(ctx: Context, userId: string) {
+  const user = await ctx.db.user.findUnique({
+    where: { id: userId },
+    select: {
+      id: true,
+      name: true,
+      email: true,
+      image: true,
+      dominantHand: true,
+      dateOfBirth: true,
+      phone: true,
+      height: true,
+      weight: true,
+      createdAt: true,
+      updatedAt: true,
+      hasOnBoarded: true,
+    },
+  });
+
+  const teamMember = await ctx.db.teamMember.findFirst({
+    where: { userId: userId },
+    select: {
+      team: {
+        select: {
+          id: true,
+          name: true,
+          code: true,
+          creatorId: true,
+        },
+      },
+      id: true,
+      status: true,
+      role: true,
+      number: true,
+      position: true,
+      attendances: {
+        select: {
+          attendanceStatus: true,
+          reason: true,
+          activity: {
+            select: {
+              id: true,
+              title: true,
+              time: true,
+              date: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!user) {
+    throw new TRPCError({
+      code: "UNAUTHORIZED",
+      message: "User is not logged in",
+    });
+  }
+
+  return { user, teamMember };
+}
+
+// export async function deleteTeamMember(ctx: Context, userId: string) {
+//   const teamMember = await ctx.db.user.findUnique({
+//     where: { id: userId },
+//   });
+
+//   return { success: true, teamMember };
+// }

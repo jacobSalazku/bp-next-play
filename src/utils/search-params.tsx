@@ -17,6 +17,14 @@ export const practiceSearchParams = {
   id: parseAsString.withDefault(""),
 };
 
+export const playerProfileSearchParams = {
+  id: parseAsString.withDefault(""),
+};
+
+export const playerProfileSearchParamsCache = createSearchParamsCache(
+  playerProfileSearchParams,
+);
+
 export const gameplanSearchParamsCache =
   createSearchParamsCache(gameplanSearchParams);
 
