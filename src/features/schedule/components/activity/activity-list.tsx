@@ -50,7 +50,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
 
   return (
     <>
-      <div className="animate-fade-in mt-3 flex flex-col rounded-xl border border-orange-200/30 bg-gray-950 p-4 shadow-sm duration-300 sm:p-6">
+      <div className="animate-fade-in mt-3 flex flex-col rounded-xl border border-orange-200/30 p-4 shadow-sm duration-300 sm:p-6">
         <div className="mb-6 flex flex-col justify-between gap-4 sm:flex-row sm:items-center">
           <h2 className="flex items-center text-xl font-semibold text-white">
             <CalendarClock className="mr-2 h-5 text-sm text-gray-400" />

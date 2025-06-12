@@ -57,7 +57,7 @@ const UserUpdateForm = () => {
           labelColor="light"
           aria-label="Input Name"
           type="text"
-          className="w-full"
+          className="w-full text-black"
           placeholder="John Doe"
           error={errors.name}
           errorMessage={errors.name?.message}
@@ -70,7 +70,7 @@ const UserUpdateForm = () => {
           labelColor="light"
           aria-label="Date of Birth"
           type="date"
-          className="w-full"
+          className="w-full text-black"
           placeholder="YYYY-MM-DD"
           error={errors.dateOfBirth}
           errorMessage={errors.dateOfBirth?.message}
@@ -84,7 +84,7 @@ const UserUpdateForm = () => {
           aria-label="Phone Number"
           type="tel"
           placeholder="+32 123 456 789"
-          className="w-full"
+          className="w-full text-black"
           error={errors.phone}
           errorMessage={errors.phone?.message}
           {...register("phone")}
@@ -123,7 +123,7 @@ const UserUpdateForm = () => {
           aria-label="Height"
           type="number"
           step={1}
-          className="w-full"
+          className="w-full text-black"
           placeholder="180 cm"
           error={errors.height}
           errorMessage={errors.height?.message}
@@ -137,7 +137,7 @@ const UserUpdateForm = () => {
           aria-label="Weight"
           type="number"
           step={1}
-          className="w-full"
+          className="w-full text-black"
           placeholder="75 kg"
           error={errors.weight}
           errorMessage={errors.weight?.message}
