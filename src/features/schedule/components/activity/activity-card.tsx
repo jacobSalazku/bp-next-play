@@ -91,6 +91,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
             Create Box Score
           </Link>
         )}
+
         {!role && (
           <Button
             aria-label="Attendance"
@@ -105,7 +106,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
         <Button
           aria-label="View Details"
           onClick={handleViewDetails}
-          variant="outline"
+          variant="primary"
           size="sm"
           className="w-full sm:w-auto"
         >

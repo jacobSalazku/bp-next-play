@@ -84,9 +84,9 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                   members.map((player) => (
                     <TableRow
                       key={player.id}
-                      className="group cursor-pointer border-b border-gray-800 transition-colors hover:bg-orange-200/5"
+                      className="group cursor-pointer border-b border-gray-800 transition-colors hover:bg-gray-800"
                     >
-                      <TableCell className="py-4 font-semibold">
+                      <TableCell className="py-8 font-semibold">
                         {player.number ? `#${player.number}` : "--"}
                       </TableCell>
 
@@ -121,7 +121,7 @@ export const PlayerBlock: FC<PlayerBlockProps> = ({ team, members }) => {
                             pathname: `/${teamSlug}/players/profile`,
                             query: { id: player.user.id },
                           }}
-                          variant="default"
+                          variant="light"
                           size="sm"
                         >
                           View

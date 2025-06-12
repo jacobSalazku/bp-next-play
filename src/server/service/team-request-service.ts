@@ -1,14 +1,14 @@
 import type { JoinTeamFormData } from "@/features/auth/zod";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
-import { getUserbyId } from "./user-service";
+import { getUserById } from "./user-service";
 
 export async function requestToJoinTeam(
   ctx: Context,
 
   input: JoinTeamFormData,
 ) {
-  const { user } = await getUserbyId(ctx);
+  const { user } = await getUserById(ctx);
 
   const team = await ctx.db.team.findUnique({
     where: { code: input.teamCode },

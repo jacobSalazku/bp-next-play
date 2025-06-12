@@ -133,8 +133,8 @@ export function PlayForm() {
   };
 
   return (
-    <div className="mx-auto my-auto w-full max-w-7xl space-y-6 p-2 sm:p-6">
-      <div className="flex items-center gap-4">
+    <div className="mx-auto my-auto w-full max-w-7xl space-y-6 p-2 sm:p-4">
+      <div className="flex items-center gap-4 pt-4 pl-4 md:pl-0">
         <div>
           <h1 className="text-2xl font-bold text-white sm:text-3xl">
             Create New Play
@@ -148,7 +148,7 @@ export function PlayForm() {
         className="flex flex-col-reverse gap-6"
       >
         <div className="flex w-full flex-1 flex-col gap-4">
-          <Card className="border border-gray-800 bg-gray-950">
+          <Card className="border border-gray-800 bg-gray-950 px-0">
             <CardHeader>
               <CardTitle className="text-white">Draw Your Play</CardTitle>
             </CardHeader>
@@ -159,7 +159,7 @@ export function PlayForm() {
                     aria-label="Select Tool"
                     key={id}
                     onClick={() => setCurrentTool(id)}
-                    variant={currentTool === id ? "secondary" : "outline"}
+                    variant={currentTool === id ? "primary" : "outline"}
                     className="flex items-center justify-center"
                   >
                     <Icon className="h-4 w-4" /> {label}
@@ -272,12 +272,12 @@ export function PlayForm() {
                         <RadioGroup
                           value={field.value}
                           onValueChange={field.onChange}
-                          className="justify flex flex-row items-center gap-12"
+                          className="flex flex-wrap gap-4 sm:flex-nowrap sm:gap-6"
                         >
                           {categories.map((option) => (
                             <div
                               key={option.id}
-                              className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-gray-900"
+                              className="flex items-center gap-2 rounded-lg bg-white px-4 py-2 text-gray-900 shadow-sm transition hover:bg-gray-100 dark:bg-gray-800 dark:text-white dark:hover:bg-gray-700"
                             >
                               <RadioGroupItem
                                 value={option.id}
@@ -295,7 +295,11 @@ export function PlayForm() {
                         </RadioGroup>
                       )}
                     />
-                    {errors.category && <p>{errors.category.message}</p>}
+                    {errors.category && (
+                      <p className="mt-1 text-sm text-red-500">
+                        {errors.category.message}
+                      </p>
+                    )}
                   </div>
                 </div>
               </div>
@@ -312,7 +316,7 @@ export function PlayForm() {
               </div>
               <Button
                 type="submit"
-                variant="secondary"
+                variant="primary"
                 className="w-full bg-white text-gray-900 hover:bg-orange-400 hover:text-white"
               >
                 <Save className="mr-2 h-4 w-4" />

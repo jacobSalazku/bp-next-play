@@ -27,11 +27,11 @@ const StatButton: FC<StatsButtonProps> = ({
     onClick={() => onIncrement?.(statKey)}
     className={cn(
       className,
-      "flex flex-col items-center justify-center rounded-xl py-10",
+      "flex flex-col items-center justify-center rounded-xl border bg-gray-100 py-10 text-gray-950 shadow-sm hover:border-orange-400 hover:bg-transparent hover:text-white",
     )}
   >
-    <span className="text-sm font-medium text-white">{label}</span>
-    <span className="text-xl font-bold">{value}</span>
+    <span className="text-md font-medium">{label}</span>
+    <span className="text-3xl font-bold">{value}</span>
   </Button>
 );
 

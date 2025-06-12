@@ -1,7 +1,7 @@
 import { updateUserSchema } from "@/features/auth/zod";
 import {
   deleteTeamMember,
-  getUserbyId,
+  getUserById,
   getUserProfile,
   updateUser,
 } from "@/server/service/user-service";
@@ -11,7 +11,7 @@ import { verifyCoachPermission } from "../utils/check-membership";
 
 export const userRouter = createTRPCRouter({
   getUser: protectedProcedure.query(async ({ ctx }) => {
-    const { user, teamMember } = await getUserbyId(ctx);
+    const { user, teamMember } = await getUserById(ctx);
 
     return { user, teamMember };
   }),

@@ -69,6 +69,9 @@ export const PlayerPerformanceChart: FC<PlayerPerformanceChartProps> = ({
     }),
   );
 
+  const isNextDisabled =
+    year === now.getFullYear() && month === now.getMonth() + 1;
+
   return (
     <Card className="border-gray-800 bg-gray-950 px-4 py-4 backdrop-blur-sm">
       <div className="flex items-center justify-center gap-4 py-2">
@@ -76,7 +79,7 @@ export const PlayerPerformanceChart: FC<PlayerPerformanceChartProps> = ({
           <ChevronLeft className="h-4 w-4 text-orange-300" />
         </Button>
         <span className="text-lg font-bold text-white">{statsDate}</span>
-        <Button onClick={nextMonth}>
+        <Button onClick={nextMonth} disabled={isNextDisabled}>
           <ChevronLeft className="h-4 w-4 rotate-180 text-orange-300" />
         </Button>
       </div>

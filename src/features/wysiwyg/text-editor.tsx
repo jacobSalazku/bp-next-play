@@ -19,7 +19,6 @@ import {
 } from "lucide-react";
 import { Button } from "../../components/foundation/button/button";
 import { Card } from "../../components/foundation/card";
-
 const TextAlign = TextAlignExtension as Extension;
 const Highlight = HighlightExtension as Extension;
 

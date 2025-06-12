@@ -62,7 +62,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
           />
         </div>
         {filteredActivities.length > 0 ? (
-          <div className="scrollbar-none max-h-[430px] overflow-y-auto pr-2 md:max-h-[120rem] xl:max-h-[150rem]">
+          <div className="scrollbar-none max-h-[430px] overflow-y-auto pr-2 md:max-h-[120rem] md:min-h-96 xl:max-h-[150rem]">
             <div className="flex flex-col gap-1">
               {filteredActivities.map((activity) => (
                 <ActivityCard
@@ -82,7 +82,7 @@ export function ActivityList({ activities, team, member }: ActivityListProps) {
             {role && (
               <Button
                 aria-label="Add Activity"
-                variant="secondary"
+                variant="primary"
                 size="sm"
                 className="mt-4 bg-gray-950 hover:bg-orange-200/10"
                 onClick={() => setOpenGameModal(true)}

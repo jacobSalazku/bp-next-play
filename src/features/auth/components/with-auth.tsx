@@ -1,4 +1,4 @@
-import { getUser } from "@/api/user";
+import { auth } from "@/server/auth";
 import { redirect } from "next/navigation";
 import React from "react";
 
@@ -6,8 +6,8 @@ const withAuth = <P extends object>(
   WrappedComponent: React.ComponentType<P>,
 ) => {
   const WithAuthComponent = async (props: P) => {
-    const user = await getUser();
-    console.log("User in withAuth:", user);
+    const user = await auth();
+
     if (!user) {
       redirect("/login");
     }

@@ -1,6 +1,7 @@
 import { Button } from "@/components/foundation/button/button";
 import type { ActivityInformation, TeamMembers } from "@/types";
 import { cn } from "@/utils/tw-merge";
+import { Undo2 } from "lucide-react";
 import type { FormEventHandler } from "react";
 import { useState } from "react";
 import type { UseFormSetValue } from "react-hook-form";
@@ -26,6 +27,7 @@ type MobileStatsFormProps = {
     amount: number,
   ) => void;
   setValue: UseFormSetValue<PlayersData>;
+  undoLastChange: () => void;
 };
 
 export const MobileMultiStatlineTracker = ({
@@ -39,6 +41,7 @@ export const MobileMultiStatlineTracker = ({
   onIncrement,
   opponentStatline,
   setValue,
+  undoLastChange,
 }: MobileStatsFormProps) => {
   const [showOpponentStats, setShowOpponentStats] = useState(false);
 
@@ -49,7 +52,7 @@ export const MobileMultiStatlineTracker = ({
     <form
       key={activity.id}
       onSubmit={onSubmit}
-      className="w-full space-y-6 overflow-y-auto rounded-xl bg-gray-950 px-2 lg:hidden"
+      className="w-full flex-grow space-y-6 overflow-y-auto rounded-xl px-4 pt-4 pb-12 lg:hidden"
     >
       <div className="scrollbar-none flex gap-2 overflow-x-auto">
         {players.map((player, index) => (
@@ -57,7 +60,7 @@ export const MobileMultiStatlineTracker = ({
             key={index}
             type="button"
             onClick={() => setActivePlayerIndex(index)}
-            variant={activePlayerIndex === index ? "secondary" : "default"}
+            variant={activePlayerIndex === index ? "primary" : "default"}
           >
             {player.name}
           </Button>
@@ -130,9 +133,7 @@ export const MobileMultiStatlineTracker = ({
         </div>
       )}
 
-      {/* Team Player Stats */}
       <div className="space-y-2">
-        {/* Made */}
         <div className="grid grid-cols-3 gap-2 text-center text-white">
           <StatButton
             statKey="fieldGoalsMade"
@@ -158,7 +159,6 @@ export const MobileMultiStatlineTracker = ({
           />
         </div>
 
-        {/* Missed */}
         <div className="grid grid-cols-3 gap-2 text-center text-white">
           <StatButton
             statKey="fieldGoalsMissed"
@@ -186,7 +186,6 @@ export const MobileMultiStatlineTracker = ({
           />
         </div>
 
-        {/* Other */}
         <div className="grid grid-cols-3 gap-2 text-center text-white">
           {otherStats.map(({ key, label }) => (
             <StatButton
@@ -199,13 +198,20 @@ export const MobileMultiStatlineTracker = ({
               }
             />
           ))}
+          <Button
+            variant="light"
+            className="h-full rounded-2xl"
+            onClick={undoLastChange}
+          >
+            <Undo2 className="Undo h-5 w-5" />
+          </Button>
         </div>
       </div>
 
       {totalTeamStats && <MobileTeamStatsRow totalTeamStats={totalTeamStats} />}
 
       <div className="pt-4">
-        <Button type="submit" variant="outline" size="full">
+        <Button type="submit" variant="light" size="full">
           Submit Stats
         </Button>
       </div>

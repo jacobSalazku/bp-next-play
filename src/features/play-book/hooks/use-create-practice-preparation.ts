@@ -2,7 +2,6 @@ import { toastStyling } from "@/features/toast-notification/styling";
 import { useCoachDashboardStore } from "@/store/use-coach-dashboard-store";
 import { api } from "@/trpc/react";
 import { useRouter } from "next/navigation";
-
 import { toast } from "sonner";
 
 export const useCreatePracticePreparation = (

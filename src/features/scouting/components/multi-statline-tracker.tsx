@@ -44,13 +44,25 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
   const [activePlayerIndex, setActivePlayerIndex] = useState(0);
   const createStatline = useCreateNewStatline();
 
+  const [lastChange, setLastChange] = useState<{
+    playerIndex: number;
+    field: keyof StatlineData;
+    previousValue: number;
+  } | null>(null);
+
   const initialPlayers = getInitalPlayers(players, activity.id);
   const initialOpponentStatline = getInitialOpponentStatline(
     activity.opponentStatline ?? defaultOpponentStatline,
     activity.id,
   );
 
-  const { control, handleSubmit, setValue, reset } = useForm<PlayersData>({
+  const {
+    control,
+    handleSubmit,
+    setValue,
+    reset,
+    formState: { isSubmitting },
+  } = useForm<PlayersData>({
     defaultValues: {
       teamId: teamSlug,
       players: initialPlayers,
@@ -74,7 +86,23 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
     const current = stats.players?.[playerIndex]?.statlines?.[0]?.[field] ?? 0;
     const updatedValue = Math.max(0, Number(current) + amount);
 
+    // Save previous state for undo
+    setLastChange({
+      playerIndex,
+      field,
+      previousValue: Number(current),
+    });
+
     setValue(`players.${playerIndex}.statlines.0.${field}`, updatedValue);
+  };
+
+  const handleUndo = () => {
+    if (!lastChange) return;
+
+    const { playerIndex, field, previousValue } = lastChange;
+
+    setValue(`players.${playerIndex}.statlines.0.${field}`, previousValue);
+    setLastChange(null);
   };
 
   const onSubmit = async (data: PlayersData) => {
@@ -130,6 +158,7 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
         onSubmit={handleSubmit(onSubmit)}
         opponentStatline={stats.opponentStatline as OpponentStatsline}
         setValue={setValue}
+        undoLastChange={handleUndo}
       />
       <form
         key={activity.id}
@@ -147,14 +176,24 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
             >
               {showOpponentStats ? "Hide" : "Show"} Opponent Stats
             </Button>
+            <div className="mt-4">
+              <Button
+                type="button"
+                variant="outline"
+                onClick={handleUndo}
+                disabled={!lastChange}
+              >
+                Undo Last Stat
+              </Button>
+            </div>
 
             <Button
               type="submit"
-              variant="outline"
+              variant="primary"
               size="lg"
               className="w-full sm:w-auto"
             >
-              Submit Stats
+              {isSubmitting ? "Saving..." : "Save Stats"}
             </Button>
           </div>
 

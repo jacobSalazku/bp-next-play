@@ -2,10 +2,10 @@ import type { CreateTeamData } from "@/features/auth/zod";
 import { TeamMemberRole, TeamMemberStatus } from "@/types/enum";
 import { TRPCError } from "@trpc/server";
 import type { Context } from "../api/trpc";
-import { getUserbyId } from "./user-service";
+import { getUserById } from "./user-service";
 
 export async function createNewTeam(ctx: Context, input: CreateTeamData) {
-  const { user } = await getUserbyId(ctx);
+  const { user } = await getUserById(ctx);
 
   const team = await ctx.db.team.create({
     data: {
@@ -108,7 +108,7 @@ export async function getActiveTeamMembers(ctx: Context, teamId: string) {
 }
 
 export async function getTeams(ctx: Context) {
-  const { user } = await getUserbyId(ctx);
+  const { user } = await getUserById(ctx);
 
   const teams = await ctx.db.team.findMany({
     where: {

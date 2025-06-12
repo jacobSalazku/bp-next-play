@@ -10,6 +10,7 @@ import {
 } from "@/features/attendance/utils/attendance-status";
 import { cn } from "@/lib/utils";
 import type { User } from "@/types";
+import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
 import { Calendar, User as UserICon } from "lucide-react";
 import Image from "next/image";
@@ -29,9 +30,8 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
 
   return (
     <div className="mx-auto w-full max-w-4xl px-6 py-10 text-white">
-      <div className="mb-8 flex items-center justify-between border-b border-orange-200/30 pb-6">
-        <h1 className="font-righteous text-2xl font-bold">Player Details</h1>
-        <div className="flex gap-3">
+      <div className="flex gap-3">
+        {selectedPlayer.teamMember?.role === ActivityType.GAME && (
           <Button
             variant="danger"
             size="sm"
@@ -47,7 +47,7 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
           >
             Kick off Team
           </Button>
-        </div>
+        )}
       </div>
 
       <div className="flex flex-col items-center border-b border-orange-200/30 pb-10">
@@ -71,13 +71,21 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
           {getFullPosition(selectedPlayer.teamMember?.position ?? null)}
         </p>
       </div>
-
       <Tabs defaultValue="info" className="mt-8">
         <TabsList className="grid w-full grid-cols-2 border border-orange-200/30 bg-gray-800">
-          <TabsTrigger value="info">Personal Info</TabsTrigger>
-          <TabsTrigger value="attendance">Attendance</TabsTrigger>
+          <TabsTrigger
+            className="cursor-pointer data-[state=active]:bg-gray-300 data-[state=active]:text-gray-950"
+            value="info"
+          >
+            Personal Info
+          </TabsTrigger>
+          <TabsTrigger
+            className="cursor-pointer data-[state=active]:bg-gray-300 data-[state=active]:text-gray-950"
+            value="attendance"
+          >
+            Attendance
+          </TabsTrigger>
         </TabsList>
-
         <TabsContent value="info" className="mt-6 space-y-5">
           <PlayerDetailItem
             label="Full Name"
@@ -103,7 +111,6 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
           <PlayerDetailItem label="Height" value={selectedPlayer.user.height} />
           <PlayerDetailItem label="Weight" value={selectedPlayer.user.weight} />
         </TabsContent>
-
         <TabsContent value="attendance" className="mt-6 space-y-4">
           <div className="text-muted-foreground flex items-center gap-2 text-sm font-medium">
             <Calendar className="h-4 w-4" />
@@ -117,9 +124,16 @@ const PlayerDetailPanel = ({ selectedPlayer }: { selectedPlayer: User }) => {
                   key={index}
                   className="flex items-center justify-between border-b border-gray-800 py-3"
                 >
-                  <div className="inline-flex gap-2 font-semibold">
-                    <span>{attendance.activity.time}</span>
-                    <span>{format(attendance.activity.date, "MMM dd")}</span>
+                  <div className="inline-flex w-1/3 gap-2 font-semibold">
+                    <span className="w-1/2 text-orange-300">
+                      {attendance.activity.title}
+                    </span>
+                    <div className="space-x-2">
+                      <span className="flex-end">
+                        {attendance.activity.time}
+                      </span>
+                      <span>{format(attendance.activity.date, "MMM dd")}</span>
+                    </div>
                   </div>
                   <span
                     className={cn(

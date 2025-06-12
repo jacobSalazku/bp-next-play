@@ -76,7 +76,7 @@ export const PlayerStatsRow = ({
         <TableCell className="p-3 text-center align-middle">
           <Button
             type="button"
-            variant={index === activePlayerIndex ? "secondary" : "outline"}
+            variant={index === activePlayerIndex ? "primary" : "light"}
             onClick={() => setActivePlayerIndex(index)}
             size="sm"
           >
