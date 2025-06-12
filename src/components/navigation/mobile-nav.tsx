@@ -11,7 +11,6 @@ type MobileNavProps = {
   isOpen: boolean;
   teamId?: string;
 };
-
 export function MobileNav({ items, onClose, isOpen, teamId }: MobileNavProps) {
   const { mobileNavOpen, setOpenLogOutModal } = useNavigationStore();
   return (
@@ -35,32 +34,38 @@ export function MobileNav({ items, onClose, isOpen, teamId }: MobileNavProps) {
             <X className="h-5 w-5" />
           </Button>
         </div>
-        <nav className="flex-1 overflow-y-auto">
-          <ul className="space-y-1 pt-4">
-            {teamId &&
-              items.map((item, idx) => (
-                <NavItem key={idx} {...item} onClick={onClose}>
-                  {item.label}
-                </NavItem>
-              ))}
-          </ul>
-          <Button
-            aria-label="Logout"
-            className={cn(
-              "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
-              isOpen ? "justify-start" : "justify-center",
-            )}
-            onClick={() => setOpenLogOutModal(true)}
-          >
-            <LogOut
+
+        <div className="flex flex-1 flex-col overflow-hidden">
+          <nav className="flex-1 overflow-y-auto">
+            <ul className="space-y-1 pt-4">
+              {teamId &&
+                items.map((item, idx) => (
+                  <NavItem key={idx} {...item} onClick={onClose}>
+                    {item.label}
+                  </NavItem>
+                ))}
+            </ul>
+          </nav>
+
+          <div className="p-4">
+            <Button
+              aria-label="Logout"
               className={cn(
-                "mr-2 h-5 w-5 rotate-180",
-                !isOpen ? "mx-auto block" : "mr-1",
+                "flex w-full items-center px-4 py-3 text-sm transition-colors dark:hover:bg-gray-800",
+                isOpen ? "justify-start" : "justify-center",
               )}
-            />
-            {isOpen && <span>Logout</span>}
-          </Button>
-        </nav>
+              onClick={() => setOpenLogOutModal(true)}
+            >
+              <LogOut
+                className={cn(
+                  "h-5 w-5 rotate-180",
+                  isOpen ? "mr-2" : "mx-auto",
+                )}
+              />
+              {isOpen && <span>Logout</span>}
+            </Button>
+          </div>
+        </div>
       </div>
     </div>
   );

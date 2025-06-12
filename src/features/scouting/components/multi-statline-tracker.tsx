@@ -51,6 +51,7 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
   } | null>(null);
 
   const initialPlayers = getInitalPlayers(players, activity.id);
+
   const initialOpponentStatline = getInitialOpponentStatline(
     activity.opponentStatline ?? defaultOpponentStatline,
     activity.id,
@@ -141,7 +142,7 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
     });
   };
 
-  useDebouncedSave(stats as PlayersData, onSubmit, 5000);
+  useDebouncedSave(stats as PlayersData, onSubmit, 10000);
 
   if (!stats) return null;
 

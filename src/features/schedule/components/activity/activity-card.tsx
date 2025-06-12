@@ -76,7 +76,7 @@ export const ActivityCard: FC<ActivityCardProps> = ({ activity, member }) => {
           </div>
         </div>
       </div>
-      <div className="flex flex-col gap-2 sm:ml-auto sm:flex-row sm:items-center">
+      <div className="flex gap-2 sm:ml-auto sm:flex-row sm:items-center">
         {activity.type === ActivityType.GAME && role && date && (
           <Link
             aria-label="Create Box Score"
