@@ -19,6 +19,6 @@ Dit project is gebouwd met de [T3 Stack](https://create.t3.gg/):
 - [Next.js](https://nextjs.org) – React framework
 - [Tailwind CSS](https://tailwindcss.com) – Styling
 - [tRPC](https://trpc.io) – Typesafe API-routes
-- [Prisma](https://prisma.io) / [Drizzle](https://orm.drizzle.team) – Database ORM
+- [Prisma](https://prisma.io) – Database ORM
 - [NextAuth.js](https://next-auth.js.org) – Authentificatie
 
