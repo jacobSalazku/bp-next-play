@@ -105,8 +105,16 @@ export async function getActivity(ctx: Context, activityId: string) {
 }
 
 export async function getGames(ctx: Context, teamId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const games = await ctx.db.activity.findMany({
-    where: { teamId: teamId, type: ActivtiyEnum.GAME, gamePlan: null },
+    where: {
+      teamId: teamId,
+      type: ActivtiyEnum.GAME,
+      gamePlan: null,
+      date: today,
+    },
     orderBy: { date: "desc" },
     select: {
       id: true,

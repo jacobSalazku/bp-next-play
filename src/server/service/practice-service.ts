@@ -50,8 +50,16 @@ export async function editPractice(ctx: Context, input: EditPracticeInput) {
 }
 
 export async function getPractices(ctx: Context, teamId: string) {
+  const today = new Date();
+  today.setHours(0, 0, 0, 0);
+
   const practices = await ctx.db.activity.findMany({
-    where: { teamId: teamId, type: ActivityEnum.PRACTICE, practice: null },
+    where: {
+      teamId: teamId,
+      type: ActivityEnum.PRACTICE,
+      practice: null,
+      date: today,
+    },
     orderBy: { date: "desc" },
     select: {
       id: true,

@@ -1,6 +1,6 @@
 import { getActivity } from "@/api/activity";
 import { getRole } from "@/api/role";
-import { getActiveTeamMember } from "@/api/user";
+import { getActiveAttendedMember } from "@/api/user";
 import withAuth from "@/features/auth/components/with-auth";
 import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
@@ -30,9 +30,8 @@ async function TeamBoxScores({ params, searchParams }: PageProps) {
   if (role !== "COACH") return redirect(`/${teamId}/schedule`);
 
   const { activityId } = await boxScoreSearchParamsCache.parse(searchParams);
-
   const activity = await getActivity(activityId);
-  const members = await getActiveTeamMember(teamId);
+  const members = await getActiveAttendedMember(teamId, activityId);
 
   const players = members.map((member) => ({
     ...member,

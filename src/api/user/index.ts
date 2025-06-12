@@ -49,3 +49,21 @@ export const getActiveTeamMember = cache(async (teamId: string) => {
 
   return members;
 });
+
+export const getActiveAttendedMember = cache(
+  async (teamId: string, activityId: string) => {
+    const member = await api.member.getActiveAttendedMember({
+      teamId,
+      activityId,
+    });
+
+    if (!member) {
+      throw new TRPCError({
+        code: "NOT_FOUND",
+        message: "Member not found.",
+      });
+    }
+
+    return member;
+  },
+);

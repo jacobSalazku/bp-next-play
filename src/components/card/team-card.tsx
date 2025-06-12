@@ -2,7 +2,7 @@
 import type { Team } from "@/types";
 import { ActivityType } from "@prisma/client";
 import { format } from "date-fns";
-import { Calendar, Clock, MapPin } from "lucide-react";
+import { Calendar, Clock } from "lucide-react";
 import type { FC } from "react";
 import { Link } from "../foundation/button/link";
 
@@ -50,10 +50,6 @@ const TeamCard: FC<TeamCardProps> = ({ team }) => {
                   <Clock className="h-4 w-4 text-white/40" />
                   {team.activities[0]?.time}
                 </div>
-              </div>
-              <div className="flex items-center gap-2">
-                <MapPin className="h-4 w-4 text-white/40" />
-                <span className="text-white/60">Location</span>
               </div>
             </>
           ) : (
