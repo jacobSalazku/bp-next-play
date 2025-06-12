@@ -8,7 +8,7 @@ export type LinkProps = {
   label?: string;
   children?: React.ReactNode;
   disabled?: boolean;
-  href: Parameters<typeof NavLink>[0]["href"]; // ensure href is required and correct type
+  href: Parameters<typeof NavLink>[0]["href"];
 } & Omit<React.AnchorHTMLAttributes<HTMLAnchorElement>, "href"> &
   VariantProps<typeof buttonVariants>;
 const Link: FC<LinkProps> = ({

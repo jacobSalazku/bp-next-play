@@ -79,8 +79,13 @@ const JoinTeamForm = () => {
         error={errors.number}
         errorMessage={errors.number?.message}
       />
-      <div className="space-2 flex items-center justify-between pt-2">
-        <Button aria-label="Join team" type="submit" disabled={isPending}>
+      <div className="space-2 flex w-full items-center justify-between py-4">
+        <Button
+          aria-label="Join team"
+          type="submit"
+          className="w-full py-5 text-sm hover:border-gray-950 hover:bg-gray-600 hover:text-white sm:w-1/3"
+          disabled={isPending}
+        >
           {isPending ? "Joining..." : "Join Team"}
         </Button>
       </div>

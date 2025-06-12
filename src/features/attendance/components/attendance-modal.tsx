@@ -51,6 +51,7 @@ const AttendanceModal: FC<AttendanceProps> = ({ mode, member }) => {
       ? () => setOpenGameAttendance(false)
       : () => setOpenPracticeAttendance(false),
   );
+  //
   const attendanceSelection = useWatch({ control, name: "attendanceStatus" });
 
   useEffect(() => {

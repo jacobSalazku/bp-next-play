@@ -4,8 +4,6 @@ import { Button } from "@/components/foundation/button/button";
 import { Input } from "@/components/foundation/input";
 import { api } from "@/trpc/react";
 import { zodResolver } from "@hookform/resolvers/zod";
-import { X } from "lucide-react";
-import Image from "next/image";
 import { useRouter } from "next/navigation";
 import { useState, useTransition } from "react";
 import { useForm } from "react-hook-form";
@@ -19,7 +17,7 @@ const CreateTeamForm = () => {
   const {
     register,
     handleSubmit,
-    setValue,
+
     formState: { errors },
   } = useForm<CreateTeamData>({
     resolver: zodResolver(createTeamSchema),
@@ -28,38 +26,11 @@ const CreateTeamForm = () => {
   const createTeam = api.team.createTeam.useMutation();
   const router = useRouter();
 
-  const handleFile = (selected: File) => {
-    setFile(selected);
-    setValue("image", selected.name);
-    const url = URL.createObjectURL(selected);
-    setPreviewUrl(url);
-  };
-
-  const handleFileSelect = (e: React.ChangeEvent<HTMLInputElement>) => {
-    if (e.target.files?.[0]) {
-      handleFile(e.target.files[0]);
-    }
-  };
-
-  const onDrop = (e: React.DragEvent) => {
-    e.preventDefault();
-    if (e.dataTransfer.files?.[0]) {
-      handleFile(e.dataTransfer.files[0]);
-    }
-  };
-
-  const removeFile = () => {
-    setFile(null);
-    setPreviewUrl(null);
-    setValue("image", "");
-  };
-
   const onSubmit = (data: CreateTeamData) => {
     startTransition(() => {
       createTeam.mutate(
         {
           ...data,
-          image: file ? file.name : undefined,
         },
         {
           onSuccess: () => {
@@ -72,55 +43,7 @@ const CreateTeamForm = () => {
   };
 
   return (
-    <form onSubmit={handleSubmit(onSubmit)} className="w-1/2">
-      {!previewUrl ? (
-        <div
-          onDrop={onDrop}
-          onDragOver={(e) => e.preventDefault()}
-          className="mb-4 cursor-pointer rounded-md border border-dashed border-neutral-400 p-6 text-center hover:border-neutral-600 hover:bg-neutral-100"
-        >
-          <div className="flex flex-col items-center justify-center">
-            <Image
-              src="/cloud-icon.svg"
-              alt="Upload"
-              width={100}
-              height={100}
-              className="mb-4 h-16 w-16 object-contain"
-            />
-            <p className="text-sm text-gray-600">
-              Drag & drop image or {""}
-              <label className="cursor-pointer text-indigo-600 underline">
-                Browse
-                <input
-                  type="file"
-                  accept="image/*"
-                  onChange={handleFileSelect}
-                  className="hidden"
-                />
-              </label>
-            </p>
-          </div>
-        </div>
-      ) : (
-        <div className="relative mb-4">
-          <Image
-            width={100}
-            height={100}
-            src={previewUrl}
-            alt="Preview"
-            className="max-h-64 w-full rounded object-contain shadow"
-          />
-          <button
-            aria-label="Remove file"
-            onClick={removeFile}
-            type="button"
-            className="absolute top-2 right-2 rounded-full bg-white p-1 text-lg text-gray-700 hover:text-red-500"
-          >
-            <X className="h-5 w-5" />
-          </button>
-        </div>
-      )}
-
+    <form onSubmit={handleSubmit(onSubmit)} className="w-full sm:w-1/2">
       <div className="mb-4">
         <Input
           id="name"
@@ -142,8 +65,12 @@ const CreateTeamForm = () => {
         />
       </div>
 
-      <div className="flex items-center justify-between">
-        <Button type="submit" disabled={isPending}>
+      <div className="flex items-center justify-between py-4">
+        <Button
+          className="w-full py-5 text-sm hover:border-gray-950 hover:bg-gray-600 hover:text-white sm:w-1/3"
+          type="submit"
+          disabled={isPending}
+        >
           {isPending ? "Creating..." : "Create Team"}
         </Button>
       </div>
