@@ -28,7 +28,15 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
       teamId: teamId,
       date: { lte: startOfTomorrow },
     },
-    select: { id: true, type: true, statlines: true },
+    select: {
+      id: true,
+      type: true,
+      statlines: true,
+      attendees: {
+        where: { attendanceStatus: "ATTENDING" },
+        select: { teamMemberId: true },
+      },
+    },
   });
 
   const { activityIds, gameActivityIds } = getActivityIds(activities);
@@ -39,6 +47,12 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
       activityId: { in: gameActivityIds },
       activity: {
         date: { lte: startOfTomorrow },
+        attendees: {
+          some: {
+            teamMemberId: { in: teamMembers.map((m) => m.id) },
+            attendanceStatus: "ATTENDING",
+          },
+        },
       },
     },
     select: { activityId: true, teamMemberId: true },
@@ -76,6 +90,12 @@ export async function getStatlineAverages(ctx: Context, teamId: string) {
             teamId: teamId,
             type: ActivityType.GAME,
             date: { lt: startOfTomorrow },
+            attendees: {
+              some: {
+                teamMemberId: member.id,
+                attendanceStatus: "ATTENDING",
+              },
+            },
           },
           activityId: {
             in: activityIds,

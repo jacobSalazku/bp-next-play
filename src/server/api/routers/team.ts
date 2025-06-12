@@ -76,7 +76,7 @@ export const teamRouter = createTRPCRouter({
       //set status to active
       return ctx.db.teamMember.update({
         where: {
-          id: `${input.teamId}_${input.userId}`, // Assuming a composite unique ID format
+          id: `${input.teamId}_${input.userId}`,
         },
         data: { status: "ACTIVE" },
       });

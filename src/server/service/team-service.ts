@@ -231,3 +231,89 @@ export async function getTeam(ctx: Context, teamId: string) {
 
   return team;
 }
+
+export async function getActiveAttendedMember(
+  ctx: Context,
+  teamId: string,
+  activityId: string,
+) {
+  const team = await ctx.db.team.findUnique({
+    where: { id: teamId },
+    select: {
+      id: true,
+      members: {
+        where: {
+          status: "ACTIVE",
+          role: "PLAYER",
+          attendances: {
+            some: { activityId: activityId, attendanceStatus: "ATTENDING" },
+          },
+        },
+        include: {
+          user: {
+            select: {
+              id: true,
+              name: true,
+              image: true,
+              email: true,
+              dateOfBirth: true,
+              phone: true,
+              height: true,
+              weight: true,
+              dominantHand: true,
+            },
+          },
+          statlines: {
+            select: {
+              id: true,
+              activityId: true,
+              fieldGoalsMade: true,
+              fieldGoalsMissed: true,
+              threePointersMade: true,
+              threePointersMissed: true,
+              freeThrows: true,
+              missedFreeThrows: true,
+              assists: true,
+              steals: true,
+              turnovers: true,
+              offensiveRebounds: true,
+              defensiveRebounds: true,
+              blocks: true,
+            },
+          },
+        },
+      },
+    },
+  });
+
+  if (!team) {
+    throw new TRPCError({
+      code: "NOT_FOUND",
+      message: "Team not found.",
+    });
+  }
+
+  const members = team.members.map((member) => ({
+    id: member.userId,
+    name: member.user.name,
+    image: member.user.image,
+    role: member.role,
+    status: member.status,
+    statlines: member.statlines,
+    number: member.number,
+    position: member.position,
+    user: {
+      id: member.user.id,
+      name: member.user.name,
+      image: member.user.image,
+      email: member.user.email,
+      dateOfBirth: member.user.dateOfBirth,
+      phone: member.user.phone,
+      height: member.user.height,
+      weight: member.user.weight,
+      dominantHand: member.user.dominantHand,
+    },
+  }));
+
+  return members;
+}

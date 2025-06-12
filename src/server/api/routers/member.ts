@@ -1,4 +1,7 @@
-import { getActiveTeamMembers } from "@/server/service/team-service";
+import {
+  getActiveAttendedMember,
+  getActiveTeamMembers,
+} from "@/server/service/team-service";
 import { getAllMembers, getTeamMember } from "@/server/service/user-service";
 import { z } from "zod";
 import { createTRPCRouter, publicProcedure } from "../trpc";
@@ -23,5 +26,17 @@ export const memberRouter = createTRPCRouter({
       const members = await getActiveTeamMembers(ctx, input.teamId);
 
       return members;
+    }),
+
+  getActiveAttendedMember: publicProcedure
+    .input(z.object({ teamId: z.string(), activityId: z.string() }))
+    .query(async ({ ctx, input }) => {
+      const member = await getActiveAttendedMember(
+        ctx,
+        input.teamId,
+        input.activityId,
+      );
+
+      return member;
     }),
 });
