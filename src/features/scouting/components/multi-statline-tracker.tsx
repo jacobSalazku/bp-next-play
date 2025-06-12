@@ -298,17 +298,18 @@ const MultiStatlineTracker: FC<TrackerProps> = ({ players, activity }) => {
           </div>
         </div>
         <div className="mt-6 grid grid-cols-2 gap-3 sm:grid-cols-3 md:grid-cols-6">
-          {statRows.map(({ key, label }) => (
-            <Button
-              key={key}
-              type="button"
-              size="lg"
-              variant="light"
-              onClick={() => handleChange(activePlayerIndex, key, +1)}
-            >
-              {label} +
-            </Button>
-          ))}
+          {players &&
+            statRows.map(({ key, label }) => (
+              <Button
+                key={key}
+                type="button"
+                size="lg"
+                variant="light"
+                onClick={() => handleChange(activePlayerIndex, key, +1)}
+              >
+                {label} +
+              </Button>
+            ))}
         </div>
       </form>
     </>
