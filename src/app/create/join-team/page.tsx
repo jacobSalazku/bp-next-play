@@ -1,4 +1,14 @@
 import { JoinTeamForm } from "@/features/auth/components/join-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Join Team",
+  description: "Join an existing team to manage your players and playbook.",
+  openGraph: {
+    title: "Join Team",
+    description: "Join an existing team to manage your players and playbook.",
+  },
+};
 
 async function JoinTeamPage() {
   return (

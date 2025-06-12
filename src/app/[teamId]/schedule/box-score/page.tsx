@@ -5,16 +5,26 @@ import withAuth from "@/features/auth/components/with-auth";
 import Skeleton from "@/features/scouting/components/mobile/skeleton";
 import { MultiStatlineTracker } from "@/features/scouting/components/multi-statline-tracker";
 import { boxScoreSearchParamsCache } from "@/utils/search-params";
+import type { Metadata } from "next";
 import { redirect } from "next/navigation";
 import type { SearchParams } from "nuqs/server";
 import { Suspense } from "react";
+
+export const metadata: Metadata = {
+  title: "Box Score",
+  description: "Box Score inserts your team's game statistics.",
+  openGraph: {
+    title: "Box Score",
+    description: "Box Score inserts your team's game statistics.",
+  },
+};
 
 type PageProps = {
   searchParams: Promise<SearchParams>;
   params: Promise<{ teamId: string }>;
 };
 
-async function PlayerPage({ params, searchParams }: PageProps) {
+async function TeamBoxScores({ params, searchParams }: PageProps) {
   const role = await getRole();
   const { teamId } = await params;
   if (role !== "COACH") return redirect(`/${teamId}/schedule`);
@@ -50,4 +60,4 @@ async function PlayerPage({ params, searchParams }: PageProps) {
     </div>
   );
 }
-export default withAuth(PlayerPage);
+export default withAuth(TeamBoxScores);

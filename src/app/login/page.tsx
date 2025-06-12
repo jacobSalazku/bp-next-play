@@ -1,4 +1,14 @@
 import SigninForm from "@/components/signin";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Login",
+  description: "Log in to your NextPlay account.",
+  openGraph: {
+    title: "Login",
+    description: "Log in to your NextPlay account.",
+  },
+};
 
 export default async function Login() {
   return (

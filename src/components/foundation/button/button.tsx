@@ -9,16 +9,14 @@ const buttonVariants = cva(
     variants: {
       variant: {
         default:
-          "bg-gray-800 text-white shadow hover:bg-gray-300 hover:text-gray-900",
+          "bg-gray-800 text-white shadow-md transition-colors duration-200 hover:bg-gray-100 hover:text-gray-900",
         primary:
           "bg-gradient-to-br from-orange-700/80 to-orange-400 text-white shadow-sm hover:bg-orange-400/90",
-        destructive:
-          "bg-destructive text-destructive-foreground shadow-sm hover:bg-destructive/90",
+
         outline:
           "border border-orange-300/30 text-white transition-all duration-200 ease-in-out hover:text-white hover:bg-gray-800 hover:shadow-md px-4 py-2 rounded",
-        secondary: "bg-orange-400/70 text-white shadow-sm",
         light:
-          "bg-gray-100 text-gray-950 shadow-sm hover:bg-gray-300 hover:text-gray-00",
+          "bg-gray-100 text-gray-950 shadow-sm hover:text-white border hover:border-orange-400 hover:bg-transparent",
         ghost:
           "text-gray-400 font-light hover:bg-accent hover:text-accent-foreground",
         link: "text-primary underline-offset-4 hover:underline",

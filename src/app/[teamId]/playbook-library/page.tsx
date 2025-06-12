@@ -6,10 +6,22 @@ import PlaybookBookBlock from "@/features/play-book/components/playbook";
 import PlaybookLibrarySkeleton from "@/features/play-book/components/skeleton/playbook-library-skeleton";
 import GamePlanForm from "@/features/play-book/form/gameplan-form";
 import PracticePreparationForm from "@/features/play-book/form/practice-preparation-form";
+import type { Metadata } from "next";
 import { Suspense } from "react";
 
 type PageProps = {
   params: Promise<{ teamId: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Playbook Library",
+  description:
+    "Manage your team's playbook, game plans, and practice preparations.",
+  openGraph: {
+    title: "Playbook Library",
+    description:
+      "Manage your team's playbook, game plans, and practice preparations.",
+  },
 };
 
 async function PlaybookPage({ params }: PageProps) {
@@ -30,7 +42,6 @@ async function PlaybookPage({ params }: PageProps) {
           playbook={playbook}
           gamePlan={gameplan}
         />
-
         <GamePlanForm
           mode="create"
           role={role}

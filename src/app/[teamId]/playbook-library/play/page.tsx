@@ -8,6 +8,15 @@ type PageProps = {
   searchParams: Promise<{ id: string }>;
 };
 
+export const metadata = {
+  title: "Play",
+  description: "View the details of a specific play.",
+  openGraph: {
+    title: "Play",
+    description: "View the details of a specific play.",
+  },
+};
+
 async function PlayView({ searchParams }: PageProps) {
   const { id } = await playbookSearchParamsCache.parse(searchParams);
   const play = await getPlayById(id);

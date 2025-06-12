@@ -1,4 +1,14 @@
 import CreateTeamForm from "@/features/auth/components/team-form";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Create Team",
+  description: "Create a new team to manage your players and playbook.",
+  openGraph: {
+    title: "Create Team",
+    description: "Create a new team to manage your players and playbook.",
+  },
+};
 
 async function CreateTeamPage() {
   return (

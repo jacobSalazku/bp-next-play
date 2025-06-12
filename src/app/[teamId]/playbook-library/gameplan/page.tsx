@@ -7,6 +7,15 @@ type PageProps = {
   searchParams: Promise<{ id: string }>;
 };
 
+export const metadata = {
+  title: "Game Plan",
+  description: "View the details of a specific game plan.",
+  openGraph: {
+    title: "Game Plan",
+    description: "View the details of a specific game plan.",
+  },
+};
+
 async function GamePlanView({ searchParams }: PageProps) {
   const { id } = await gameplanSearchParamsCache.parse(searchParams);
   const gameplan = await getGamePlanById(id);

@@ -1,8 +1,17 @@
 import { getTeam } from "@/api/team";
 import { getTeamMembers } from "@/api/user";
 import withAuth from "@/features/auth/components/with-auth";
-
 import { PlayerBlock } from "@/features/player-table";
+import type { Metadata } from "next";
+
+export const metadata: Metadata = {
+  title: "Players",
+  description: "View and manage your team's players.",
+  openGraph: {
+    title: "Players",
+    description: "View and manage your team's players.",
+  },
+};
 
 async function PlayerPage({ params }: { params: Promise<{ teamId: string }> }) {
   const { teamId } = await params;

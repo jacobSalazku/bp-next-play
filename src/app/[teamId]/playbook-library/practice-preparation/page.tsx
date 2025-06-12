@@ -1,8 +1,18 @@
 import { getPlayById } from "@/api/play";
 import { practiceSearchParamsCache } from "@/utils/search-params";
+import type { Metadata } from "next";
 
 type PageProps = {
   searchParams: Promise<{ id: string }>;
+};
+
+export const metadata: Metadata = {
+  title: "Practice Preparation",
+  description: "Prepare for your next practice with detailed instructions.",
+  openGraph: {
+    title: "Practice Preparation",
+    description: "Prepare for your next practice with detailed instructions.",
+  },
 };
 
 async function PracticePreparationView({ searchParams }: PageProps) {
